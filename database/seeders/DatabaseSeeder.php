@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Role;
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,30 +13,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Memastikan bahwa role dengan id 1 sudah ada
+        Role::firstOrCreate(['id' => 1], ['Nama_Role' => 'Nakes', 'created_at' => now(), 'updated_at' => now()]);
+        Role::firstOrCreate(['id' => 2], ['Nama_Role' => 'Kader', 'created_at' => now(), 'updated_at' => now()]);
 
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
-
-        Role::insert([
-            [
-                'Nama_Role' => 'Nakes',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'Nama_Role' => 'Kader',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
-        ]);
-
+        // Menambahkan user setelah role ada
         User::create([
-            'name' => 'Irhas Wahyu Ningtyas',
+            'nama' => 'Irhas Wahyu Ningtyas',
             'email' => 'irhas@gmail.com',
-            'id_role' => '1',
+            'id_role' => 1, // Menggunakan id yang sudah ada pada role
             'password' => bcrypt('12345678'),
         ]);
     }

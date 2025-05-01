@@ -1,6 +1,6 @@
 @extends('partials.admin.main')
 
-@section('title', 'Manajemen Pengguna')
+@section('title', 'Manajemen Daftar Pertanyaan')
 
 @section('content')
     <div class="content-wrapper">
@@ -8,7 +8,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Manajemen Pengguna</h1>
+                        <h1 class="m-0">Manajemen Daftar Pertanyaan</h1>
                     </div>
                 </div>
             </div>
@@ -28,12 +28,12 @@
                                                     <i data-feather="search"></i>
                                                 </span>
                                             </div>
-                                            <input type="text" class="form-control" placeholder="Cari Pengguna" id="searchUser"
-                                                name="search" autocomplete="off">
+                                            <input type="text" class="form-control" placeholder="Cari Pertanyaan" id="searchPertanyaan"
+                                                   name="search" autocomplete="off">
                                         </div>
                                     </div>
                                     <div class="col-md-6 text-right">
-                                        <button id="tambahPenggunaBaru" class="btn btn-tambah-baru">
+                                        <button id="tambahPertanyaanBaru" class="btn btn-tambah-baru">
                                             Tambah Baru
                                         </button>
                                     </div>
@@ -44,29 +44,23 @@
                                     <thead class="thead-light">
                                         <tr>
                                             <th><b>No</b></th>
-                                            <th><b>Nama</b></th>
-                                            <th><b>Email</b></th>
-                                            <th><b>Role</b></th>
+                                            <th><b>Pertanyaan</b></th>
                                             <th><b>Aksi</b></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($users as $i => $user)
+                                        @foreach ($pertanyaans as $i => $data)
                                             <tr>
                                                 <td>{{ $i + 1 }}</td>
-                                                <td>{{ $user->nama }}</td>
-                                                <td>{{ $user->email }}</td>
-                                                <td>{{ $user->role->Nama_Role ?? 'N/A' }}</td>
+                                                <td>{{ $data->pertanyaan }}</td>
                                                 <td>
                                                     <button class="btn btn-sm btn-primary btn-edit"
-                                                        data-id="{{ $user->id }}" data-nama="{{ $user->nama }}"
-                                                        data-email="{{ $user->email }}"
-                                                        data-role-id="{{ $user->id_role }}">
+                                                            data-id="{{ $data->id }}" data-pertanyaan="{{ $data->pertanyaan }}">
                                                         Edit
                                                     </button>
                                                     <button class="btn btn-danger btn-sm btn-delete"
-                                                        data-user-id="{{ $user->id }}"
-                                                        data-user-nama="{{ $user->nama }}">
+                                                            data-pertanyaan-id="{{ $data->id }}"
+                                                            data-pertanyaan-text="{{ $data->pertanyaan }}">
                                                         Hapus
                                                     </button>
                                                 </td>
@@ -82,38 +76,22 @@
         </section>
     </div>
 
-    <div class="modal fade" id="tambahPenggunaModal" tabindex="-1" role="dialog"
-        aria-labelledby="tambahPenggunaModalLabel" aria-hidden="true">
+    <div class="modal fade" id="tambahPertanyaanModal" tabindex="-1" role="dialog" aria-labelledby="tambahPertanyaanModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="tambahPenggunaModalLabel">Tambah Pengguna Baru</h5>
+                    <h5 class="modal-title" id="tambahPertanyaanModalLabel">Tambah Pertanyaan Baru</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="tambahPenggunaForm" method="POST" action="{{ route('pengguna.store') }}">
+                <form id="tambahPertanyaanForm" method="POST" action="{{ route('daftar_pertanyaan.store') }}">
                     @csrf
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="nama">Nama</label>
-                            <input type="text" class="form-control" id="nama" name="nama" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="id_role">Role</label>
-                            <select class="form-control" id="id_role" name="id_role" required>
-                                @foreach ($roles as $role)
-                                    <option value="{{ $role->id }}"> {{ $role->Nama_Role }} </option>
-                                @endforeach
-                            </select>
+                            <label for="pertanyaan">Pertanyaan</label>
+                            <textarea class="form-control" id="pertanyaan" name="pertanyaan" rows="3" required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -129,7 +107,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Edit Pengguna</h5>
+                    <h5 class="modal-title" id="editModalLabel">Edit Pertanyaan</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -139,20 +117,8 @@
                     @method('PUT')
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="edit_Nama">Nama</label>
-                            <input type="text" class="form-control" id="edit_Nama" name="nama">
-                        </div>
-                        <div class="form-group">
-                            <label for="edit_Email">Email</label>
-                            <input type="email" class="form-control" id="edit_Email" name="email">
-                        </div>
-                        <div class="form-group">
-                            <label for="edit_Role">Role</label>
-                            <select class="form-control" id="edit_Role" name="id_role">
-                                @foreach ($roles as $role)
-                                    <option value="{{ $role->id }}"> {{ $role->Nama_Role }} </option>
-                                @endforeach
-                            </select>
+                            <label for="edit_pertanyaan">Pertanyaan</label>
+                            <textarea class="form-control" id="edit_pertanyaan" name="pertanyaan" rows="3"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -165,7 +131,7 @@
     </div>
 
     <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog"
-        aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+         aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -175,7 +141,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Apakah Anda yakin ingin menghapus pengguna <span id="userToDelete"></span>?
+                    Apakah Anda yakin ingin menghapus pertanyaan: <span id="pertanyaanToDelete"></span>?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
@@ -189,20 +155,16 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
-            $('#tambahPenggunaBaru').click(function() {
-                $('#tambahPenggunaModal').modal('show');
+            $('#tambahPertanyaanBaru').click(function() {
+                $('#tambahPertanyaanModal').modal('show');
             });
 
             $('.btn-edit').on('click', function() {
-                var userId = $(this).data('id');
-                var userName = $(this).data('nama');
-                var userEmail = $(this).data('email');
-                var roleId = $(this).data('role-id');
-                var editUrl = "{{ route('pengguna.update', ':id') }}".replace(':id', userId);
+                var pertanyaanId = $(this).data('id');
+                var pertanyaanText = $(this).data('pertanyaan');
+                var editUrl = "{{ route('daftar_pertanyaan.update', ':id') }}".replace(':id', pertanyaanId);
 
-                $('#edit_Nama').val(userName);
-                $('#edit_Email').val(userEmail);
-                $('#edit_Role').val(roleId);
+                $('#edit_pertanyaan').val(pertanyaanText);
                 $('#editForm').attr('action', editUrl);
                 $('#editModal').modal('show');
             });
@@ -213,19 +175,19 @@
 
             // UNTUK HAPUS //
             $('.btn-delete').on('click', function() {
-                var userId = $(this).data('user-id');
-                var userName = $(this).data('user-nama');
-                var deleteUrl = "{{ route('pengguna.delete', ':id') }}".replace(':id', userId);
+                var pertanyaanId = $(this).data('pertanyaan-id');
+                var pertanyaanText = $(this).data('pertanyaan-text');
+                var deleteUrl = "{{ route('daftar_pertanyaan.delete', ':id') }}".replace(':id', pertanyaanId);
 
-                $('#userToDelete').text(userName);
+                $('#pertanyaanToDelete').text(pertanyaanText);
                 $('#deleteConfirmButton').attr('href', deleteUrl);
                 $('#deleteConfirmationModal').modal('show');
             });
 
             // UNTUK SEARCH //
-            $('#searchUser').on('input', function() {
+            $('#searchPertanyaan').on('input', function() {
                 var searchValue = $(this).val();
-                var url = "{{ route('pengguna.index') }}";
+                var url = "{{ route('daftar_pertanyaan.index') }}";
 
                 // Tambahkan parameter 'search' ke URL
                 url += (url.indexOf('?') > -1 ? '&' : '?') + 'search=' + searchValue;

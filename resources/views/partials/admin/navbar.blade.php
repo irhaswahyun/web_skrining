@@ -1,4 +1,4 @@
-<nav class="topnav navbar navbar-light">
+<nav class="topnav navbar bg-navbar-custom">
     <button type="button" class="navbar-toggler text-muted mt-2 p-0 mr-3 collapseSidebar">
       <i class="fe fe-menu navbar-toggler-icon"></i>
     </button>
@@ -31,7 +31,14 @@
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
           <a class="dropdown-item" href="#">Profile</a>
           <a class="dropdown-item" href="#">Settings</a>
-          <a class="dropdown-item" href="#">Activities</a>
+          <a class="dropdown-item" href="{{ route('logout') }}" 
+          onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            Logout
+        </a>
+
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+            @csrf
+        </form>
         </div>
       </li>
     </ul>

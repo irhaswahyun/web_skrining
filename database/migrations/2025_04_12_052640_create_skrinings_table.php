@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('ID_Pengguna');
             $table->string('Unit_Pelayanan');
             $table->date('Tanggal_Skrining');
-            $table->string('ID_DaftarSkrining');
+            $table->string('ID_DaftarPertanyaan');
             $table->timestamps();
         });
     }

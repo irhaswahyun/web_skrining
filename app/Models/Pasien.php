@@ -9,5 +9,13 @@ class Pasien extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nama', 'nik']; // sesuaikan dengan kolom di tabel
+    protected $fillable = [
+        'NIK', 
+        'Nama_Pasien', 
+        'Tanggal_Lahir', 
+        'Kategori', 
+        'Jenis_Kelamin', 
+        'Alamat', 
+        'No_telp',
+    ];
 }

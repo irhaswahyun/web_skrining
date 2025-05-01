@@ -1,6 +1,6 @@
 @extends('partials.admin.main')
 
-@section('title', 'Manajemen Pengguna')
+@section('title', 'Manajemen Daftar Penyakit')
 
 @section('content')
     <div class="content-wrapper">
@@ -8,7 +8,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0">Manajemen Pengguna</h1>
+                        <h1 class="m-0">Manajemen Daftar Penyakit</h1>
                     </div>
                 </div>
             </div>
@@ -28,12 +28,12 @@
                                                     <i data-feather="search"></i>
                                                 </span>
                                             </div>
-                                            <input type="text" class="form-control" placeholder="Cari Pengguna" id="searchUser"
-                                                name="search" autocomplete="off">
+                                            <input type="text" class="form-control" placeholder="Cari Penyakit" id="searchPenyakit"
+                                                   name="search" autocomplete="off">
                                         </div>
                                     </div>
                                     <div class="col-md-6 text-right">
-                                        <button id="tambahPenggunaBaru" class="btn btn-tambah-baru">
+                                        <button id="tambahPenyakitBaru" class="btn btn-tambah-baru">
                                             Tambah Baru
                                         </button>
                                     </div>
@@ -44,29 +44,23 @@
                                     <thead class="thead-light">
                                         <tr>
                                             <th><b>No</b></th>
-                                            <th><b>Nama</b></th>
-                                            <th><b>Email</b></th>
-                                            <th><b>Role</b></th>
+                                            <th><b>Nama Penyakit</b></th>
                                             <th><b>Aksi</b></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($users as $i => $user)
+                                        @foreach ($daftarPenyakits as $i => $data)
                                             <tr>
                                                 <td>{{ $i + 1 }}</td>
-                                                <td>{{ $user->nama }}</td>
-                                                <td>{{ $user->email }}</td>
-                                                <td>{{ $user->role->Nama_Role ?? 'N/A' }}</td>
+                                                <td>{{ $data->Nama_Penyakit }}</td>
                                                 <td>
                                                     <button class="btn btn-sm btn-primary btn-edit"
-                                                        data-id="{{ $user->id }}" data-nama="{{ $user->nama }}"
-                                                        data-email="{{ $user->email }}"
-                                                        data-role-id="{{ $user->id_role }}">
+                                                            data-id="{{ $data->id }}" data-nama="{{ $data->Nama_Penyakit }}">
                                                         Edit
                                                     </button>
                                                     <button class="btn btn-danger btn-sm btn-delete"
-                                                        data-user-id="{{ $user->id }}"
-                                                        data-user-nama="{{ $user->nama }}">
+                                                            data-penyakit-id="{{ $data->id }}"
+                                                            data-penyakit-nama="{{ $data->Nama_Penyakit }}">
                                                         Hapus
                                                     </button>
                                                 </td>
@@ -82,38 +76,22 @@
         </section>
     </div>
 
-    <div class="modal fade" id="tambahPenggunaModal" tabindex="-1" role="dialog"
-        aria-labelledby="tambahPenggunaModalLabel" aria-hidden="true">
+    <div class="modal fade" id="tambahPenyakitModal" tabindex="-1" role="dialog" aria-labelledby="tambahPenyakitModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="tambahPenggunaModalLabel">Tambah Pengguna Baru</h5>
+                    <h5 class="modal-title" id="tambahPenyakitModalLabel">Tambah Penyakit Baru</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="tambahPenggunaForm" method="POST" action="{{ route('pengguna.store') }}">
+                <form id="tambahPenyakitForm" method="POST" action="{{ route('daftar_penyakit.store') }}">
                     @csrf
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="nama">Nama</label>
-                            <input type="text" class="form-control" id="nama" name="nama" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="id_role">Role</label>
-                            <select class="form-control" id="id_role" name="id_role" required>
-                                @foreach ($roles as $role)
-                                    <option value="{{ $role->id }}"> {{ $role->Nama_Role }} </option>
-                                @endforeach
-                            </select>
+                            <label for="nama_penyakit">Nama Penyakit</label>
+                            <input type="text" class="form-control" id="nama_penyakit" name="Nama_Penyakit" required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -129,7 +107,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Edit Pengguna</h5>
+                    <h5 class="modal-title" id="editModalLabel">Edit Penyakit</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -139,20 +117,8 @@
                     @method('PUT')
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="edit_Nama">Nama</label>
-                            <input type="text" class="form-control" id="edit_Nama" name="nama">
-                        </div>
-                        <div class="form-group">
-                            <label for="edit_Email">Email</label>
-                            <input type="email" class="form-control" id="edit_Email" name="email">
-                        </div>
-                        <div class="form-group">
-                            <label for="edit_Role">Role</label>
-                            <select class="form-control" id="edit_Role" name="id_role">
-                                @foreach ($roles as $role)
-                                    <option value="{{ $role->id }}"> {{ $role->Nama_Role }} </option>
-                                @endforeach
-                            </select>
+                            <label for="edit_Nama_Penyakit">Nama Penyakit</label>
+                            <input type="text" class="form-control" id="edit_Nama_Penyakit" name="Nama_Penyakit">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -165,7 +131,7 @@
     </div>
 
     <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog"
-        aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+         aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -175,7 +141,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Apakah Anda yakin ingin menghapus pengguna <span id="userToDelete"></span>?
+                    Apakah Anda yakin ingin menghapus penyakit <span id="penyakitToDelete"></span>?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
@@ -189,20 +155,16 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
-            $('#tambahPenggunaBaru').click(function() {
-                $('#tambahPenggunaModal').modal('show');
+            $('#tambahPenyakitBaru').click(function() {
+                $('#tambahPenyakitModal').modal('show');
             });
 
             $('.btn-edit').on('click', function() {
-                var userId = $(this).data('id');
-                var userName = $(this).data('nama');
-                var userEmail = $(this).data('email');
-                var roleId = $(this).data('role-id');
-                var editUrl = "{{ route('pengguna.update', ':id') }}".replace(':id', userId);
+                var penyakitId = $(this).data('id');
+                var penyakitNama = $(this).data('nama');
+                var editUrl = "{{ route('daftar_penyakit.update', ':id') }}".replace(':id', penyakitId);
 
-                $('#edit_Nama').val(userName);
-                $('#edit_Email').val(userEmail);
-                $('#edit_Role').val(roleId);
+                $('#edit_Nama_Penyakit').val(penyakitNama);
                 $('#editForm').attr('action', editUrl);
                 $('#editModal').modal('show');
             });
@@ -213,19 +175,19 @@
 
             // UNTUK HAPUS //
             $('.btn-delete').on('click', function() {
-                var userId = $(this).data('user-id');
-                var userName = $(this).data('user-nama');
-                var deleteUrl = "{{ route('pengguna.delete', ':id') }}".replace(':id', userId);
+                var penyakitId = $(this).data('penyakit-id');
+                var penyakitNama = $(this).data('penyakit-nama');
+                var deleteUrl = "{{ route('daftar_penyakit.delete', ':id') }}".replace(':id', penyakitId);
 
-                $('#userToDelete').text(userName);
+                $('#penyakitToDelete').text(penyakitNama);
                 $('#deleteConfirmButton').attr('href', deleteUrl);
                 $('#deleteConfirmationModal').modal('show');
             });
 
             // UNTUK SEARCH //
-            $('#searchUser').on('input', function() {
+            $('#searchPenyakit').on('input', function() {
                 var searchValue = $(this).val();
-                var url = "{{ route('pengguna.index') }}";
+                var url = "{{ route('daftar_penyakit.index') }}";
 
                 // Tambahkan parameter 'search' ke URL
                 url += (url.indexOf('?') > -1 ? '&' : '?') + 'search=' + searchValue;

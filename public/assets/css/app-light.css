@@ -12042,3 +12042,189 @@ a.uppy-Dashboard-poweredBy {
     font-size: 35px;
     top: -10px;
     right: -35px; } }
+
+/* Background utama sidebar */
+.bg-sidebar-custom {
+  background-color: rgba(4, 163, 97, 0.9); /* Hijau dengan transparansi 90% */
+  color: #ffffff;
+}
+
+/* Warna default teks dan icon */
+.bg-sidebar-custom .nav-link,
+.bg-sidebar-custom .nav-link span,
+.bg-sidebar-custom .nav-link i {
+  color: #ffffff;
+}
+
+/* Hover efek pada link */
+.bg-sidebar-custom .nav-link:hover,
+.bg-sidebar-custom .nav-link:focus {
+  background-color: rgba(4, 163, 97, 0.2); /* Hijau transparan saat hover */
+  color: #ffffff !important;
+  border-radius: 8px;
+}
+
+/* Aktif: transparan hijau mint */
+.bg-sidebar-custom .nav-link.active {
+  background-color: rgba(4, 163, 97, 0.4) !important; /* Hijau transparan lebih tegas */
+  color: #ffffff !important;
+  border-radius: 8px;
+}
+
+.bg-sidebar-custom .nav-link.active span,
+.bg-sidebar-custom .nav-link.active i {
+  color: #ffffff !important;
+}
+
+/* Tambahan kalau kamu pakai .sidebar-left juga */
+.sidebar-left .nav-link {
+  color: white;
+}
+
+.sidebar-left .nav-link:hover {
+  background-color: rgba(4, 163, 97, 0.2);
+  border-radius: 8px;
+}
+
+.sidebar-left .nav-link.active {
+  background-color: rgba(4, 163, 97, 0.4);
+  color: white !important;
+  border-radius: 8px;
+}
+
+/* Dropdown menu juga transparan saat hover/focus */
+.bg-sidebar-custom .dropdown-toggle:hover,
+.bg-sidebar-custom .dropdown-toggle:focus {
+  background-color: rgba(4, 163, 97, 0.2) !important;
+  color: #ffffff !important;
+  border-radius: 8px;
+}
+
+
+/* /////////////////////////////////////////// */
+/* Background navbar dengan warna hijau */
+.bg-navbar-custom {
+  background-color: #66DEAC;
+  color: #fff;
+}
+
+.bg-navbar-custom .navbar-brand,
+.bg-navbar-custom .nav-link,
+.bg-navbar-custom .dropdown-toggle {
+  color: #fff;
+}
+
+.bg-navbar-custom .nav-link:hover,
+.bg-navbar-custom .dropdown-toggle:hover {
+  opacity: 0.85;
+}
+
+/* Tombol Tambah */
+.btn-tambah-baru {
+  background-color: #fff; /* Latar belakang putih */
+  color: #000; /* Warna teks hitam */
+  border-color: #66DEAC; /* Warna border toska */
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; /* Transisi untuk semua properti */
+}
+
+.btn-tambah-baru:hover {
+  background-color: #e0f7fa; /* Perkiraan warna latar belakang toska muda saat hover */
+  color: #35D8BA; /* Warna teks toska yang lebih gelap saat hover */
+  border-color: #35D8BA; /* Warna border toska yang lebih gelap saat hover */
+}
+
+/* Tombol Edit */
+.btn-edit {
+  background-color: #66DEAC; /* Warna toska dari desainmu */
+  color: #fff;
+  border-color: #66DEAC;
+}
+
+.btn-edit:hover {
+  background-color: #35D8BA; /* Warna toska yang lebih gelap saat hover */
+  border-color: #35D8BA;
+}
+
+/* Tabel */
+.table-custom {
+  width: 100%;
+  margin-bottom: 1rem;
+  color: #6c757d;
+}
+
+.table-custom th,
+.table-custom td {
+  padding: 0.75rem;
+  vertical-align: top;
+  border-top: none; /* Hilangkan border atas setiap sel */
+  border-left: none; /* Hilangkan border kiri setiap sel */
+  border-right: none; /* Hilangkan border kanan setiap sel */
+  border-bottom: 1px solid #dee2e6; /* Tambahkan border bawah */
+}
+
+.table-custom thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #dee2e6; /* Border bawah header lebih tebal */
+}
+
+.table-custom thead tr th {
+  border-top: none; /* Hilangkan border atas header */
+}
+
+/* search */
+.input-group-prepend .input-group-text svg.feather-search {
+  width: 16px; /* Ganti dengan ukuran yang Anda inginkan */
+  height: 16px; /* Ganti dengan ukuran yang Anda inginkan */
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 4px; /* Sesuaikan jika perlu */
+  color: #6c757d; /* Sesuaikan jika perlu */
+}
+
+.input-group-text {
+  background-color: #fff; /* Pastikan latar belakang putih */
+  border: 1px solid #ced4da;
+  border-right: none; /* Hilangkan border kanan */
+}
+
+.form-control {
+  border-left: none; /* Hilangkan border kiri */
+}
+
+
+
+/* Contoh tambahan styling untuk modal (opsional) */
+#editRoleModal .modal-title {
+  color: #333;
+  font-size: 1.2rem;
+}
+
+#editRoleModal .modal-body label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+#editRoleModal .modal-footer .btn-secondary {
+  margin-right: 0.5rem;
+}
+
+#editRoleModal .modal-content {
+  border-radius: 0.3rem;
+}
+
+/* CSS untuk memposisikan modal di tengah layar */
+.modal-dialog {
+  display: flex;
+  align-items: center;
+  min-height: calc(100% - 1rem);
+}
+
+@media (min-width: 576px) {
+  .modal-dialog {
+      max-width: 500px; /* Ubah sesuai lebar yang Anda inginkan */
+      margin: 30px auto; /* Memberikan margin atas dan bawah */
+  }
+}
+
+
+

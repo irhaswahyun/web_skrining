@@ -1,4 +1,4 @@
-<aside class="sidebar-left border-right bg-white shadow" id="leftSidebar" data-simplebar>
+<aside class="sidebar-left border-right bg-sidebar-custom shadow" id="leftSidebar" data-simplebar>
     <a href="#" class="btn collapseSidebar toggle-btn d-lg-none text-muted ml-2 mt-3" data-toggle="toggle">
       <i class="fe fe-x"><span class="sr-only"></span></i>
     </a>
@@ -16,19 +16,25 @@
         </a>
       </div>
       <ul class="navbar-nav flex-fill w-100 mb-2">
-          <a href="{{ route('admin.dashboard') }}" data-toggle="collapse" aria-expanded="false" class="nav-link">
+        <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
             <i class="fe fe-home fe-16"></i>
             <span class="ml-3 item-text">Dashboard</span>
           </a>
       </ul>
       <ul class="navbar-nav flex-fill w-100 mb-2">
-          <a href="admin.manajemen_pengguna.index" data-toggle="collapse" aria-expanded="false" class="nav-link">
+        <a href="{{ route('role.index') }}" class="nav-link {{ request()->routeIs('role.index') ? 'active' : '' }}">
+          <i class="fe fe-home fe-16"></i>
+          <span class="ml-3 item-text">Role</span>
+        </a>
+    </ul>
+      <ul class="navbar-nav flex-fill w-100 mb-2">
+        <a href="{{ route('pengguna.index') }}" class="nav-link {{ request()->routeIs('pasien.index') ? 'active' : '' }}">
             <i class="fe fe-box fe-16"></i>
             <span class="ml-3 item-text">Manajemen Pengguna</span>
           </a>
       </ul>
       <ul class="navbar-nav flex-fill w-100 mb-2">
-          <a class="nav-link" href="admin.manajemen_pasien.index">
+        <a href="{{ route('pasien.index') }}" class="nav-link {{ request()->routeIs('pasien.index') ? 'active' : '' }}">
             <i class="fe fe-layers fe-16"></i>
             <span class="ml-3 item-text">Manajemen Pasien</span>
           </a>
@@ -41,13 +47,13 @@
           </a>
           <ul class="collapse list-unstyled pl-4 w-100" id="forms">
             <li class="nav-item">
-              <a class="nav-link pl-3" href="./form_elements.html"><span class="ml-1 item-text">Daftar Penyakit</span></a>
+              <a class="nav-link pl-3 {{ request()->routeIs('daftar_penyakit.index') ? 'active' : '' }}" href="{{ route('daftar_penyakit.index') }}"><span class="ml-1 item-text">Daftar Penyakit</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link pl-3" href="./form_advanced.html"><span class="ml-1 item-text">Daftar Pertanyaan</span></a>
+              <a class="nav-link pl-3 {{ request()->routeIs('daftar_pertanyaan.index') ? 'active' : '' }}" href="{{ route('daftar_pertanyaan.index') }}"><span class="ml-1 item-text">Daftar Pertanyaan</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link pl-3" href="./form_validation.html"><span class="ml-1 item-text">Form Skrining</span></a>
+              <a class="nav-link pl-3 {{ request()->routeIs('form_skrining.index') ? 'active' : '' }}" href="{{ route('form_skrining.index') }}"><span class="ml-1 item-text">Form Skrining</span></a>
             </li>
           </ul>
         </li>
