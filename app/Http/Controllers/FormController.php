@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FormSkrining;
+use Illuminate\Http\Request;
 use App\Models\daftar_penyakit;
 use App\Models\daftar_pertanyaan;
-use Illuminate\Http\Request;
 
 class FormController extends Controller
 {
@@ -12,30 +13,28 @@ class FormController extends Controller
      public function index()
      {
          $penyakits = daftar_penyakit::all();
-         return view('admin.form_skrining.index', compact('penyakits'));
-     }
- 
-     // Tampilkan form untuk memilih pertanyaan sesuai penyakit
-     public function editPertanyaan($id)
-     {
-         $penyakit = daftar_penyakit::findOrFail($id);
          $pertanyaans = daftar_pertanyaan::all();
-         $selectedPertanyaanIds = optional($penyakit->pertanyaans)->pluck('id') ?? collect(); // pertanyaan yang sudah dipilih
- 
-         return view('admin.form_skrining.edit', compact('penyakit', 'pertanyaans', 'selectedPertanyaanIds'));
+         return view('admin.form_skrining.index', compact('penyakits', 'pertanyaans'));
      }
- 
-     // Simpan pertanyaan yang dipilih untuk penyakit tertentu
-     public function updatePertanyaan(Request $request, $id)
-     {
-         $request->validate([
-             'pertanyaan_ids' => 'required|array',
-             'pertanyaan_ids.*' => 'exists:daftar_pertanyaans,id',
-         ]);
- 
-         $penyakit = daftar_penyakit::findOrFail($id);
-         $penyakit->pertanyaans()->sync($request->pertanyaan_ids); // relasi many-to-many
- 
-         return redirect()->route('form.index')->with('success', 'Pertanyaan berhasil diperbarui.');
-     }
+
+     public function store(Request $request)
+    {
+        $request->validate([
+            'nama_skrining'   => 'required|string|max:255',
+            'id_daftar_penyakit'     => 'required|exists:daftar_penyakits,id',
+            'pertanyaan_ids'  => 'required|array',
+            'pertanyaan_ids.*'=> 'exists:daftar_pertanyaans,id',
+        ]);
+
+        // Simpan form skrining
+        $form = new FormSkrining();
+        $form->nama_skrining = $request->nama_skrining;
+        $form->id_daftar_penyakit = $request->id_daftar_penyakit;
+        $form->save();
+
+        // Simpan relasi ke pertanyaan (many-to-many)
+        $form->pertanyaan()->sync($request->pertanyaan_ids);
+
+        return redirect()->route('form_skrining.index')->with('success', 'Form skrining berhasil disimpan.');
+    }
 }

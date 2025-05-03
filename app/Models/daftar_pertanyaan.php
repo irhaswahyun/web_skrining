@@ -10,7 +10,7 @@ class daftar_pertanyaan extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['Pertanyaan'];
+    protected $fillable = ['pertanyaan'];
 
     public function jawaban()
     {
@@ -18,6 +18,6 @@ class daftar_pertanyaan extends Model
     }
 
     public function penyakit() {
-        return $this->hasMany(daftar_penyakit::class);
+        return $this->belongsToMany(daftar_penyakit::class, 'form_skrinings', 'id_daftar_penyakit', 'id_daftar_pertanyaan');
     }
 }

@@ -12,6 +12,6 @@ class daftar_penyakit extends Model
     protected $fillable = ['Nama_Penyakit'];
 
     public function pertanyaan() {
-        return $this->hasMany(daftar_pertanyaan::class);
+        return $this->belongsToMany(daftar_pertanyaan::class, 'form_skrinings', 'id_daftar_penyakit', 'id_daftar_pertanyaan');
     }
 }

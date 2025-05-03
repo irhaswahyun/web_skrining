@@ -80,7 +80,7 @@ Route::prefix('daftar-pertanyaan')->group(function () {
 // FORM SKRINING
 Route::prefix('form-skrining')->group(function () {
     Route::get('/', [FormController::class, 'index'])->name('form_skrining.index');
-    Route::get('/edit/{id}', [FormController::class, 'editPertanyaan'])->name('form.edit');
+    Route::post('/store', [FormController::class, 'store'])->name('form_skrining.store');
 });
 
 //SKRINING
