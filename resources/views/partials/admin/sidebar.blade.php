@@ -23,7 +23,7 @@
       </ul>
       <ul class="navbar-nav flex-fill w-100 mb-2">
         <a href="{{ route('role.index') }}" class="nav-link {{ request()->routeIs('role.index') ? 'active' : '' }}">
-          <i class="fe fe-home fe-16"></i>
+          <i class="fe fe-user fe-16"></i>
           <span class="ml-3 item-text">Role</span>
         </a>
     </ul>

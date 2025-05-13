@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('daftar_penyakits', function (Blueprint $table) {
             $table->id();
             $table->string('Nama_Penyakit');
+            $table->text('Deskripsi');
             $table->timestamps();
         });
     }

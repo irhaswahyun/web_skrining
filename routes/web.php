@@ -84,7 +84,7 @@ Route::prefix('form-skrining')->group(function () {
     Route::get('/detail/{id}', [FormController::class, 'detail'])->name('form_skrining.detail');
     Route::get('/edit/{id}', [FormController::class, 'edit'])->name('form_skrining.edit');
     Route::put('/update/{id}', [FormController::class, 'update'])->name('form_skrining.update');
-    Route::delete('/delete/{id}', [FormController::class, 'delete'])->name('form_skrining.delete');
+    Route::delete('/delete/{formSkrining}', [FormController::class, 'delete'])->name('form_skrining.delete');
 });
 
 //SKRINING

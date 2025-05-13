@@ -35,6 +35,7 @@ class Daftar_PenyakitController extends Controller
 
             $daftarPenyakit = new Daftar_Penyakit();
             $daftarPenyakit->Nama_Penyakit = $request->Nama_Penyakit;
+            $daftarPenyakit->Deskripsi = $request->Deskripsi;
             $daftarPenyakit->save();
 
             return redirect()->route('daftar_penyakit.index')->with('success', 'Daftar Penyakit berhasil ditambahkan');
@@ -53,6 +54,7 @@ class Daftar_PenyakitController extends Controller
     {
         $daftarPenyakit = Daftar_Penyakit::findOrFail($id);
         $daftarPenyakit->Nama_Penyakit = $request->Nama_Penyakit;
+        $daftarPenyakit->Deskripsi = $request->Deskripsi;
         $daftarPenyakit->save();
 
         return redirect()->route('daftar_penyakit.index')->with('success', 'Daftar Penyakit berhasil diperbarui');

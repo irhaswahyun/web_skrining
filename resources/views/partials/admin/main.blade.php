@@ -23,20 +23,18 @@
     <link rel="stylesheet" href="{{ asset('assets/css/daterangepicker.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/app-light.css') }}" id="lightTheme">
     <link rel="stylesheet" href="{{ asset('assets/css/app-dark.css') }}" id="darkTheme" disabled>
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/admin.css') }}">
     <!-- Tambahkan di bagian head -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
 </head>
 
-<body class="vertical  light  ">
+<body class="vertical light">
     <div class="wrapper">
         @include('partials.admin.navbar')
 
         @include('partials.admin.sidebar')
         <main role="main" class="main-content">
             @yield('content')
-
-
         </main>
     </div>
     <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
@@ -47,6 +45,10 @@
             $('#pertanyaan_ids').select2(); // Aktifkan Select2 pada select dengan id pertanyaan_ids
         });
     </script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('assets/js/popper.min.js') }}"></script>
     <script src="{{ asset('assets/js/moment.min.js') }}"></script>
     <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
@@ -241,7 +243,7 @@
                 });
         }
     </script>
-    <script src="js/apps.js"></script>
+    <script src="{{ asset('assets/js/apps.js') }}"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-56159088-1"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>

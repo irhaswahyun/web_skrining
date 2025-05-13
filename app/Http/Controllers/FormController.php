@@ -64,12 +64,13 @@ class FormController extends Controller
         return redirect()->route('form_skrining.index')->with('success', 'Form skrining berhasil disimpan.');
     }
 
-    public function detail($id) {
-        $formSkrining = FormSkrining::with('pertanyaan')->findOrFail($id);
-        $penyakits = daftar_penyakit::all();
-        $pertanyaans = daftar_pertanyaan::all();
+    public function detail($id)
+    {
+        // Ambil data Skrining dengan relasi pertanyaan
+        $formSkrining = FormSkrining::with('penyakit', 'pertanyaan')->findOrFail($id);
 
-        return view('admin.form_skrining.detail', compact('formSkrining', 'penyakits', 'pertanyaans'));
+        // Pastikan data dikembalikan dalam format JSON
+        return response()->json(['formSkrining' => $formSkrining]);
     }
 
     /**
@@ -140,4 +141,3 @@ class FormController extends Controller
         return redirect()->route('form_skrining.index')->with('success', 'Form skrining berhasil dihapus.');
     }
 }
-
