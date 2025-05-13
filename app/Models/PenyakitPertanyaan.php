@@ -8,4 +8,10 @@ class PenyakitPertanyaan extends Model
 {
     protected $table = 'penyakit_pertanyaans';
     protected $fillable = ['id_daftar_penyakit', 'id_daftar_pertanyaan'];
+
+    public function formSkrining() {
+        return $this->belongsTo(FormSkrining::class, 'id_daftar_penyakit', 'id');
+    }
+    
+
 }

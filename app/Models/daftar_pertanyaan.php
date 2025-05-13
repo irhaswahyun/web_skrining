@@ -10,7 +10,7 @@ class daftar_pertanyaan extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['pertanyaan'];
+    protected $fillable = ['pertanyaan' , 'catatan'];
 
     public function jawaban()
     {

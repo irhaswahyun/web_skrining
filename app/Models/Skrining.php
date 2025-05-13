@@ -12,23 +12,24 @@ class Skrining extends Model
     protected $table = 'skrinings';
 
     protected $fillable = [
-        'ID_Pasien',
-        'ID_Pengguna',
-        'Unit_Pelayanan',
+        'Nama_Petugas',
+        'NIK_Pasien',
+        'Nama_Pasien',
         'Tanggal_Skrining',
-        'ID_DaftarPertanyaan',
+        'ID_penyakit_pertanyaan',
     ];
 
     protected $casts = [
         'Tanggal_Skrining' => 'date',
     ];
 
-    public function daftar_pertanyaan()
+    public function formSkrining()
     {
-        return $this->belongsTo(daftar_pertanyaan::class, 'ID_DaftarPertanyaan');
+        return $this->belongsTo(FormSkrining::class);
     }
 
-    public function penyakit() {
-        return $this->belongsTo(daftar_penyakit::class);
-    }
+    public function penyakitPertanyaan()
+{
+    return $this->belongsTo(PenyakitPertanyaan::class, 'ID_penyakit_pertanyaan');
+}
 }

@@ -30,6 +30,7 @@ class Daftar_PertanyaanController extends Controller
 
             $pertanyaan = new daftar_pertanyaan();
             $pertanyaan->pertanyaan = $request->pertanyaan;
+            $pertanyaan->catatan = $request->catatan;
             $pertanyaan->save();
 
             return redirect()->route('daftar_pertanyaan.index')->with('success', 'Pertanyaan berhasil ditambahkan');
@@ -48,6 +49,7 @@ class Daftar_PertanyaanController extends Controller
     {
         $pertanyaan = daftar_pertanyaan::findOrFail($id);
         $pertanyaan->pertanyaan = $request->pertanyaan;
+        $pertanyaan->catatan = $request->catatan;
         $pertanyaan->save();
 
         return redirect()->route('daftar_pertanyaan.index')->with('success', 'Pertanyaan berhasil diperbarui');

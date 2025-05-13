@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('skrinings', function (Blueprint $table) {
             $table->id();
-            $table->string('ID_Pasien');
-            $table->string('ID_Pengguna');
-            $table->string('Unit_Pelayanan');
+            $table->string('Nama_Petugas');
+            $table->string('NIK_Pasien');
+            $table->string('Nama_Pasien');
             $table->date('Tanggal_Skrining');
-            $table->string('ID_DaftarPertanyaan');
+            $table->string('ID_penyakit_pertanyaan');
             $table->timestamps();
         });
     }

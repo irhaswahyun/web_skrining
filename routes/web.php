@@ -88,6 +88,10 @@ Route::prefix('form-skrining')->group(function () {
 });
 
 //SKRINING
-// Route::resource('skrining', SkriningController::class);
-// Route::get('/skrining/create', [SkriningController::class, 'create'])->name('skrining.create');
-// Route::post('/skrining/store', [SkriningController::class, 'store'])->name('skrining.store');
+Route::prefix('admin/skrining')->group(function () {
+    Route::get('/', [SkriningController::class, 'index'])->name('skrining.index');
+    // Route::get('/create', [SkriningController::class, 'create'])->name('skrining.create');
+    Route::post('/store', [SkriningController::class, 'store'])->name('skrining.store');
+    Route::put('/update/{id}', [SkriningController::class, 'update'])->name('skrining.update'); // Gunakan PUT untuk update
+    Route::get('/delete/{skrining}', [SkriningController::class, 'delete'])->name('skrining.delete');
+});

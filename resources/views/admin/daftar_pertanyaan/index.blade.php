@@ -45,6 +45,7 @@
                                         <tr>
                                             <th><b>No</b></th>
                                             <th><b>Pertanyaan</b></th>
+                                            <th><b>Catatan</b></th>
                                             <th><b>Aksi</b></th>
                                         </tr>
                                     </thead>
@@ -53,14 +54,17 @@
                                             <tr>
                                                 <td>{{ $i + 1 }}</td>
                                                 <td>{{ $data->pertanyaan }}</td>
+                                                <td>{{ $data->catatan }}</td>
                                                 <td>
                                                     <button class="btn btn-sm btn-primary btn-edit"
-                                                            data-id="{{ $data->id }}" data-pertanyaan="{{ $data->pertanyaan }}">
+                                                            data-id="{{ $data->id }}" data-pertanyaan="{{ $data->pertanyaan }}"
+                                                            data-catatan="{{ $data->catatan }}">
                                                         Edit
                                                     </button>
                                                     <button class="btn btn-danger btn-sm btn-delete"
                                                             data-pertanyaan-id="{{ $data->id }}"
-                                                            data-pertanyaan-text="{{ $data->pertanyaan }}">
+                                                            data-pertanyaan-text="{{ $data->pertanyaan }}"
+                                                            data-pertanyaan-catatan="{{ $data->catatan }}">
                                                         Hapus
                                                     </button>
                                                 </td>
@@ -94,6 +98,12 @@
                             <textarea class="form-control" id="pertanyaan" name="pertanyaan" rows="3" required></textarea>
                         </div>
                     </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="catatan">Catatan</label>
+                            <textarea class="form-control" id="catatan" name="catatan" rows="3" ></textarea>
+                        </div>
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-success">Simpan</button>
@@ -119,6 +129,12 @@
                         <div class="form-group">
                             <label for="edit_pertanyaan">Pertanyaan</label>
                             <textarea class="form-control" id="edit_pertanyaan" name="pertanyaan" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="edit_catatan">Catatan</label>
+                            <textarea class="form-control" id="edit_catatan" name="catatan" rows="3"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -162,9 +178,11 @@
             $('.btn-edit').on('click', function() {
                 var pertanyaanId = $(this).data('id');
                 var pertanyaanText = $(this).data('pertanyaan');
+                var pertanyaanCatatan = $(this).data('catatan');
                 var editUrl = "{{ route('daftar_pertanyaan.update', ':id') }}".replace(':id', pertanyaanId);
 
                 $('#edit_pertanyaan').val(pertanyaanText);
+                $('#edit_catatan').val(pertanyaanCatatan);
                 $('#editForm').attr('action', editUrl);
                 $('#editModal').modal('show');
             });
@@ -177,6 +195,7 @@
             $('.btn-delete').on('click', function() {
                 var pertanyaanId = $(this).data('pertanyaan-id');
                 var pertanyaanText = $(this).data('pertanyaan-text');
+                var pertanyaanCatatan = $(this).data('pertanyaan-catatan');
                 var deleteUrl = "{{ route('daftar_pertanyaan.delete', ':id') }}".replace(':id', pertanyaanId);
 
                 $('#pertanyaanToDelete').text(pertanyaanText);

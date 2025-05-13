@@ -59,10 +59,10 @@
         </li>
       </ul>
       <ul class="navbar-nav flex-fill w-100 mb-2">
-        <a href="#tables" data-toggle="collapse" aria-expanded="false" class="nav-link">
-          <i class="fe fe-grid fe-16"></i>
-          <span class="ml-3 item-text">Skrining</span>
-        </a>
+        <a href="{{ route('skrining.index') }}" class="nav-link {{ request()->routeIs('skrining.index') ? 'active' : '' }}">
+            <i class="fe fe-layers fe-16"></i>
+            <span class="ml-3 item-text">Skrining</span>
+          </a>
       </ul>
       <ul class="navbar-nav flex-fill w-100 mb-2">
         <a href="#charts" data-toggle="collapse" aria-expanded="false" class="nav-link">
