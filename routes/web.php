@@ -81,9 +81,13 @@ Route::prefix('daftar-pertanyaan')->group(function () {
 Route::prefix('form-skrining')->group(function () {
     Route::get('/', [FormController::class, 'index'])->name('form_skrining.index');
     Route::post('/store', [FormController::class, 'store'])->name('form_skrining.store');
+    Route::get('/detail/{id}', [FormController::class, 'detail'])->name('form_skrining.detail');
+    Route::get('/edit/{id}', [FormController::class, 'edit'])->name('form_skrining.edit');
+    Route::put('/update/{id}', [FormController::class, 'update'])->name('form_skrining.update');
+    Route::delete('/delete/{id}', [FormController::class, 'delete'])->name('form_skrining.delete');
 });
 
 //SKRINING
-Route::resource('skrining', SkriningController::class);
-Route::get('/skrining/create', [SkriningController::class, 'create'])->name('skrining.create');
-Route::post('/skrining/store', [SkriningController::class, 'store'])->name('skrining.store');
+// Route::resource('skrining', SkriningController::class);
+// Route::get('/skrining/create', [SkriningController::class, 'create'])->name('skrining.create');
+// Route::post('/skrining/store', [SkriningController::class, 'store'])->name('skrining.store');

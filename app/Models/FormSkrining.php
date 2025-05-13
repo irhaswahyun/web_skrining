@@ -12,4 +12,10 @@ class FormSkrining extends Model
     {
         return $this->belongsToMany(daftar_pertanyaan::class, 'penyakit_pertanyaans', 'id_daftar_penyakit', 'id_daftar_pertanyaan');
     }
+
+
+    public function penyakit()
+    {
+        return $this->belongsTo(daftar_penyakit::class, 'id_daftar_penyakit', 'id');
+    }
 }
