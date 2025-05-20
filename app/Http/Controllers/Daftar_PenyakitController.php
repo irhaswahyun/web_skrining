@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Daftar_Penyakit;
+use App\Models\DaftarPenyakit;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 
@@ -10,7 +11,7 @@ class Daftar_PenyakitController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Daftar_Penyakit::query();
+        $query = DaftarPenyakit::query();
 
         if ($request->search) {
             $query->where('Nama_Penyakit', 'LIKE', '%' . $request->search . '%');
@@ -33,9 +34,8 @@ class Daftar_PenyakitController extends Controller
             //     'Nama_Penyakit' => 'required',
             // ]);
 
-            $daftarPenyakit = new Daftar_Penyakit();
+            $daftarPenyakit = new DaftarPenyakit();
             $daftarPenyakit->Nama_Penyakit = $request->Nama_Penyakit;
-            $daftarPenyakit->Deskripsi = $request->Deskripsi;
             $daftarPenyakit->save();
 
             return redirect()->route('daftar_penyakit.index')->with('success', 'Daftar Penyakit berhasil ditambahkan');
@@ -46,21 +46,20 @@ class Daftar_PenyakitController extends Controller
 
     public function edit($id)
     {
-        $editData = Daftar_Penyakit::findOrFail($id);
+        $editData = DaftarPenyakit::findOrFail($id);
         return view('admin.daftar_penyakit.edit', compact('editData'));
     }
 
     public function update(Request $request, $id)
     {
-        $daftarPenyakit = Daftar_Penyakit::findOrFail($id);
+        $daftarPenyakit = DaftarPenyakit::findOrFail($id);
         $daftarPenyakit->Nama_Penyakit = $request->Nama_Penyakit;
-        $daftarPenyakit->Deskripsi = $request->Deskripsi;
         $daftarPenyakit->save();
 
         return redirect()->route('daftar_penyakit.index')->with('success', 'Daftar Penyakit berhasil diperbarui');
     }
 
-    public function delete(Daftar_Penyakit $id): RedirectResponse
+    public function delete(DaftarPenyakit $id): RedirectResponse
     {
         $id->delete();
         return redirect()->route('daftar_penyakit.index')->with('success', 'Daftar Penyakit berhasil dihapus');

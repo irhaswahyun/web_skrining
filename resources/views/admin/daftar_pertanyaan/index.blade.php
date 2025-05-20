@@ -29,7 +29,7 @@
                                                 </span>
                                             </div>
                                             <input type="text" class="form-control" placeholder="Cari Pertanyaan" id="searchPertanyaan"
-                                                   name="search" autocomplete="off">
+                                                name="search" autocomplete="off">
                                         </div>
                                     </div>
                                     <div class="col-md-6 text-right">
@@ -40,13 +40,13 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                <table class="table table-custom">
+                                <table class="table table-hover">
                                     <thead class="thead-light">
                                         <tr>
-                                            <th><b>No</b></th>
-                                            <th><b>Pertanyaan</b></th>
-                                            <th><b>Catatan</b></th>
-                                            <th><b>Aksi</b></th>
+                                            <th style="width: 5%;">No</th>
+                                            <th>Pertanyaan</th>
+                                            <th>Catatan</th>
+                                            <th style="width: 15%;">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -56,17 +56,18 @@
                                                 <td>{{ $data->pertanyaan }}</td>
                                                 <td>{{ $data->catatan }}</td>
                                                 <td>
-                                                    <button class="btn btn-sm btn-primary btn-edit"
-                                                            data-id="{{ $data->id }}" data-pertanyaan="{{ $data->pertanyaan }}"
+                                                        <button class="btn btn-sm btn-primary btn-edit"
+                                                            data-id="{{ $data->id }}"
+                                                            data-pertanyaan="{{ $data->pertanyaan }}"
                                                             data-catatan="{{ $data->catatan }}">
-                                                        Edit
-                                                    </button>
-                                                    <button class="btn btn-danger btn-sm btn-delete"
+                                                            Edit
+                                                        </button>
+                                                        <button class="btn btn-sm btn-danger btn-delete"
                                                             data-pertanyaan-id="{{ $data->id }}"
                                                             data-pertanyaan-text="{{ $data->pertanyaan }}"
                                                             data-pertanyaan-catatan="{{ $data->catatan }}">
-                                                        Hapus
-                                                    </button>
+                                                            Hapus
+                                                        </button>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -80,12 +81,13 @@
         </section>
     </div>
 
+    {{-- Modal Tambah --}}
     <div class="modal fade" id="tambahPertanyaanModal" tabindex="-1" role="dialog" aria-labelledby="tambahPertanyaanModalLabel"
-         aria-hidden="true">
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="tambahPertanyaanModalLabel">Tambah Pertanyaan Baru</h5>
+                    <h5 class="modal-title">Tambah Pertanyaan Baru</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -97,11 +99,9 @@
                             <label for="pertanyaan">Pertanyaan</label>
                             <textarea class="form-control" id="pertanyaan" name="pertanyaan" rows="3" required></textarea>
                         </div>
-                    </div>
-                    <div class="modal-body">
                         <div class="form-group">
                             <label for="catatan">Catatan</label>
-                            <textarea class="form-control" id="catatan" name="catatan" rows="3" ></textarea>
+                            <textarea class="form-control" id="catatan" name="catatan" rows="3"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -113,11 +113,12 @@
         </div>
     </div>
 
+    {{-- Modal Edit --}}
     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Edit Pertanyaan</h5>
+                    <h5 class="modal-title">Edit Pertanyaan</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -130,8 +131,6 @@
                             <label for="edit_pertanyaan">Pertanyaan</label>
                             <textarea class="form-control" id="edit_pertanyaan" name="pertanyaan" rows="3"></textarea>
                         </div>
-                    </div>
-                    <div class="modal-body">
                         <div class="form-group">
                             <label for="edit_catatan">Catatan</label>
                             <textarea class="form-control" id="edit_catatan" name="catatan" rows="3"></textarea>
@@ -146,18 +145,19 @@
         </div>
     </div>
 
+    {{-- Modal Hapus --}}
     <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog"
-         aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+        aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteConfirmationModalLabel">Konfirmasi Hapus</h5>
+                    <h5 class="modal-title">Konfirmasi Hapus</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    Apakah Anda yakin ingin menghapus pertanyaan: <span id="pertanyaanToDelete"></span>?
+                    Apakah Anda yakin ingin menghapus pertanyaan: <span id="pertanyaanToDelete" class="font-weight-bold"></span>?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
@@ -169,56 +169,48 @@
 @endsection
 
 @section('scripts')
-    <script>
-        $(document).ready(function() {
-            $('#tambahPertanyaanBaru').click(function() {
-                $('#tambahPertanyaanModal').modal('show');
-            });
-
-            $('.btn-edit').on('click', function() {
-                var pertanyaanId = $(this).data('id');
-                var pertanyaanText = $(this).data('pertanyaan');
-                var pertanyaanCatatan = $(this).data('catatan');
-                var editUrl = "{{ route('daftar_pertanyaan.update', ':id') }}".replace(':id', pertanyaanId);
-
-                $('#edit_pertanyaan').val(pertanyaanText);
-                $('#edit_catatan').val(pertanyaanCatatan);
-                $('#editForm').attr('action', editUrl);
-                $('#editModal').modal('show');
-            });
-
-            $('#editModal').on('hidden.bs.modal', function() {
-                $('#editForm')[0].reset();
-            });
-
-            // UNTUK HAPUS //
-            $('.btn-delete').on('click', function() {
-                var pertanyaanId = $(this).data('pertanyaan-id');
-                var pertanyaanText = $(this).data('pertanyaan-text');
-                var pertanyaanCatatan = $(this).data('pertanyaan-catatan');
-                var deleteUrl = "{{ route('daftar_pertanyaan.delete', ':id') }}".replace(':id', pertanyaanId);
-
-                $('#pertanyaanToDelete').text(pertanyaanText);
-                $('#deleteConfirmButton').attr('href', deleteUrl);
-                $('#deleteConfirmationModal').modal('show');
-            });
-
-            // UNTUK SEARCH //
-            $('#searchPertanyaan').on('input', function() {
-                var searchValue = $(this).val();
-                var url = "{{ route('daftar_pertanyaan.index') }}";
-
-                // Tambahkan parameter 'search' ke URL
-                url += (url.indexOf('?') > -1 ? '&' : '?') + 'search=' + searchValue;
-
-                // Lakukan permintaan AJAX untuk memperbarui tabel
-                $.get(url, function(data) {
-                    // Ganti isi tabel dengan data yang diterima
-                    $('tbody').html($(data).find('tbody').html());
-                });
-            });
-
-            feather.replace();
+<script>
+    $(document).ready(function () {
+        $('#tambahPertanyaanBaru').click(function () {
+            $('#tambahPertanyaanModal').modal('show');
         });
-    </script>
+
+        $('.btn-edit').on('click', function () {
+            var id = $(this).data('id');
+            var pertanyaan = $(this).data('pertanyaan');
+            var catatan = $(this).data('catatan');
+            var url = "{{ route('daftar_pertanyaan.update', ':id') }}".replace(':id', id);
+
+            $('#edit_pertanyaan').val(pertanyaan);
+            $('#edit_catatan').val(catatan);
+            $('#editForm').attr('action', url);
+            $('#editModal').modal('show');
+        });
+
+        $('#editModal').on('hidden.bs.modal', function () {
+            $('#editForm')[0].reset();
+        });
+
+        $('.btn-delete').on('click', function () {
+            var id = $(this).data('pertanyaan-id');
+            var text = $(this).data('pertanyaan-text');
+            var url = "{{ route('daftar_pertanyaan.delete', ':id') }}".replace(':id', id);
+
+            $('#pertanyaanToDelete').text(text);
+            $('#deleteConfirmButton').attr('href', url);
+            $('#deleteConfirmationModal').modal('show');
+        });
+
+        $('#searchPertanyaan').on('input', function () {
+            var val = $(this).val();
+            var url = "{{ route('daftar_pertanyaan.index') }}?search=" + val;
+
+            $.get(url, function (data) {
+                $('tbody').html($(data).find('tbody').html());
+            });
+        });
+
+        feather.replace();
+    });
+</script>
 @endsection

@@ -2,22 +2,34 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class jawaban extends Model
+class Jawaban extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['ID_DaftarPertanyaan', 'jawaban', 'ID_Skrining'];
+    protected $table = 'jawabans'; // Pastikan nama tabel ini sama persis di database
 
-    public function pertanyaan()
+    protected $fillable = [
+        'jawaban',
+        'ID_DaftarPertanyaan', // Pastikan nama kolom ini sama persis di database Anda
+        'ID_Skrining',         // Pastikan nama kolom ini sama persis di database Anda
+    ];
+
+    // Relasi many-to-one dengan DaftarPertanyaan
+    public function daftarPertanyaan()
     {
-        return $this->belongsTo(daftar_pertanyaan::class, 'ID_DaftarPertanyaan');
+        // foreign key 'ID_DaftarPertanyaan' di tabel 'jawabans'
+        // Pastikan nama kolom 'ID_DaftarPertanyaan' di tabel 'jawabans' dan tipe datanya BIGINT UNSIGNED
+        return $this->belongsTo(DaftarPertanyaan::class, 'ID_DaftarPertanyaan');
     }
 
-    public function skrining()
+    // Relasi many-to-one dengan FormSkrining
+    public function formSkrining()
     {
-        return $this->belongsTo(Skrining::class, 'ID_Skrining');
+        // foreign key 'ID_Skrining' di tabel 'jawabans'
+        // Pastikan nama kolom 'ID_Skrining' di tabel 'jawabans' dan tipe datanya BIGINT UNSIGNED
+        return $this->belongsTo(FormSkrining::class, 'ID_Skrining');
     }
 }

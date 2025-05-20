@@ -2,20 +2,28 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class FormSkrining extends Model
 {
-    protected $fillable = ['nama_skrining', 'id_daftar_penyakit'];
+    use HasFactory;
 
-    public function pertanyaan()
-    {
-        return $this->belongsToMany(daftar_pertanyaan::class, 'penyakit_pertanyaans', 'id_daftar_penyakit', 'id_daftar_pertanyaan');
-    }
-
+    protected $table = 'form_skrinings';
+    protected $fillable = [
+        'nama_skrining',
+        'id_daftar_penyakit',
+    ];
 
     public function penyakit()
     {
-        return $this->belongsTo(daftar_penyakit::class, 'id_daftar_penyakit', 'id');
+        return $this->belongsTo(DaftarPenyakit::class, 'id_daftar_penyakit');
+    }
+
+    // Perbaikan pada getPertanyaanTerkait
+    public function getPertanyaanTerkait()
+    {
+        // Menggunakan relasi 'pertanyaan' yang seharusnya didefinisikan di model DaftarPenyakit
+        return $this->penyakit->pertanyaan ?? collect(); // Menggunakan null coalescing untuk menghindari error jika penyakit tidak ada
     }
 }

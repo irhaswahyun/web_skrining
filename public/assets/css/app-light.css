@@ -12045,58 +12045,59 @@ a.uppy-Dashboard-poweredBy {
 
 /* Background utama sidebar */
 .bg-sidebar-custom {
-  background-color: rgba(4, 163, 97, 0.9); /* Hijau dengan transparansi 90% */
-  color: #ffffff;
+  background-color: #A8E6CF; /* Warna dari desain */
+  color: #2E4A42;
 }
 
 /* Warna default teks dan icon */
 .bg-sidebar-custom .nav-link,
 .bg-sidebar-custom .nav-link span,
 .bg-sidebar-custom .nav-link i {
-  color: #ffffff;
+  color: #2E4A42;
 }
 
 /* Hover efek pada link */
 .bg-sidebar-custom .nav-link:hover,
 .bg-sidebar-custom .nav-link:focus {
-  background-color: rgba(4, 163, 97, 0.2); /* Hijau transparan saat hover */
-  color: #ffffff !important;
+  background-color: #98D7C2; /* Hover menu */
+  color: #2E4A42 !important;
   border-radius: 8px;
 }
 
-/* Aktif: transparan hijau mint */
+/* Aktif: warna menu aktif dari desain */
 .bg-sidebar-custom .nav-link.active {
-  background-color: rgba(4, 163, 97, 0.4) !important; /* Hijau transparan lebih tegas */
-  color: #ffffff !important;
+  background-color: #81C9B5 !important; /* Aktif */
+  color: #2E4A42 !important;
   border-radius: 8px;
 }
 
 .bg-sidebar-custom .nav-link.active span,
 .bg-sidebar-custom .nav-link.active i {
-  color: #ffffff !important;
+  color: #2E4A42 !important;
 }
 
-/* Tambahan kalau kamu pakai .sidebar-left juga */
+/* Tambahan untuk sidebar-left */
 .sidebar-left .nav-link {
-  color: white;
+  color: #2E4A42;
 }
 
 .sidebar-left .nav-link:hover {
-  background-color: rgba(4, 163, 97, 0.2);
+  background-color: #98D7C2;
+  color: #2E4A42;
   border-radius: 8px;
 }
 
 .sidebar-left .nav-link.active {
-  background-color: rgba(4, 163, 97, 0.4);
-  color: white !important;
+  background-color: #81C9B5;
+  color: #2E4A42 !important;
   border-radius: 8px;
 }
 
-/* Dropdown menu juga transparan saat hover/focus */
+/* Dropdown menu hover/focus */
 .bg-sidebar-custom .dropdown-toggle:hover,
 .bg-sidebar-custom .dropdown-toggle:focus {
-  background-color: rgba(4, 163, 97, 0.2) !important;
-  color: #ffffff !important;
+  background-color: #98D7C2 !important;
+  color: #2E4A42 !important;
   border-radius: 8px;
 }
 
@@ -12104,21 +12105,25 @@ a.uppy-Dashboard-poweredBy {
 /* /////////////////////////////////////////// */
 /* Background navbar dengan warna hijau */
 .bg-navbar-custom {
-  background-color: #66DEAC;
-  color: #fff;
+  background-color: #92D4BE; /* Warna navbar dari Figma */
+  color: #2E4A42; /* Disesuaikan agar kontras dan seragam dengan teks sidebar */
 }
 
+/* Teks dan link navbar */
 .bg-navbar-custom .navbar-brand,
 .bg-navbar-custom .nav-link,
 .bg-navbar-custom .dropdown-toggle {
-  color: #fff;
+  color: #2E4A42; /* Warna teks menu sidebar */
 }
 
+/* Hover efek */
 .bg-navbar-custom .nav-link:hover,
 .bg-navbar-custom .dropdown-toggle:hover {
   opacity: 0.85;
+  color: #2E4A42;
 }
 
+/* /////////////////////////////////////////// */
 /* Tombol Tambah */
 .btn-tambah-baru {
   background-color: #fff; /* Latar belakang putih */

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('daftar_pertanyaans', function (Blueprint $table) {
             $table->id();
             $table->string('pertanyaan');
+            $table->string('catatan');
             $table->timestamps();
         });
     }

@@ -55,15 +55,13 @@
                                             <tr>
                                                 <td>{{ $i + 1 }}</td>
                                                 <td>{{ $skrining->nama_skrining }}</td>
-                                                <td>{{ $skrining->penyakit->Nama_Penyakit ?? '-' }}</td>
+                                                <td>{{ $skrining->penyakit->Nama_Penyakit ?? '-' }}</td> {{-- Pastikan ini sesuai dengan nama kolom di database Anda --}}
                                                 <td>{{ $skrining->pertanyaans_count }}</td>
                                                 <td>
                                                     <button class="btn btn-sm btn-info btn-detail"
                                                         data-id="{{ $skrining->id }}">Detail</button>
                                                     <button class="btn btn-sm btn-primary btn-edit"
-                                                        data-id="{{ $skrining->id }}"
-                                                        data-nama="{{ $skrining->nama_skrining }}"
-                                                        data-penyakit-id="{{ $skrining->id_daftar_penyakit }}">
+                                                        data-id="{{ $skrining->id }}">
                                                         Edit
                                                     </button>
                                                     <button class="btn btn-danger btn-sm btn-delete"
@@ -85,6 +83,7 @@
     </section>
     </div>
 
+    {{-- MODAL TAMBAH FORM SKRINING BARU --}}
     <div class="modal fade" id="tambahSkriningModal" tabindex="-1" role="dialog"
         aria-labelledby="tambahSkriningModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -109,18 +108,21 @@
                             <select name="id_daftar_penyakit" class="form-control" required>
                                 <option value="">-- Pilih Penyakit --</option>
                                 @foreach ($penyakits as $penyakit)
-                                    <option value="{{ $penyakit->id }}">{{ $penyakit->Nama_Penyakit }}</option>
+                                    <option value="{{ $penyakit->id }}">{{ $penyakit->Nama_Penyakit }}</option> {{-- Pastikan ini sesuai --}}
                                 @endforeach
                             </select>
                         </div>
                         <div class="form-group">
                             <label>Pertanyaan</label>
                             <div class="form-check">
+                                {{-- Loop semua pertanyaan dari controller index --}}
                                 @foreach ($pertanyaans as $pertanyaan)
                                     <div>
                                         <input type="checkbox" name="pertanyaan_ids[]" value="{{ $pertanyaan->id }}"
-                                            class="form-check-input">
-                                        <label class="form-check-label">{{ $pertanyaan->pertanyaan }}</label>
+                                            id="tambah_pertanyaan_{{ $pertanyaan->id }}" class="form-check-input">
+                                        <label class="form-check-label" for="tambah_pertanyaan_{{ $pertanyaan->id }}">
+                                            {{ $pertanyaan->pertanyaan }}
+                                        </label>
                                     </div>
                                 @endforeach
                             </div>
@@ -135,6 +137,7 @@
         </div>
     </div>
 
+    {{-- MODAL EDIT FORM SKRINING --}}
     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -159,13 +162,15 @@
                             <select class="form-control" id="edit_id_daftar_penyakit" name="id_daftar_penyakit" required>
                                 <option value="">-- Pilih Penyakit --</option>
                                 @foreach ($penyakits as $penyakit)
-                                    <option value="{{ $penyakit->id }}">{{ $penyakit->Nama_Penyakit }}</option>
+                                    <option value="{{ $penyakit->id }}">{{ $penyakit->Nama_Penyakit }}</option>  {{-- Pastikan ini sesuai --}}
                                 @endforeach
                             </select>
                         </div>
                         <div class="form-group">
                             <label>Pertanyaan</label>
+                            {{-- CONTAINER tempat pertanyaan (checkboxes) akan diisi oleh JavaScript --}}
                             <div class="form-check" id="edit_pertanyaan_list">
+                                <p>Memuat pertanyaan...</p> {{-- Placeholder loading --}}
                             </div>
                         </div>
                     </div>
@@ -178,6 +183,7 @@
         </div>
     </div>
 
+    {{-- MODAL DETAIL FORM SKRINING --}}
     <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -204,6 +210,7 @@
         </div>
     </div>
 
+    {{-- MODAL KONFIRMASI HAPUS --}}
     <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog"
         aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -219,7 +226,6 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    {{-- <a href="#" id="deleteConfirmButton" class="btn btn-danger">Hapus</a> --}}
                     <form id="deleteForm" method="POST">
                         @csrf
                         @method('DELETE')
@@ -234,71 +240,107 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
+            // Event untuk tombol "Tambah Baru"
             $('#tambahSkriningBaru').click(function() {
                 $('#tambahSkriningModal').modal('show');
             });
 
+            // Event untuk tombol "Edit"
             $('.btn-edit').on('click', function() {
-                // Ambil data dari atribut tombol
-                var id = $(this).data('id');
-                var nama = $(this).data('nama');
-                var penyakitId = $(this).data('penyakit-id');
+                var formSkriningId = $(this).data('id');
+                // Menggunakan helper route() untuk mendapatkan URL update yang benar
+                var urlUpdate = "{{ route('form_skrining.update', ':id') }}";
+                urlUpdate = urlUpdate.replace(':id', formSkriningId);
 
-                // Set form action
-                $('#editForm').attr('action', '/skrining/' + id);
+                $('#editForm').attr('action', urlUpdate);
 
-                // Set nilai input
-                $('#edit_nama_skrining').val(nama);
-                $('#edit_id_daftar_penyakit').val(penyakitId);
+                $.ajax({
+                    // Menggunakan helper route()
+                    url: "{{ route('form_skrining.detail', ':id') }}".replace(':id', formSkriningId),
+                    method: 'GET',
+                    success: function(response) {
+                        console.log('Response for Edit Modal:', response);
 
-                // Optional: Kosongkan dan isi ulang pertanyaan jika perlu
+                        $('#edit_nama_skrining').val(response.formSkrining.nama_skrining);
+                        $('#edit_id_daftar_penyakit').val(response.formSkrining.penyakit.id);
 
-                // Tampilkan modal
-                $('#editModal').modal('show');
+                        var pertanyaanContainer = $('#edit_pertanyaan_list');
+                        pertanyaanContainer.empty();
+
+                        var allPertanyaans = @json($pertanyaans);
+
+                        var relatedPertanyaanIds = response.formSkrining.related_pertanyaan.map(p => p.id);
+
+                        if (allPertanyaans && allPertanyaans.length > 0) {
+                            $.each(allPertanyaans, function(index, pertanyaan) {
+                                var isChecked = relatedPertanyaanIds.includes(pertanyaan.id);
+                                pertanyaanContainer.append(
+                                    `<div class="form-check">
+                                        <input class="form-check-input" type="checkbox"
+                                            name="pertanyaan_ids[]"
+                                            value="${pertanyaan.id}"
+                                            id="edit_pertanyaan_${pertanyaan.id}"
+                                            ${isChecked ? 'checked' : ''}>
+                                        <label class="form-check-label" for="edit_pertanyaan_${pertanyaan.id}">
+                                            ${pertanyaan.pertanyaan}
+                                        </label>
+                                    </div>`
+                                );
+                            });
+                        } else {
+                            pertanyaanContainer.append('<p>Tidak ada pertanyaan yang tersedia.</p>');
+                        }
+
+                        $('#editModal').modal('show');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error fetching form skrining detail for edit:", error);
+                        console.log(xhr.responseText);
+                        alert('Terjadi kesalahan saat memuat data form skrining. Silakan cek konsol browser.');
+                    }
+                });
             });
 
             $('#editModal').on('hidden.bs.modal', function() {
                 $('#editForm')[0].reset();
                 $('#edit_pertanyaan_list').empty();
+                $('#edit_pertanyaan_list').append('<p>Memuat pertanyaan...</p>');
             });
 
+            // Event untuk tombol "Detail"
             $('.btn-detail').on('click', function() {
-    var skriningId = $(this).data('id');
+                var skriningId = $(this).data('id');
 
-    // Gunakan route yang benar untuk detail
-    $.get("{{ route('form_skrining.detail', ':id') }}".replace(':id', skriningId), function(data) {
-        // Pastikan data yang diterima sesuai dengan struktur yang diinginkan
-        if (data.formSkrining) {
-            // Mengisi modal dengan data
-            $('#detail_nama_skrining').text(data.formSkrining.nama_skrining);
-            $('#detail_nama_penyakit').text(data.formSkrining.penyakit ? data.formSkrining.penyakit.Nama_Penyakit : '-');
-            
-            // Mengisi daftar pertanyaan
-            $('#detail_daftar_pertanyaan').empty();
-            if (data.formSkrining.pertanyaan && data.formSkrining.pertanyaan.length > 0) {
-                $.each(data.formSkrining.pertanyaan, function(key, value) {
-                    $('#detail_daftar_pertanyaan').append(`<li>${value.pertanyaan}</li>`);
+                $.get("{{ route('form_skrining.detail', ':id') }}".replace(':id', skriningId), function(data) {
+                    if (data.formSkrining) {
+                        $('#detail_nama_skrining').text(data.formSkrining.nama_skrining);
+                        // PERHATIKAN BARIS INI.  Ganti Nama_Penyakit jika perlu.
+                        $('#detail_nama_penyakit').text(data.formSkrining.penyakit ? data.formSkrining.penyakit.Nama_Penyakit : '-');
+                        // ----------------------------------------------------
+
+                        $('#detail_daftar_pertanyaan').empty();
+                        if (data.formSkrining.related_pertanyaan && data.formSkrining.related_pertanyaan.length > 0) {
+                            $.each(data.formSkrining.related_pertanyaan, function(key, value) {
+                                $('#detail_daftar_pertanyaan').append(`<li>${value.pertanyaan}</li>`);
+                            });
+                        } else {
+                            $('#detail_daftar_pertanyaan').append('<li>Tidak ada pertanyaan terkait.</li>');
+                        }
+
+                        $('#detailModal').modal('show');
+                    } else {
+                        alert('Data tidak ditemukan');
+                    }
+                }).fail(function(xhr) {
+                    console.error("Error fetching detail:", xhr.responseText);
+                    alert('Terjadi kesalahan saat memuat data.');
                 });
-            } else {
-                $('#detail_daftar_pertanyaan').append('<li>Tidak ada pertanyaan terkait.</li>');
-            }
-            
-            // Menampilkan modal
-            $('#detailModal').modal('show');
-        } else {
-            alert('Data tidak ditemukan');
-        }
-    }).fail(function() {
-        alert('Terjadi kesalahan saat memuat data.');
-    });
-});
-
+            });
 
             $('.btn-delete').on('click', function() {
                 var skriningId = $(this).data('skrining-id');
                 var skriningNama = $(this).data('skrining-nama');
-                var deleteUrl = "{{ route('form_skrining.delete', ':id') }}".replace(':id',
-                    skriningId); // Menggunakan route delete
+                var deleteUrl = "{{ route('form_skrining.delete', ':id') }}".replace(':id', skriningId);
 
                 $('#skriningToDelete').text(skriningNama);
                 $('#deleteForm').attr('action', deleteUrl);
@@ -320,3 +362,4 @@
         });
     </script>
 @endsection
+

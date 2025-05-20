@@ -45,7 +45,6 @@
                                         <tr>
                                             <th><b>No</b></th>
                                             <th><b>Nama Penyakit</b></th>
-                                            <th><b>Deskripsi</b></th>
                                             <th><b>Aksi</b></th>
                                         </tr>
                                     </thead>
@@ -54,15 +53,13 @@
                                             <tr>
                                                 <td>{{ $i + 1 }}</td>
                                                 <td>{{ $data->Nama_Penyakit }}</td>
-                                                <td>{{ $data->Deskripsi }}</td>
                                                 <td>
                                                     <button class="btn btn-sm btn-primary btn-edit"
                                                             data-id="{{ $data->id }}" data-nama="{{ $data->Nama_Penyakit }}">
                                                         Edit
                                                     </button>
                                                     <button class="btn btn-danger btn-sm btn-delete"
-                                                            data-penyakit-id="{{ $data->id }}"
-                                                            data-penyakit-nama="{{ $data->Nama_Penyakit }}">
+                                                            data-penyakit-id="{{ $data->id }}">
                                                         Hapus
                                                     </button>
                                                 </td>
@@ -95,10 +92,6 @@
                             <label for="nama_penyakit">Nama Penyakit</label>
                             <input type="text" class="form-control" id="nama_penyakit" name="Nama_Penyakit" required>
                         </div>
-                        <div class="form-group">
-                            <label for="deskripsi">Deskripsi</label>
-                            <input type="text" class="form-control" id="deskripsi" name="Deskripsi" required>
-                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
@@ -125,10 +118,6 @@
                         <div class="form-group">
                             <label for="edit_Nama_Penyakit">Nama Penyakit</label>
                             <input type="text" class="form-control" id="edit_Nama_Penyakit" name="Nama_Penyakit">
-                        </div>
-                        <div class="form-group">
-                            <label for="Deskripsi">Deskripsi</label>
-                            <input type="text" class="form-control" id="Deskripsi" name="Deskripsi">
                         </div>
                     </div>
                     <div class="modal-footer">

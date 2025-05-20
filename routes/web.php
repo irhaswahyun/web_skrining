@@ -55,6 +55,8 @@ Route::prefix('pasien')->group(function () {
     Route::get('/edit/{id}', [PasienController::class, 'edit'])->name('pasien.edit');
     Route::put('/update/{id}', [PasienController::class, 'update'])->name('pasien.update'); // Ganti POST dengan PUT
     Route::get('/delete/{id}', [PasienController::class, 'delete'])->name('pasien.delete');
+     Route::get('/get-pasien-data', [PasienController::class, 'getPasienData'])->name('pasien.getPasienData');
+    
 });
 
 // DAFTAR PENYAKIT
@@ -88,10 +90,13 @@ Route::prefix('form-skrining')->group(function () {
 });
 
 //SKRINING
-Route::prefix('admin/skrining')->group(function () {
+Route::prefix('skrining')->group(function () {
     Route::get('/', [SkriningController::class, 'index'])->name('skrining.index');
     // Route::get('/create', [SkriningController::class, 'create'])->name('skrining.create');
     Route::post('/store', [SkriningController::class, 'store'])->name('skrining.store');
     Route::put('/update/{id}', [SkriningController::class, 'update'])->name('skrining.update'); // Gunakan PUT untuk update
-    Route::get('/delete/{skrining}', [SkriningController::class, 'delete'])->name('skrining.delete');
-});
+    Route::get('/delete/{skrining}', [SkriningController::class, 'delete'])->name('skrining.destroy');
+    Route::get('/show/{id}', [SkriningController::class, 'show'])->name('skrining.show');
+    Route::get('/get-pertanyaan-by-penyakit/{id}', [SkriningController::class, 'getPertanyaanByPenyakit'])->name('skrining.get-pertanyaan-by-penyakit');
+    // Route::get('/get-pasien-data', [SkriningController::class, 'getPasienData'])->name('get-pasien-data');
+}); 
