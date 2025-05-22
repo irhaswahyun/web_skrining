@@ -10,14 +10,22 @@ class FormSkrining extends Model
     use HasFactory;
 
     protected $table = 'form_skrinings';
+    protected $primaryKey = 'id';
+    
     protected $fillable = [
+        'nama_form',
         'nama_skrining',
         'id_daftar_penyakit',
     ];
 
     public function penyakit()
     {
-        return $this->belongsTo(DaftarPenyakit::class, 'id_daftar_penyakit');
+        return $this->belongsTo(DaftarPenyakit::class, 'id_daftar_penyakit', 'id');
+    }
+
+    public function pertanyaan()
+    {
+        return $this->belongsToMany(DaftarPertanyaan::class, 'id_form_skrinings','penyakit_pertanyaans', 'id_daftar_penyakit', 'id_daftar_pertanyaan');
     }
 
     // Perbaikan pada getPertanyaanTerkait

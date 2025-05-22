@@ -10,6 +10,7 @@ class Jawaban extends Model
     use HasFactory;
 
     protected $table = 'jawabans'; // Pastikan nama tabel ini sama persis di database
+    // protected $primaryKey = 'id';
 
     protected $fillable = [
         'jawaban',
@@ -22,7 +23,7 @@ class Jawaban extends Model
     {
         // foreign key 'ID_DaftarPertanyaan' di tabel 'jawabans'
         // Pastikan nama kolom 'ID_DaftarPertanyaan' di tabel 'jawabans' dan tipe datanya BIGINT UNSIGNED
-        return $this->belongsTo(DaftarPertanyaan::class, 'ID_DaftarPertanyaan');
+        return $this->belongsTo(DaftarPertanyaan::class, 'ID_DaftarPertanyaan','id');
     }
 
     // Relasi many-to-one dengan FormSkrining
@@ -30,6 +31,6 @@ class Jawaban extends Model
     {
         // foreign key 'ID_Skrining' di tabel 'jawabans'
         // Pastikan nama kolom 'ID_Skrining' di tabel 'jawabans' dan tipe datanya BIGINT UNSIGNED
-        return $this->belongsTo(FormSkrining::class, 'ID_Skrining');
+        return $this->belongsTo(FormSkrining::class, 'ID_Skrining','id');
     }
 }

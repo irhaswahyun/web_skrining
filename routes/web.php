@@ -1,14 +1,26 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SkriningController;
 use App\Http\Controllers\PasienController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\Daftar_PenyakitController;
-use App\Http\Controllers\Daftar_PertanyaanController;   
+use App\Http\Controllers\Daftar_PertanyaanController;
 use App\Http\Controllers\FormController;
+use App\Http\Controllers\RiwayatSkriningController;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
 
 Route::get('/', function () {
     return view('auth.login');
@@ -27,59 +39,53 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 
-//ROLE
+// ROLE ROUTES
 Route::prefix('role')->group(function () {
     Route::get('/', [RoleController::class, 'index'])->name('role.index');
-    // Route::get('/create', [RoleController::class, 'create'])->name('role.create');
     Route::post('/store', [RoleController::class, 'store'])->name('role.store');
     Route::get('/edit/{id}', [RoleController::class, 'edit'])->name('role.edit');
-    Route::put('/update/{id}', [RoleController::class, 'update'])->name('role.update'); // Ganti POST dengan PUT
+    Route::put('/update/{id}', [RoleController::class, 'update'])->name('role.update');
     Route::get('/delete/{id}', [RoleController::class, 'delete'])->name('role.delete');
 });
 
-// PENGGUNA
+// PENGGUNA ROUTES
 Route::prefix('pengguna')->group(function () {
     Route::get('/', [PenggunaController::class, 'index'])->name('pengguna.index');
-    // Route::get('/create', [PenggunaController::class, 'create'])->name('pengguna.create');
     Route::post('/store', [PenggunaController::class, 'store'])->name('pengguna.store');
     Route::get('/edit/{id}', [PenggunaController::class, 'edit'])->name('pengguna.edit');
-    Route::put('/update/{id}', [PenggunaController::class, 'update'])->name('pengguna.update'); // Gunakan PUT untuk update
+    Route::put('/update/{id}', [PenggunaController::class, 'update'])->name('pengguna.update');
     Route::get('/delete/{id}', [PenggunaController::class, 'delete'])->name('pengguna.delete');
 });
 
-//PASIEN
+// PASIEN ROUTES
 Route::prefix('pasien')->group(function () {
     Route::get('/', [PasienController::class, 'index'])->name('pasien.index');
-    // Route::get('/create', [PasienController::class, 'create'])->name('pasien.create');
     Route::post('/store', [PasienController::class, 'store'])->name('pasien.store');
     Route::get('/edit/{id}', [PasienController::class, 'edit'])->name('pasien.edit');
-    Route::put('/update/{id}', [PasienController::class, 'update'])->name('pasien.update'); // Ganti POST dengan PUT
+    Route::put('/update/{id}', [PasienController::class, 'update'])->name('pasien.update');
     Route::get('/delete/{id}', [PasienController::class, 'delete'])->name('pasien.delete');
-     Route::get('/get-pasien-data', [PasienController::class, 'getPasienData'])->name('pasien.getPasienData');
-    
+    Route::get('/get-data', [PasienController::class, 'getPasienData'])->name('pasien.getPasienData');
 });
 
-// DAFTAR PENYAKIT
+// DAFTAR PENYAKIT ROUTES
 Route::prefix('daftar-penyakit')->group(function () {
     Route::get('/', [Daftar_PenyakitController::class, 'index'])->name('daftar_penyakit.index');
-    // Route::get('/create', [Daftar_PenyakitController::class, 'create'])->name('daftar_penyakit.create');
     Route::post('/store', [Daftar_PenyakitController::class, 'store'])->name('daftar_penyakit.store');
     Route::get('/edit/{id}', [Daftar_PenyakitController::class, 'edit'])->name('daftar_penyakit.edit');
-    Route::put('/update/{id}', [Daftar_PenyakitController::class, 'update'])->name('daftar_penyakit.update'); // Gunakan PUT untuk update
+    Route::put('/update/{id}', [Daftar_PenyakitController::class, 'update'])->name('daftar_penyakit.update');
     Route::get('/delete/{id}', [Daftar_PenyakitController::class, 'delete'])->name('daftar_penyakit.delete');
 });
 
-// DAFTAR PERTANYAAN
+// DAFTAR PERTANYAAN ROUTES
 Route::prefix('daftar-pertanyaan')->group(function () {
     Route::get('/', [Daftar_PertanyaanController::class, 'index'])->name('daftar_pertanyaan.index');
-    // Route::get('/create', [Daftar_PenyakitController::class, 'create'])->name('daftar_penyakit.create');
     Route::post('/store', [Daftar_PertanyaanController::class, 'store'])->name('daftar_pertanyaan.store');
     Route::get('/edit/{id}', [Daftar_PertanyaanController::class, 'edit'])->name('daftar_pertanyaan.edit');
-    Route::put('/update/{id}', [Daftar_PertanyaanController::class, 'update'])->name('daftar_pertanyaan.update'); // Gunakan PUT untuk update
+    Route::put('/update/{id}', [Daftar_PertanyaanController::class, 'update'])->name('daftar_pertanyaan.update');
     Route::get('/delete/{id}', [Daftar_PertanyaanController::class, 'delete'])->name('daftar_pertanyaan.delete');
 });
 
-// FORM SKRINING
+// FORM SKRINING ROUTES
 Route::prefix('form-skrining')->group(function () {
     Route::get('/', [FormController::class, 'index'])->name('form_skrining.index');
     Route::post('/store', [FormController::class, 'store'])->name('form_skrining.store');
@@ -89,14 +95,19 @@ Route::prefix('form-skrining')->group(function () {
     Route::delete('/delete/{formSkrining}', [FormController::class, 'delete'])->name('form_skrining.delete');
 });
 
-//SKRINING
+// SKRINING ROUTES
 Route::prefix('skrining')->group(function () {
     Route::get('/', [SkriningController::class, 'index'])->name('skrining.index');
-    // Route::get('/create', [SkriningController::class, 'create'])->name('skrining.create');
     Route::post('/store', [SkriningController::class, 'store'])->name('skrining.store');
-    Route::put('/update/{id}', [SkriningController::class, 'update'])->name('skrining.update'); // Gunakan PUT untuk update
-    Route::get('/delete/{skrining}', [SkriningController::class, 'delete'])->name('skrining.destroy');
+    Route::put('/update/{id}', [SkriningController::class, 'update'])->name('skrining.update');
+    Route::delete('/{id}', [SkriningController::class, 'delete'])->name('skrining.delete');
     Route::get('/show/{id}', [SkriningController::class, 'show'])->name('skrining.show');
-    Route::get('/get-pertanyaan-by-penyakit/{id}', [SkriningController::class, 'getPertanyaanByPenyakit'])->name('skrining.get-pertanyaan-by-penyakit');
-    // Route::get('/get-pasien-data', [SkriningController::class, 'getPasienData'])->name('get-pasien-data');
-}); 
+    Route::get('/get-pertanyaan-by-form-skrining/{id}', [SkriningController::class, 'getPertanyaanByFormSkrining'])->name('skrining.get-pertanyaan-by-form-skrining');
+    // Route::get('/get-form-skrinings-by-kategori', [SkriningController::class, 'getFormSkriningsByKategori'])->name('skrining.get-form-skrinings-by-kategori'); // Rute ini dihapus
+});
+
+// RIWAYAT SKRINING ROUTES
+Route::prefix('riwayat-skrining')->group(function () {
+    Route::get('/', [RiwayatSkriningController::class, 'index'])->name('riwayat_skrining.index');
+    Route::get('/get-history', [RiwayatSkriningController::class, 'getHistory'])->name('riwayat_skrining.get_history');
+});

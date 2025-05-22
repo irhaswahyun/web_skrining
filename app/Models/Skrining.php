@@ -12,32 +12,31 @@ class Skrining extends Model
     protected $table = 'skrinings';
 
     protected $fillable = [
-        'Nama_Petugas', 
+        'Nama_Petugas',
         'NIK_Pasien',
         'Nama_Pasien',
         'Tanggal_Skrining',
-        'ID_penyakit_pertanyaan',
+        'id_form_skrining' // Pastikan id_daftar_penyakit TIDAK ada di sini
     ];
 
     protected $casts = [
         'Tanggal_Skrining' => 'date',
     ];
 
-
     public function pasien()
     {
-        return $this->belongsTo(Pasien::class, 'NIK_Pasien', 'NIK'); // Pastikan model Pasien ada dan kolom NIK
+        return $this->belongsTo(Pasien::class, 'NIK_Pasien', 'NIK');
     }
 
-
-    public function formSkrining()
+    public function formSkrining() // Relasi ini akan digunakan untuk mendapatkan nama skrining dan penyakitnya
     {
-        return $this->belongsTo(FormSkrining::class);
+        return $this->belongsTo(FormSkrining::class, 'id_form_skrining', 'id');
     }
 
-    // Relasi many-to-one ke PenyakitPertanyaan
-    public function penyakitPertanyaan()
-{
-    return $this->belongsTo(PenyakitPertanyaan::class, 'ID_penyakit_pertanyaan');
-}
+    public function jawabans()
+    {
+        return $this->hasMany(Jawaban::class, 'ID_Skrining', 'id');
+    }
+
+    // Pastikan tidak ada fungsi 'penyakit()' di sini lagi
 }

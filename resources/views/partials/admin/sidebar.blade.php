@@ -66,7 +66,7 @@
           </a>
       </ul>
       <ul class="navbar-nav flex-fill w-100 mb-2">
-        <a href="#charts" data-toggle="collapse" aria-expanded="false" class="nav-link">
+       <a href="{{ route('riwayat_skrining.index') }}" class="nav-link {{ request()->routeIs('riwayat_skrining.index') ? 'active' : '' }}">
           <i class="fe fe-pie-chart fe-16"></i>
           <span class="ml-3 item-text">Riwayat Skrining</span>
         </a>

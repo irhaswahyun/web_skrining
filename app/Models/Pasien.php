@@ -9,6 +9,11 @@ class Pasien extends Model
 {
     use HasFactory;
 
+    protected $table = 'pasiens';
+    protected $primaryKey = 'NIK';
+    public $incrementing = false;
+    public $keyType = 'string';
+
     protected $fillable = [
         'NIK', 
         'Nama_Pasien', 
@@ -18,4 +23,9 @@ class Pasien extends Model
         'Alamat', 
         'No_telp',
     ];
+
+    public function skrining()
+    {
+        return $this->hasMany(Skrining::class, 'NIK_Pasien', 'NIK');
+    }
 }
