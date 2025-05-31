@@ -50,6 +50,7 @@
                                             <th><b>Kategori</b></th>
                                             <th><b>Jenis Kelamin</b></th>
                                             <th><b>Alamat</b></th>
+                                            <th><b>Wilayah</b></th> {{-- Kolom Wilayah --}}
                                             <th><b>No Telepon</b></th>
                                             <th><b>Aksi</b></th>
                                         </tr>
@@ -64,23 +65,29 @@
                                                 <td>{{ $pasien->Kategori }}</td>
                                                 <td>{{ $pasien->Jenis_Kelamin }}</td>
                                                 <td>{{ $pasien->Alamat }}</td>
+                                                {{-- Menggunakan $pasien->Wilayah (huruf kapital) sesuai Controller dan Migrasi --}}
+                                                <td>{{ $pasien->Wilayah }}</td>
                                                 <td>{{ $pasien->No_telp }}</td>
                                                 <td>
                                                     <button class="btn btn-sm btn-primary btn-edit"
-                                                        data-pasien-id="{{ $pasien->id }}"
-                                                        data-pasien-nik="{{ $pasien->NIK }}"
-                                                        data-pasien-nama="{{ $pasien->Nama_Pasien }}"
-                                                        data-pasien-tanggal-lahir="{{ $pasien->Tanggal_Lahir }}"
-                                                        data-pasien-kategori="{{ $pasien->Kategori }}"
-                                                        data-pasien-jenis-kelamin="{{ $pasien->Jenis_Kelamin }}"
-                                                        data-pasien-alamat="{{ $pasien->Alamat }}"
-                                                        data-pasien-no-telp="{{ $pasien->No_telp }}">
-                                                        Edit
+                                                            {{-- PENTING: Menggunakan NIK sebagai ID untuk rute update --}}
+                                                            data-pasien-id="{{ $pasien->NIK }}"
+                                                            data-pasien-nik="{{ $pasien->NIK }}"
+                                                            data-pasien-nama="{{ $pasien->Nama_Pasien }}"
+                                                            data-pasien-tanggal-lahir="{{ $pasien->Tanggal_Lahir }}"
+                                                            data-pasien-kategori="{{ $pasien->Kategori }}"
+                                                            data-pasien-jenis-kelamin="{{ $pasien->Jenis_Kelamin }}"
+                                                            data-pasien-alamat="{{ $pasien->Alamat }}"
+                                                            {{-- Menggunakan data-pasien-wilayah="{{ $pasien->Wilayah }}" (huruf kapital) --}}
+                                                            data-pasien-wilayah="{{ $pasien->Wilayah }}"
+                                                            data-pasien-no-telp="{{ $pasien->No_telp }}">
+                                                            Edit
                                                     </button>
                                                     <button class="btn btn-danger btn-sm btn-delete"
-                                                        data-pasien-id="{{ $pasien->id }}"
-                                                        data-pasien-nama="{{ $pasien->Nama_Pasien }}">
-                                                        Hapus
+                                                            {{-- PENTING: Menggunakan NIK sebagai ID untuk rute delete --}}
+                                                            data-pasien-id="{{ $pasien->NIK }}"
+                                                            data-pasien-nama="{{ $pasien->Nama_Pasien }}">
+                                                            Hapus
                                                     </button>
                                                 </td>
                                             </tr>
@@ -132,6 +139,11 @@
                         <div class="form-group">
                             <label for="edit_Alamat">Alamat</label>
                             <input type="text" class="form-control" id="edit_Alamat" name="Alamat">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_Wilayah">Wilayah</label>
+                            {{-- Menggunakan name="Wilayah" (huruf kapital) sesuai Controller --}}
+                            <input type="text" class="form-control" id="edit_Wilayah" name="Wilayah">
                         </div>
                         <div class="form-group">
                             <label for="edit_No_telp">No Telepon</label>
@@ -206,6 +218,11 @@
                             <input type="text" class="form-control" id="create_Alamat" name="Alamat" required>
                         </div>
                         <div class="form-group">
+                            <label for="create_Wilayah">Wilayah</label>
+                            {{-- Menggunakan name="Wilayah" (huruf kapital) sesuai Controller --}}
+                            <input type="text" class="form-control" id="create_Wilayah" name="Wilayah" required>
+                        </div>
+                        <div class="form-group">
                             <label for="create_No_telp">No Telepon</label>
                             <input type="text" class="form-control" id="create_No_telp" name="No_telp" required>
                         </div>
@@ -223,44 +240,59 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
+            // Inisialisasi Feather Icons
+            feather.replace();
+
+            // Event untuk tombol "Tambah Baru"
             $('#tambahPasienBaru').on('click', function() {
                 $('#createModal').modal('show');
             });
 
+            // Reset form tambah pasien saat modal ditutup
             $('#createModal').on('hidden.bs.modal', function() {
                 $('#createForm')[0].reset();
             });
 
-            $('.btn-edit').on('click', function() {
-                var pasienId = $(this).data('pasien-id');
+            // Event untuk tombol "Edit"
+            $(document).on('click', '.btn-edit', function() {
+                // PENTING: Mengambil pasienId dari data-pasien-id yang sekarang adalah NIK
+                var pasienId = $(this).data('pasien-id'); // Ini akan menjadi NIK
                 var pasienNik = $(this).data('pasien-nik');
                 var pasienNama = $(this).data('pasien-nama');
                 var pasienTanggalLahir = $(this).data('pasien-tanggal-lahir');
                 var pasienKategori = $(this).data('pasien-kategori');
                 var pasienJenisKelamin = $(this).data('pasien-jenis-kelamin');
                 var pasienAlamat = $(this).data('pasien-alamat');
+                var pasienWilayah = $(this).data('pasien-wilayah');
                 var pasienNoTelp = $(this).data('pasien-no-telp');
 
+                // Set action URL untuk form edit, menggunakan pasienId (yang sekarang adalah NIK)
                 var editUrl = "{{ route('pasien.update', ':id') }}".replace(':id', pasienId);
 
+                // Isi form modal edit dengan data pasien
                 $('#edit_NIK').val(pasienNik);
                 $('#edit_Nama_Pasien').val(pasienNama);
                 $('#edit_Tanggal_Lahir').val(pasienTanggalLahir);
                 $('#edit_Kategori').val(pasienKategori);
                 $('#edit_Jenis_Kelamin').val(pasienJenisKelamin);
                 $('#edit_Alamat').val(pasienAlamat);
+                $('#edit_Wilayah').val(pasienWilayah);
                 $('#edit_No_telp').val(pasienNoTelp);
                 $('#editForm').attr('action', editUrl);
+
+                // Tampilkan modal edit
                 $('#editModal').modal('show');
             });
 
+            // Reset form edit pasien saat modal ditutup
             $('#editModal').on('hidden.bs.modal', function() {
                 $('#editForm')[0].reset();
             });
 
-            // UNTUK HAPUS //
-            $('.btn-delete').on('click', function() {
-                var pasienId = $(this).data('pasien-id');
+            // Event untuk tombol "Hapus"
+            $(document).on('click', '.btn-delete', function() {
+                // PENTING: Mengambil pasienId dari data-pasien-id yang sekarang adalah NIK
+                var pasienId = $(this).data('pasien-id'); // Ini akan menjadi NIK
                 var pasienNama = $(this).data('pasien-nama');
                 var deleteUrl = "{{ route('pasien.delete', ':id') }}".replace(':id', pasienId);
 
@@ -269,19 +301,21 @@
                 $('#deleteConfirmationModal').modal('show');
             });
 
-            // UNTUK PENCARIAN //
+            // Event untuk pencarian pasien
             $('#searchPasien').on('input', function() {
                 var searchValue = $(this).val();
                 var url = "{{ route('pasien.index') }}";
 
+                // Tambahkan parameter pencarian ke URL
                 url += (url.indexOf('?') > -1 ? '&' : '?') + 'search=' + searchValue;
 
+                // Menggunakan AJAX untuk memperbarui hanya bagian tbody tabel
                 $.get(url, function(data) {
+                    // Mengambil konten tbody dari respons dan memperbarui tabel
+                    // Asumsi respons AJAX berisi seluruh halaman HTML atau hanya bagian tabel
                     $('tbody').html($(data).find('tbody').html());
                 });
             });
-
-            feather.replace();
         });
     </script>
 @endsection

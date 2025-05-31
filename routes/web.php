@@ -10,6 +10,8 @@ use App\Http\Controllers\Daftar_PenyakitController;
 use App\Http\Controllers\Daftar_PertanyaanController;
 use App\Http\Controllers\FormController;
 use App\Http\Controllers\RiwayatSkriningController;
+use App\Http\Controllers\RekapSkriningController;
+use App\Http\Controllers\PasienSkriningController;
 
 /*
 |--------------------------------------------------------------------------
@@ -110,4 +112,30 @@ Route::prefix('skrining')->group(function () {
 Route::prefix('riwayat-skrining')->group(function () {
     Route::get('/', [RiwayatSkriningController::class, 'index'])->name('riwayat_skrining.index');
     Route::get('/get-history', [RiwayatSkriningController::class, 'getHistory'])->name('riwayat_skrining.get_history');
+});
+
+// // REKAP HASIL SKRINING ROUTES
+// Route::prefix('rekap-hasil-skrining')->group(function () {
+//     // Route::get('/', [RekapSkriningController::class, 'index'])->name('rekap_hasil_skrining.index');
+//     // Route::get('/summary', [RekapSkriningController::class, 'getRekapSummary'])->name('rekap_hasil_skrining.summary');
+//     // Route::get('/pasien', [RekapSkriningController::class, 'getPasienByPenyakit'])->name('rekap_hasil_skrining.pasien');
+//     // Route::get('/detail', [RekapSkriningController::class, 'getDetailSkrining'])->name('rekap_hasil_skrining.detail');
+//     // Route::get('/pasien-list', [PasienSkriningController::class, 'index'])->name('rekap_hasil_skrining.pasien_list');
+//     // Rute detail skrining tetap di RekapSkriningController karena itu adalah AJAX call untuk detail satu record
+//     // Route::get('/detail', [RekapSkriningController::class, 'getDetailSkrining'])->name('rekap_hasil_skrining.detail');
+//         Route::get('/', [RekapSkriningController::class, 'index'])->name('rekap_hasil_skrining.index');
+//         Route::get('/summary', [RekapSkriningController::class, 'getSummary'])->name('rekap_hasil_skrining.summary');
+//         // Route::get('/pasien-list', [RekapSkriningController::class, 'pasienList'])->name('rekap_hasil_skrining.pasien_list');
+//         Route::get('/pasien-list', [PasienSkriningController::class, 'index'])->name('rekap_hasil_skrining.pasien_list');
+//         Route::get('/detail', [RekapSkriningController::class, 'getDetailSkrining'])->name('rekap_hasil_skrining.detail'); // Rute untuk detail skrining
+// });
+
+// Pastikan rute rekap skrining ini ada dan sesuai
+Route::prefix('rekap-hasil-skrining')->name('rekap_hasil_skrining.')->group(function () {
+    Route::get('/', [RekapSkriningController::class, 'index'])->name('index');
+    Route::get('/summary', [RekapSkriningController::class, 'getRekapSummary'])->name('summary');
+    Route::get('/detail', [RekapSkriningController::class, 'getDetailSkrining'])->name('detail');
+
+    // Rute untuk menampilkan daftar pasien skrining
+    Route::get('/pasien-list', [RekapSkriningController::class, 'pasienList'])->name('pasien_list');
 });

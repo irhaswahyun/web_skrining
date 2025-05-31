@@ -23,11 +23,6 @@ class PasienController extends Controller
         return view('admin.manajemen_pasien.index', compact('pasiens'));
     }
 
-    // public function create()
-    // {
-    //     return view('admin.manajemen_pasien.create');
-    // }
-
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
@@ -37,6 +32,7 @@ class PasienController extends Controller
             'Kategori' => 'required',
             'Jenis_Kelamin' => 'required',
             'Alamat' => 'required',
+            'Wilayah' => 'required',
             'No_telp' => 'required',
         ]);
 
@@ -48,55 +44,76 @@ class PasienController extends Controller
             $pasien->Kategori = $request->Kategori;
             $pasien->Jenis_Kelamin = $request->Jenis_Kelamin;
             $pasien->Alamat = $request->Alamat;
+            $pasien->Wilayah = $request->Wilayah;
             $pasien->No_telp = $request->No_telp;
             $pasien->save();
 
             return redirect()->route('pasien.index')->with('success', 'Pasien berhasil ditambahkan');
         } catch (\Exception $e) {
-            return redirect()->route('pasien.index')->with('error', 'Terjadi kesalahan: ' . $e->getMessage()); // Lebih baik tangkap Exception
+            // Log error untuk debugging lebih lanjut
+            // \Log::error('Error saat menyimpan pasien: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->route('pasien.index')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
-
     public function edit($id)
     {
-        $editData=Pasien::findOrFail($id);
+        // Karena primaryKey model adalah NIK, $id di sini akan dicari di kolom NIK
+        $editData = Pasien::findOrFail($id);
         return view('admin.manajemen_pasien.edit', compact('editData'));
     }
 
     public function update(Request $request, $id)
     {
-        $pasien=Pasien::findOrFail($id);
+        // Karena primaryKey model adalah NIK, $id di sini akan dicari di kolom NIK
+        $pasien = Pasien::findOrFail($id);
+
         $request->validate([
-            'NIK' => 'required|digits:16|unique:pasiens,NIK,' . $pasien->id, // Tambahkan validasi digits dan ignore ID saat update
+            // PENTING: Mengubah cara mengabaikan NIK saat update
+            // Gunakan $pasien->getKey() atau $pasien->NIK karena NIK adalah primaryKey
+            'NIK' => 'required|digits:16|unique:pasiens,NIK,' . $pasien->getKey() . ',' . $pasien->getKeyName(),
             'Nama_Pasien' => 'required',
             'Tanggal_Lahir' => 'required|date',
             'Kategori' => 'required',
             'Jenis_Kelamin' => 'required',
             'Alamat' => 'required',
+            'Wilayah' => 'required',
             'No_telp' => 'required',
         ]);
-        $pasien->NIK = $request->NIK;
-        $pasien->Nama_Pasien = $request->Nama_Pasien;
-        $pasien->Tanggal_Lahir = $request->Tanggal_Lahir;
-        $pasien->Kategori = $request->Kategori;
-        $pasien->Jenis_Kelamin = $request->Jenis_Kelamin;
-        $pasien->Alamat = $request->Alamat;
-        $pasien->No_telp = $request->No_telp;
-        $pasien->save();
 
-        return redirect()->route('pasien.index')->with('success', 'Pasien berhasil diperbarui');
+        try {
+            $pasien->NIK = $request->NIK;
+            $pasien->Nama_Pasien = $request->Nama_Pasien;
+            $pasien->Tanggal_Lahir = $request->Tanggal_Lahir;
+            $pasien->Kategori = $request->Kategori;
+            $pasien->Jenis_Kelamin = $request->Jenis_Kelamin;
+            $pasien->Alamat = $request->Alamat;
+            $pasien->Wilayah = $request->Wilayah;
+            $pasien->No_telp = $request->No_telp;
+            $pasien->save();
+
+            return redirect()->route('pasien.index')->with('success', 'Pasien berhasil diperbarui');
+        } catch (\Exception $e) {
+            // Log error untuk debugging lebih lanjut
+            // \Log::error('Error saat memperbarui pasien: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->route('pasien.index')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     public function delete(Pasien $id): RedirectResponse
     {
-        $id->delete();
-        return redirect()->route('pasien.index')->with('success', 'Pasien berhasil dihapus');
-
+        // Karena primaryKey model adalah NIK, $id di sini akan di-bind ke model Pasien berdasarkan NIK
+        try {
+            $id->delete();
+            return redirect()->route('pasien.index')->with('success', 'Pasien berhasil dihapus');
+        } catch (\Exception $e) {
+            // \Log::error('Error saat menghapus pasien: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->route('pasien.index')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     public function getPasienData(Request $request) {
-        $nik = $request->input('NIK'); // Menggunakan 'NIK' (huruf besar) sesuai dengan saran
+        $nik = $request->input('NIK');
 
         try {
             $pasien = Pasien::where('NIK', $nik)->firstOrFail();

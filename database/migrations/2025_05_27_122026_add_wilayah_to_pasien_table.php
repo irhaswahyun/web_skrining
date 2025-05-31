@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('daftar_pertanyaans', function (Blueprint $table) {
-            $table->id();
-            $table->string('pertanyaan');
-            $table->string('catatan')->nullable();
-            $table->timestamps();
+        Schema::table('pasiens', function (Blueprint $table) {
+            $table->string('Wilayah')->nullable()->after('Alamat');
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('daftar_pertanyaans');
+        Schema::table('pasiens', function (Blueprint $table) {
+            $table->dropColumn('Wilayah');
+        });
     }
 };

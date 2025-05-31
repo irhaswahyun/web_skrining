@@ -21,6 +21,7 @@ class Pasien extends Model
         'Kategori', 
         'Jenis_Kelamin', 
         'Alamat', 
+        'Wilayah',
         'No_telp',
     ];
 

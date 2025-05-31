@@ -115,8 +115,8 @@
                     <p id="detail_riwayat_Nama_Petugas"></p>
                     <h6 class="font-weight-bold">Nama Skrining:</h6>
                     <p id="detail_riwayat_Nama_Skrining"></p>
-                    <h6 class="font-weight-bold">Nama Penyakit:</h6>
-                    <p id="detail_riwayat_Nama_Penyakit"></p>
+                    {{-- <h6 class="font-weight-bold">Nama Penyakit:</h6>
+                    <p id="detail_riwayat_Nama_Penyakit"></p> --}}
                     <h6 class="font-weight-bold">Tanggal Skrining:</h6>
                     <p id="detail_riwayat_Tanggal_Skrining"></p>
                     <h6 class="font-weight-bold">Kondisi:</h6>

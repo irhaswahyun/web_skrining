@@ -38,5 +38,5 @@ class Skrining extends Model
         return $this->hasMany(Jawaban::class, 'ID_Skrining', 'id');
     }
 
-    // Pastikan tidak ada fungsi 'penyakit()' di sini lagi
+    
 }

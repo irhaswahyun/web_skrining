@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('Kategori');
             $table->string('Jenis_Kelamin');
             $table->string('Alamat');
+            $table->string('Wilayah');
             $table->string('No_telp');
             $table->timestamps();
         });

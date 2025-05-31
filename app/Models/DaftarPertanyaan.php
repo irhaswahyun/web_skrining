@@ -16,6 +16,7 @@ class DaftarPertanyaan extends Model
     Protected $fillable = [
         'pertanyaan', // Pastikan ini sesuai dengan nama kolom di database Anda
         'catatan',
+        'id_form_skrining',
     ];
 
     // Relasi many-to-many dengan DaftarPenyakit melalui tabel pivot penyakit_pertanyaans
