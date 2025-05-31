@@ -33,7 +33,8 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6 text-right">
-                                        <button id="tambahRoleBaru" class="btn btn-tambah-baru">
+                                        <button id="tambahRoleBaru" class="btn btn-tambah-baru" data-bs-toggle="modal"
+                                            data-bs-target="#tambahRoleModal">
                                             Tambah Baru
                                         </button>
                                     </div>

@@ -64,7 +64,7 @@
                                 @endif
 
                                 {{-- Tombol Debugging (biarkan tetap ada untuk sementara) --}}
-                                <button id="checkDataTableStatus" class="btn btn-sm btn-outline-primary mb-3">Check DataTables Status</button>
+                                {{-- <button id="checkDataTableStatus" class="btn btn-sm btn-outline-primary mb-3">Check DataTables Status</button> --}}
 
                                 <div class="table-responsive">
                                     <table id="pasienSkriningTable" class="table table-bordered table-hover">

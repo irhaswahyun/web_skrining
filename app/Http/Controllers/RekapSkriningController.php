@@ -133,20 +133,20 @@ class RekapSkriningController extends Controller
     public function pasienList(Request $request)
 {
     $wilayah = trim($request->query('wilayah', null));
-    $namaFormSkrining = trim($request->query('nama_form_Skrining', null));
+    $namaFormSkrining = trim($request->query('nama_form_skrining'));
     $bulan = $request->query('bulan', null);
     $tahun = $request->query('tahun', null);
 
     // --- STEP 1: Cek input dari URL ---
-    dd([
-        'wilayah_dari_url' => $wilayah,
-        'nama_form_skrining_dari_url' => $namaFormSkrining,
-        'bulan_dari_url' => $bulan,
-        'tahun_dari_url' => $tahun,
-        'tipe_nama_form_skrining' => gettype($namaFormSkrining),
-        'tipe_wilayah' => gettype($wilayah),
-        'url_lengkap' => $request->fullUrl(),
-    ]);
+    // dd([
+    //     'wilayah_dari_url' => $wilayah,
+    //     'nama_form_skrining_dari_url' => $namaFormSkrining,
+    //     'bulan_dari_url' => $bulan,
+    //     'tahun_dari_url' => $tahun,
+    //     'tipe_nama_form_skrining' => gettype($namaFormSkrining),
+    //     'tipe_wilayah' => gettype($wilayah),
+    //     'url_lengkap' => $request->fullUrl(),
+    // ]);
     // Saat Anda menjalankan ini, pastikan nilai-nilai di atas SAMA PERSIS dengan yang Anda harapkan.
     // Misalnya, nama_form_skrining_dari_url harus "Skrining Flu", bukan "Tidak Diketahui" atau string kosong.
     // Jika di sini sudah salah, berarti masalahnya ada di LINKING DARI HALAMAN REKAP (index.blade.php)
