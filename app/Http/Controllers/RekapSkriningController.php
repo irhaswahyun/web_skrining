@@ -198,10 +198,13 @@ class RekapSkriningController extends Controller
     {
         $skriningId = $request->query('skrining_id');
 
+        // Penting: Pastikan nama relasi 'jawabans' dan 'daftarPertanyaan' ini BENAR
+        // di model Skrining dan Jawaban Anda.
         $skrining = Skrining::with([
             'pasien',
             'formSkrining.penyakit',
-            'jawabans.daftarPertanyaan'
+            'jawabans.daftarPertanyaan' // Ini berarti Skrining punya hasMany Jawaban,
+                                       // dan Jawaban punya belongsTo DaftarPertanyaan
         ])->find($skriningId);
 
         if (!$skrining) {
@@ -214,7 +217,7 @@ class RekapSkriningController extends Controller
         $detailJawaban = $skrining->jawabans->map(function ($jawaban) {
             return [
                 'pertanyaan' => $jawaban->daftarPertanyaan->pertanyaan ?? 'Pertanyaan Tidak Diketahui',
-                'jawaban' => $jawaban->jawaban,
+                'jawaban' => $jawaban->jawaban ?? '-', // Tambahkan null coalescing untuk jawaban
             ];
         });
 
@@ -229,11 +232,11 @@ class RekapSkriningController extends Controller
                 // 'id' => $skrining->id,
                 'NIK' => $skrining->pasien->NIK ?? 'N/A',
                 'Nama_Pasien' => $skrining->pasien->Nama_Pasien ?? 'N/A',
-                'Nama_Petugas' => $skrining->Nama_Petugas,
+                'Nama_Petugas' => $skrining->Nama_Petugas ?? 'N/A', // Pastikan kolom ini ada dan diisi
                 'Nama_Skrining' => $skrining->formSkrining->nama_skrining ?? 'N/A',
-                'Tanggal_Skrining' => $skrining->Tanggal_Skrining ? $skrining->Tanggal_Skrining->format('d-m-Y') : 'N/A',
-                'Nama_Penyakit_Terkait' => $namaPenyakitTerkait,
-                'detail_jawaban' => $detailJawaban,
+                'Tanggal_Skrining' => $skrining->Tanggal_Skrining ? Carbon::parse($skrining->Tanggal_Skrining)->format('d-m-Y H:i') : 'N/A', // Ganti format menjadi H:i juga jika perlu
+                'detail_jawaban' => $detailJawaban, // Ini adalah array yang akan di-loop di frontend
+                // 'Kondisi' => $skrining->Kondisi ?? 'N/A', // Uncomment jika ingin menampilkan Kondisi
             ]
         ]);
     }

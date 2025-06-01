@@ -119,8 +119,8 @@
                     <p id="detail_riwayat_Nama_Penyakit"></p> --}}
                     <h6 class="font-weight-bold">Tanggal Skrining:</h6>
                     <p id="detail_riwayat_Tanggal_Skrining"></p>
-                    <h6 class="font-weight-bold">Kondisi:</h6>
-                    <p id="detail_riwayat_Kondisi"></p>
+                    {{-- <h6 class="font-weight-bold">Kondisi:</h6>
+                    <p id="detail_riwayat_Kondisi"></p> --}}
                     <h6 class="font-weight-bold">Pertanyaan & Jawaban:</h6>
                     <div id="detail_riwayat_daftar_pertanyaan_formatted">
                         <p>Memuat pertanyaan...</p>

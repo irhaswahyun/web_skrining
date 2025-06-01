@@ -67,8 +67,8 @@
                                 {{-- <button id="checkDataTableStatus" class="btn btn-sm btn-outline-primary mb-3">Check DataTables Status</button> --}}
 
                                 <div class="table-responsive">
-                                    <table id="pasienSkriningTable" class="table table-bordered table-hover">
-                                        <thead>
+                                    <table id="pasienSkriningTable" class="table table-custom">
+                                        <thead class="thead-light">
                                             <tr>
                                                 <th>No</th>
                                                 <th>NIK</th>
@@ -115,12 +115,12 @@
     </div>
 
     {{-- MODAL DETAIL RIWAYAT SKRINING (tetap sama) --}}
-    <div class="modal fade" id="detailRiwayatModal" tabindex="-1" role="dialog" aria-labelledby="detailRiwayatModalLabel"
+    <div class="modal fade" id="detailRiwayatModal" tabindex="-1" role="dialog" aria-labelledby="detailRiwayatModal"
         aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="detailRiwayatModalLabel">Detail Riwayat Skrining</h5>
+                    <h5 class="modal-title" id="detailRiwayatModal"> Detail Modal</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -197,12 +197,12 @@
                 });
             }
 
-            // Handler untuk tombol detail skrining
-            $(document).on('click', '.btn-detail-skrining', function() {
-                var skriningId = $(this).data('skrining-id');
-                var detailPertanyaanContainer = $('#detail_riwayat_daftar_pertanyaan_formatted');
-                detailPertanyaanContainer.empty().append('<p>Memuat pertanyaan...</p>');
+             // Event untuk tombol "Detail" di Rekap Hasil Skrining (pasien-list)
+    $(document).on('click', '.btn-detail-skrining', function() {
+        console.log("Tombol detail diklik!"); // <-- TAMBAHKAN BARIS INI
+        var skriningId = $(this).data('skrining-id');
 
+<<<<<<< HEAD
                 $.ajax({
                     url: "{{ route('rekap_hasil_skrining.detail') }}",
                     method: 'GET',
@@ -259,8 +259,49 @@
                         detailPertanyaanContainer.html(
                             '<p class="text-danger">Gagal memuat detail pertanyaan.</p>');
                     }
+=======
+        // Hapus SweetAlert loading sementara untuk mempermudah debugging
+        // Swal.fire({
+        //     title: 'Memuat Detail Skrining',
+        //     text: 'Mohon tunggu...',
+        //     allowOutsideClick: false,
+        //     didOpen: () => {
+        //         Swal.showLoading();
+        //     }
+        // });
+
+        $.ajax({
+            url: "{{ route('rekap_hasil_skrining.detail') }}",
+            method: 'GET',
+            data: { skrining_id: skriningId },
+            success: function(response) {
+                console.log("AJAX Success Response:", response); // <-- TAMBAHKAN BARIS INI
+                Swal.close(); // Tutup loading jika berhasil
+
+                if (response.success) {
+                    // ... (kode untuk mengisi modal)
+                    // ... (kode untuk menampilkan modal)
+                    $('#detailRiwayatModal').modal('show');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: response.message || 'Terjadi kesalahan saat memuat detail.',
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                Swal.close(); // Tutup loading jika error
+                console.error("AJAX Error:", xhr.responseText); // <-- TAMBAHKAN BARIS INI
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Terjadi kesalahan saat mengambil detail skrining.',
+>>>>>>> 15f4ec85005f4ecbe10943595dcbff3c4117c5a5
                 });
-            });
+            }
+        });
+    });
 
             // Handler untuk tombol check DataTables status
             $('#checkDataTableStatus').on('click', function() {
