@@ -31,4 +31,12 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class, 'id_role');
     }
+
+     public function getRoleAttribute()
+    {
+        return $this->role()->first()->Nama_Role;
+    }
+
+    CONST ROLE_ADMIN = 'admin';
+    CONST ROLE_NAKES = 'nakes';
 }

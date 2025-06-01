@@ -26,9 +26,9 @@
               <div class="col-6 col-lg-3 mb-4">
                 <div class="card shadow text-center">
                   <div class="card-body">
-                    <h6 class="text-uppercase text-muted mb-2">Total Pasien</h6>
-                    <span class="h2 mb-0">{{ $jumlahPasien }}</span>
-                    {{-- <span class="small text-muted">+20%</span> --}}
+                    <h6 class="text-uppercase text-muted mb-2">Total Sales</h6>
+                    <span class="h2 mb-0">$12,600</span>
+                    <span class="small text-muted">+20%</span>
                     <span class="fe fe-arrow-up text-success fe-12"></span>
                   </div> <!-- .card-body -->
                 </div> <!-- .card -->

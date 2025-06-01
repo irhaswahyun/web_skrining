@@ -196,7 +196,7 @@ class RekapSkriningController extends Controller
 }
     public function getDetailSkrining(Request $request)
     {
-        $skriningId = $request->input('skrining_id');
+        $skriningId = $request->query('skrining_id');
 
         $skrining = Skrining::with([
             'pasien',
@@ -226,7 +226,7 @@ class RekapSkriningController extends Controller
         return response()->json([
             'success' => true,
             'skriningDetail' => [
-                'id' => $skrining->id,
+                // 'id' => $skrining->id,
                 'NIK' => $skrining->pasien->NIK ?? 'N/A',
                 'Nama_Pasien' => $skrining->pasien->Nama_Pasien ?? 'N/A',
                 'Nama_Petugas' => $skrining->Nama_Petugas,

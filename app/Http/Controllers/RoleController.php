@@ -2,14 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Role;
+use App\Models\Pasien;
+use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
 class RoleController extends Controller
 {
+    public function admin() {
+        // menampilkan jumlah data pasien
+        $jumlahPasien = Pasien::count();
+        return view('admin.adminDashboard', [
+            'title' => 'Dashboard Admin',
+            'jumlahPasien' => $jumlahPasien
+        ]);
+    }
+
+    public function nakes() {
+        return view('nakes.nakesDashboard', [
+            'title' => 'Dashboard Nakes'
+        ]);
+    }
+
     public function index(Request $request)
     {
         $query = Role::query();

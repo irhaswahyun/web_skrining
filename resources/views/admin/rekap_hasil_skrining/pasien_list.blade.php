@@ -3,8 +3,8 @@
 @section('title', 'Daftar Pasien Skrining')
 
 @push('styles')
-{{-- Optional: jika ada CSS spesifik halaman --}}
-{{-- <style>
+    {{-- Optional: jika ada CSS spesifik halaman --}}
+    {{-- <style>
     /* CSS khusus untuk halaman ini */
 </style> --}}
 @endpush
@@ -27,12 +27,12 @@
                     <div class="col-sm-6">
                         <h1 class="m-0">
                             Daftar Pasien Skrining "{{ $namaFormSkrining ?? 'Tidak Diketahui' }}"
-                            @if($wilayah && $wilayah !== 'Tidak Diketahui')
+                            @if ($wilayah && $wilayah !== 'Tidak Diketahui')
                                 di Wilayah "{{ $wilayah }}"
                             @elseif($wilayah === 'Tidak Diketahui')
                                 di Wilayah Tidak Diketahui
                             @endif
-                            @if($bulan && $tahun)
+                            @if ($bulan && $tahun)
                                 pada Bulan {{ \Carbon\Carbon::createFromDate($tahun, $bulan, 1)->isoFormat('MMMM') }}
                             @elseif($tahun)
                                 pada Tahun {{ $tahun }}
@@ -73,11 +73,11 @@
                                                 <th>No</th>
                                                 <th>NIK</th>
                                                 <th>Nama Pasien</th>
-                                                <th>Nama Petugas</th>
-                                                <th>Nama Skrining</th>
+                                                {{-- <th>Nama Petugas</th> --}}
+                                                {{-- <th>Nama Skrining</th> --}}
                                                 <th>Tanggal</th>
                                                 {{-- <th>Penyakit Terkait</th> --}} {{-- Di-komen karena tidak ada --}}
-                                                <th>Aksi</th>
+                                                {{-- <th>Aksi</th> --}}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -86,18 +86,21 @@
                                                     <td>{{ $index + 1 }}</td>
                                                     <td>{{ $skrining->pasien->NIK ?? 'N/A' }}</td>
                                                     <td>{{ $skrining->pasien->Nama_Pasien ?? 'N/A' }}</td>
-                                                    <td>{{ $skrining->Nama_Petugas }}</td>
-                                                    <td>{{ $skrining->formSkrining->nama_skrining ?? 'N/A' }}</td>
-                                                    <td>{{ \Carbon\Carbon::parse($skrining->Tanggal_Skrining)->format('d-m-Y') }}</td>
-                                                    {{-- <td>{{ $skrining->formSkrining->penyakit->Nama_Penyakit ?? 'Tidak Diketahui' }}</td> --}}
-                                                    <td>
-                                                        <button class="btn btn-sm btn-info btn-detail-skrining"
-                                                                data-skrining-id="{{ $skrining->id }}">Detail</button>
+                                                    {{-- <td>{{ $skrining->Nama_Petugas }}</td> --}}
+                                                    {{-- <td>{{ $skrining->formSkrining->nama_skrining ?? 'N/A' }}</td> --}}
+                                                    <td>{{ \Carbon\Carbon::parse($skrining->Tanggal_Skrining)->format('d-m-Y') }}
                                                     </td>
+                                                    {{-- <td>{{ $skrining->formSkrining->penyakit->Nama_Penyakit ?? 'Tidak Diketahui' }}</td> --}}
+                                                    {{-- <td>
+                                                        <button class="btn btn-sm btn-info btn-detail-skrining"
+                                                            data-skrining-id="{{ $skrining->id }}"
+                                                            >Detail</button>
+                                                    </td> --}}
                                                 </tr>
                                             @empty
                                                 <tr>
-                                                    <td colspan="6" class="text-center">Tidak ada pasien ditemukan.</td> {{-- Sesuaikan colspan menjadi 6 (jumlah kolom aktual) --}}
+                                                    <td colspan="6" class="text-center">Tidak ada pasien ditemukan.</td>
+                                                    {{-- Sesuaikan colspan menjadi 6 (jumlah kolom aktual) --}}
                                                 </tr>
                                             @endforelse
                                         </tbody>
@@ -179,11 +182,14 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'Error Inisialisasi DataTables!',
-                        text: 'Terjadi kesalahan saat menginisialisasi tabel: ' + e.message + '. Cek console browser untuk detail.',
+                        text: 'Terjadi kesalahan saat menginisialisasi tabel: ' + e.message +
+                            '. Cek console browser untuk detail.',
                     });
                 }
             } else {
-                console.error("jQuery DataTable is not a function. Pastikan jQuery dan DataTables dimuat dengan benar di main.blade.php.");
+                console.error(
+                    "jQuery DataTable is not a function. Pastikan jQuery dan DataTables dimuat dengan benar di main.blade.php."
+                );
                 Swal.fire({
                     icon: 'error',
                     title: 'DataTables Library Missing!',
@@ -210,11 +216,14 @@
                             $('#detail_riwayat_Nama_Pasien').text(skriningData.Nama_Pasien);
                             $('#detail_riwayat_Nama_Petugas').text(skriningData.Nama_Petugas);
                             $('#detail_riwayat_Nama_Skrining').text(skriningData.Nama_Skrining);
-                            $('#detail_riwayat_Nama_Penyakit').text(skriningData.Nama_Penyakit_Terkait);
-                            $('#detail_riwayat_Tanggal_Skrining').text(skriningData.Tanggal_Skrining);
+                            $('#detail_riwayat_Nama_Penyakit').text(skriningData
+                                .Nama_Penyakit_Terkait);
+                            $('#detail_riwayat_Tanggal_Skrining').text(skriningData
+                                .Tanggal_Skrining);
 
                             detailPertanyaanContainer.empty();
-                            if (skriningData.detail_jawaban && skriningData.detail_jawaban.length > 0) {
+                            if (skriningData.detail_jawaban && skriningData.detail_jawaban
+                                .length > 0) {
                                 $.each(skriningData.detail_jawaban, function(key, value) {
                                     var answerContent = value.jawaban || '-';
                                     var questionItem = `
@@ -226,7 +235,8 @@
                                     detailPertanyaanContainer.append(questionItem);
                                 });
                             } else {
-                                detailPertanyaanContainer.html('<p>Tidak ada pertanyaan terkait.</p>');
+                                detailPertanyaanContainer.html(
+                                    '<p>Tidak ada pertanyaan terkait.</p>');
                             }
 
                             $('#detailRiwayatModal').modal('show');
@@ -234,7 +244,8 @@
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error!',
-                                text: response.message || 'Data detail skrining tidak ditemukan.',
+                                text: response.message ||
+                                    'Data detail skrining tidak ditemukan.',
                             });
                         }
                     },
@@ -245,7 +256,8 @@
                             title: 'Gagal!',
                             text: 'Terjadi kesalahan saat mengambil detail skrining. Silakan coba lagi.',
                         });
-                        detailPertanyaanContainer.html('<p class="text-danger">Gagal memuat detail pertanyaan.</p>');
+                        detailPertanyaanContainer.html(
+                            '<p class="text-danger">Gagal memuat detail pertanyaan.</p>');
                     }
                 });
             });
