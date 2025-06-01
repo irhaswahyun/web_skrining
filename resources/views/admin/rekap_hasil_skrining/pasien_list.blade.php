@@ -67,8 +67,8 @@
                                 {{-- <button id="checkDataTableStatus" class="btn btn-sm btn-outline-primary mb-3">Check DataTables Status</button> --}}
 
                                 <div class="table-responsive">
-                                    <table id="pasienSkriningTable" class="table table-bordered table-hover">
-                                        <thead>
+                                    <table id="pasienSkriningTable" class="table table-custom">
+                                        <thead class="thead-light">
                                             <tr>
                                                 <th>No</th>
                                                 <th>NIK</th>
@@ -91,8 +91,7 @@
                                                     <td>{{ \Carbon\Carbon::parse($skrining->Tanggal_Skrining)->format('d-m-Y') }}</td>
                                                     {{-- <td>{{ $skrining->formSkrining->penyakit->Nama_Penyakit ?? 'Tidak Diketahui' }}</td> --}}
                                                     <td>
-                                                        <button class="btn btn-sm btn-info btn-detail-skrining"
-                                                                data-skrining-id="{{ $skrining->id }}">Detail</button>
+                                                        <button class="btn btn-sm btn-info btn-detail-skrining">Detail</button>
                                                     </td>
                                                 </tr>
                                             @empty
@@ -112,12 +111,12 @@
     </div>
 
     {{-- MODAL DETAIL RIWAYAT SKRINING (tetap sama) --}}
-    <div class="modal fade" id="detailRiwayatModal" tabindex="-1" role="dialog" aria-labelledby="detailRiwayatModalLabel"
+    <div class="modal fade" id="detailRiwayatModal" tabindex="-1" role="dialog" aria-labelledby="detailRiwayatModal"
         aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="detailRiwayatModalLabel">Detail Riwayat Skrining</h5>
+                    <h5 class="modal-title" id="detailRiwayatModal"> Detail Modal</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -191,64 +190,52 @@
                 });
             }
 
-            // Handler untuk tombol detail skrining
-            $(document).on('click', '.btn-detail-skrining', function() {
-                var skriningId = $(this).data('skrining-id');
-                var detailPertanyaanContainer = $('#detail_riwayat_daftar_pertanyaan_formatted');
-                detailPertanyaanContainer.empty().append('<p>Memuat pertanyaan...</p>');
+             // Event untuk tombol "Detail" di Rekap Hasil Skrining (pasien-list)
+    $(document).on('click', '.btn-detail-skrining', function() {
+        console.log("Tombol detail diklik!"); // <-- TAMBAHKAN BARIS INI
+        var skriningId = $(this).data('skrining-id');
 
-                $.ajax({
-                    url: "{{ route('rekap_hasil_skrining.detail') }}",
-                    method: 'GET',
-                    data: {
-                        skrining_id: skriningId
-                    },
-                    success: function(response) {
-                        if (response.success && response.skriningDetail) {
-                            var skriningData = response.skriningDetail;
-                            $('#detail_riwayat_NIK').text(skriningData.NIK);
-                            $('#detail_riwayat_Nama_Pasien').text(skriningData.Nama_Pasien);
-                            $('#detail_riwayat_Nama_Petugas').text(skriningData.Nama_Petugas);
-                            $('#detail_riwayat_Nama_Skrining').text(skriningData.Nama_Skrining);
-                            $('#detail_riwayat_Nama_Penyakit').text(skriningData.Nama_Penyakit_Terkait);
-                            $('#detail_riwayat_Tanggal_Skrining').text(skriningData.Tanggal_Skrining);
+        // Hapus SweetAlert loading sementara untuk mempermudah debugging
+        // Swal.fire({
+        //     title: 'Memuat Detail Skrining',
+        //     text: 'Mohon tunggu...',
+        //     allowOutsideClick: false,
+        //     didOpen: () => {
+        //         Swal.showLoading();
+        //     }
+        // });
 
-                            detailPertanyaanContainer.empty();
-                            if (skriningData.detail_jawaban && skriningData.detail_jawaban.length > 0) {
-                                $.each(skriningData.detail_jawaban, function(key, value) {
-                                    var answerContent = value.jawaban || '-';
-                                    var questionItem = `
-                                        <div class="form-group mb-3">
-                                            <label>${value.pertanyaan}</label>
-                                            <p class="form-control-plaintext border rounded p-2 bg-light">${answerContent}</p>
-                                        </div>
-                                    `;
-                                    detailPertanyaanContainer.append(questionItem);
-                                });
-                            } else {
-                                detailPertanyaanContainer.html('<p>Tidak ada pertanyaan terkait.</p>');
-                            }
+        $.ajax({
+            url: "{{ route('rekap_hasil_skrining.detail') }}",
+            method: 'GET',
+            data: { skrining_id: skriningId },
+            success: function(response) {
+                console.log("AJAX Success Response:", response); // <-- TAMBAHKAN BARIS INI
+                Swal.close(); // Tutup loading jika berhasil
 
-                            $('#detailRiwayatModal').modal('show');
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error!',
-                                text: response.message || 'Data detail skrining tidak ditemukan.',
-                            });
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Error fetching detail skrining:", error);
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Gagal!',
-                            text: 'Terjadi kesalahan saat mengambil detail skrining. Silakan coba lagi.',
-                        });
-                        detailPertanyaanContainer.html('<p class="text-danger">Gagal memuat detail pertanyaan.</p>');
-                    }
+                if (response.success) {
+                    // ... (kode untuk mengisi modal)
+                    // ... (kode untuk menampilkan modal)
+                    $('#detailRiwayatModal').modal('show');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: response.message || 'Terjadi kesalahan saat memuat detail.',
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                Swal.close(); // Tutup loading jika error
+                console.error("AJAX Error:", xhr.responseText); // <-- TAMBAHKAN BARIS INI
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Terjadi kesalahan saat mengambil detail skrining.',
                 });
-            });
+            }
+        });
+    });
 
             // Handler untuk tombol check DataTables status
             $('#checkDataTableStatus').on('click', function() {
