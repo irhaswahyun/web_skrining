@@ -62,16 +62,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::get('/delete/{id}', [PenggunaController::class, 'delete'])->name('pengguna.delete');
     });
 
-    // PASIEN ROUTES
-    Route::prefix('pasien')->group(function () {
-        Route::get('/', [PasienController::class, 'index'])->name('pasien.index');
-        Route::post('/store', [PasienController::class, 'store'])->name('pasien.store');
-        Route::get('/edit/{id}', [PasienController::class, 'edit'])->name('pasien.edit');
-        Route::put('/update/{id}', [PasienController::class, 'update'])->name('pasien.update');
-        Route::get('/delete/{id}', [PasienController::class, 'delete'])->name('pasien.delete');
-        Route::get('/get-data', [PasienController::class, 'getPasienData'])->name('pasien.getPasienData');
-    });
-
     // DAFTAR PENYAKIT ROUTES
     Route::prefix('daftar-penyakit')->group(function () {
         Route::get('/', [Daftar_PenyakitController::class, 'index'])->name('daftar_penyakit.index');
@@ -100,7 +90,22 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::delete('/delete/{formSkrining}', [FormController::class, 'delete'])->name('form_skrining.delete');
     });
 
-    // SKRINING ROUTES
+});
+
+Route::middleware(['auth', 'role:nakes'])->group(function () {
+    Route::get('/nakes', [RoleController::class, 'nakes'])->name('nakes.dashboard');
+
+    // PASIEN ROUTES
+    Route::prefix('pasien')->group(function () {
+        Route::get('/', [PasienController::class, 'index'])->name('pasien.index');
+        Route::post('/store', [PasienController::class, 'store'])->name('pasien.store');
+        Route::get('/edit/{id}', [PasienController::class, 'edit'])->name('pasien.edit');
+        Route::put('/update/{id}', [PasienController::class, 'update'])->name('pasien.update');
+        Route::get('/delete/{id}', [PasienController::class, 'delete'])->name('pasien.delete');
+        Route::get('/get-data', [PasienController::class, 'getPasienData'])->name('pasien.getPasienData');
+    });
+
+     // SKRINING ROUTES
     Route::prefix('skrining')->group(function () {
         Route::get('/', [SkriningController::class, 'index'])->name('skrining.index');
         Route::post('/store', [SkriningController::class, 'store'])->name('skrining.store');
@@ -142,7 +147,4 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         // Rute untuk menampilkan daftar pasien skrining
         Route::get('/pasien-list', [RekapSkriningController::class, 'pasienList'])->name('pasien_list');
     });
-});
-Route::middleware(['auth', 'role:nakes'])->group(function () {
-    Route::get('/nakes', [RoleController::class, 'nakes'])->name('nakes.dashboard');
 });

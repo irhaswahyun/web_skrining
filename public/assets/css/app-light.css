@@ -12343,3 +12343,46 @@ a.uppy-Dashboard-poweredBy {
     right: -100px;
     transform: rotate(20deg);
 }
+
+
+/* Styling untuk ikon di dalam kartu (Font Awesome) */
+.card-icon {
+    font-size: 30px; /* Ukuran font untuk ikon */
+    color: #00a87f; /* Warna ikon (hijau) */
+    background-color: #e6f7ed; /* Latar belakang ringan untuk ikon */
+    padding: 10px;
+    border-radius: 8px; /* Sudut membulat */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px; /* Ukuran kotak ikon */
+    height: 50px;
+    flex-shrink: 0; /* Pastikan ikon tidak menyusut */
+}
+
+/* Penyesuaian untuk kartu agar ikon dan teks lebih rapi */
+.card-body.d-flex {
+    padding: 15px; /* Sesuaikan padding */
+}
+
+.card-body.d-flex .text-muted {
+    font-size: 0.85em; /* Sedikit perkecil font label */
+    margin-bottom: 5px !important; /* Kurangi margin bawah label */
+}
+
+/* Jika Anda memiliki .green-card untuk kartu dinamis, pastikan warnanya konsisten */
+.card.green-card .card-icon {
+    /* Sesuaikan warna ikon jika green-card punya skema warna berbeda */
+    /* Contoh: color: #1a73e8; background-color: #e8f0fe; */
+}
+
+/* Untuk tampilan di layar kecil, jadikan tumpuk vertikal */
+@media (max-width: 767.98px) {
+    .card-body.d-flex.flex-column.flex-md-row {
+        flex-direction: column !important;
+    }
+    .card-icon.mb-2.mb-md-0 {
+        margin-right: 0 !important;
+        margin-bottom: 10px !important; /* Tambahkan margin bawah saat tumpuk */
+    }
+}

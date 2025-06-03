@@ -44,13 +44,6 @@
             </a>
         </ul>
         <ul class="navbar-nav flex-fill w-100 mb-2">
-            <a href="{{ route('pasien.index') }}"
-                class="nav-link {{ request()->routeIs('pasien.index') ? 'active' : '' }}">
-                <i class="fe fe-layers fe-16"></i>
-                <span class="ml-3 item-text">Manajemen Pasien</span>
-            </a>
-        </ul>
-        <ul class="navbar-nav flex-fill w-100 mb-2">
             <li class="nav-item dropdown">
                 <a href="#forms" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle nav-link">
                     <i class="fe fe-credit-card fe-16"></i>
@@ -75,6 +68,21 @@
                 </ul>
             </li>
         </ul>
+        @elseif($user->role == App\Models\User::ROLE_NAKES)
+        <ul class="navbar-nav flex-fill w-100 mb-2">
+            <a href="{{ route('nakes.dashboard') }}"
+                class="nav-link {{ request()->routeIs('nakes.dashboard') ? 'active' : '' }}">
+                <i class="fe fe-home fe-16"></i>
+                <span class="ml-3 item-text">Dashboard</span>
+            </a>
+        </ul>
+         <ul class="navbar-nav flex-fill w-100 mb-2">
+            <a href="{{ route('pasien.index') }}"
+                class="nav-link {{ request()->routeIs('pasien.index') ? 'active' : '' }}">
+                <i class="fe fe-layers fe-16"></i>
+                <span class="ml-3 item-text">Manajemen Pasien</span>
+            </a>
+        </ul>
         <ul class="navbar-nav flex-fill w-100 mb-2">
             <a href="{{ route('skrining.index') }}"
                 class="nav-link {{ request()->routeIs('skrining.index') ? 'active' : '' }}">
@@ -94,14 +102,6 @@
                 class="nav-link {{ request()->routeIs('rekap_hasil_skrining.index') ? 'active' : '' }}">
                 <i class="fe fe-pie-chart fe-16"></i>
                 <span class="ml-3 item-text">Rekap Hasil Skrining</span>
-            </a>
-        </ul>
-        @elseif($user->role == App\Models\User::ROLE_NAKES)
-        <ul class="navbar-nav flex-fill w-100 mb-2">
-            <a href="{{ route('nakes.dashboard') }}"
-                class="nav-link {{ request()->routeIs('nakes.dashboard') ? 'active' : '' }}">
-                <i class="fe fe-home fe-16"></i>
-                <span class="ml-3 item-text">Dashboard</span>
             </a>
         </ul>
         @endif

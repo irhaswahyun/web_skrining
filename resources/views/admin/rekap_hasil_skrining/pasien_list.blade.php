@@ -26,7 +26,7 @@
                 <div class="row mb-2">
                     <div class="col-sm-6">
                         <h1 class="m-0">
-                            Daftar Pasien Skrining "{{ $namaFormSkrining ?? 'Tidak Diketahui' }}"
+                            Daftar Pasien "{{ $namaFormSkrining ?? 'Tidak Diketahui' }}"
                             @if ($wilayah && $wilayah !== 'Tidak Diketahui')
                                 di Wilayah "{{ $wilayah }}"
                             @elseif($wilayah === 'Tidak Diketahui')
@@ -40,7 +40,7 @@
                         </h1>
                     </div>
                     <div class="col-sm-6 text-right">
-                        <a href="{{ route('rekap_hasil_skrining.index') }}" class="btn btn-secondary">
+                        <a href="{{ route('rekap_hasil_skrining.index') }}" class="btn btn-tambah-baru">
                             <i data-feather="arrow-left"></i> Kembali ke Rekap
                         </a>
                     </div>
@@ -53,9 +53,9 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
-                            <div class="card-header">
+                            {{-- <div class="card-header">
                                 <h3 class="card-title">Tabel Pasien Skrining</h3>
-                            </div>
+                            </div> --}}
                             <div class="card-body">
                                 @if (session('error'))
                                     <div class="alert alert-danger" role="alert">
@@ -202,7 +202,6 @@
         console.log("Tombol detail diklik!"); // <-- TAMBAHKAN BARIS INI
         var skriningId = $(this).data('skrining-id');
 
-<<<<<<< HEAD
                 $.ajax({
                     url: "{{ route('rekap_hasil_skrining.detail') }}",
                     method: 'GET',
@@ -259,45 +258,6 @@
                         detailPertanyaanContainer.html(
                             '<p class="text-danger">Gagal memuat detail pertanyaan.</p>');
                     }
-=======
-        // Hapus SweetAlert loading sementara untuk mempermudah debugging
-        // Swal.fire({
-        //     title: 'Memuat Detail Skrining',
-        //     text: 'Mohon tunggu...',
-        //     allowOutsideClick: false,
-        //     didOpen: () => {
-        //         Swal.showLoading();
-        //     }
-        // });
-
-        $.ajax({
-            url: "{{ route('rekap_hasil_skrining.detail') }}",
-            method: 'GET',
-            data: { skrining_id: skriningId },
-            success: function(response) {
-                console.log("AJAX Success Response:", response); // <-- TAMBAHKAN BARIS INI
-                Swal.close(); // Tutup loading jika berhasil
-
-                if (response.success) {
-                    // ... (kode untuk mengisi modal)
-                    // ... (kode untuk menampilkan modal)
-                    $('#detailRiwayatModal').modal('show');
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal!',
-                        text: response.message || 'Terjadi kesalahan saat memuat detail.',
-                    });
-                }
-            },
-            error: function(xhr, status, error) {
-                Swal.close(); // Tutup loading jika error
-                console.error("AJAX Error:", xhr.responseText); // <-- TAMBAHKAN BARIS INI
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'Terjadi kesalahan saat mengambil detail skrining.',
->>>>>>> 15f4ec85005f4ecbe10943595dcbff3c4117c5a5
                 });
             }
         });

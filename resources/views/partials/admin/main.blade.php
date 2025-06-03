@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="{{ asset('favicon.ico') }}"> {{-- Pastikan favicon.ico ada di public/ --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title }}</title>
+    <title>Web Skrining Puskesmas Mojopanggung</title>
     <link rel="stylesheet" href="{{ asset('assets/css/simplebar.css') }}">
     <link
         href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100;0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,600;1,700;1,800;1,900&display=swap"
@@ -27,6 +27,11 @@
     {{-- <link rel="stylesheet" href="{{ asset('assets/css/admin.css') }}"> --}}
     {{-- Pastikan ini adalah versi select2 yang ingin Anda gunakan. Jika ada versi lokal di assets/css/select2.css, pertimbangkan untuk menghapus CDN ini atau sebaliknya --}}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+   
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" 
+    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" 
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
 
     {{-- ================================================================================= --}}
     {{-- END CSS SECTION                                                                   --}}
@@ -57,29 +62,15 @@
     {{-- START JAVASCRIPT SECTION                                                          --}}
     {{-- ================================================================================= --}}
 
-<<<<<<< HEAD
-            $('#pertanyaan_ids').select2(); // Aktifkan Select2 pada select dengan id pertanyaan_ids
-
-        });
-    </script>
-    {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script> --}}
-=======
-    {{-- 1. JQUERY (HANYA SATU VERSI) --}}
+   
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    {{-- 2. BOOTSTRAP BUNDLE (pilih salah satu CDN atau lokal, CDN lebih disarankan untuk versi terbaru) --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    {{-- <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script> --}} {{-- Hapus atau komentari ini jika menggunakan CDN bundle --}}
-
-    {{-- 3. LIBRARY PENDUKUNG UTAMA & PLUGINS YANG MUNGKIN TIDAK TERGANTUNG PADA 'colors'/'base' --}}
->>>>>>> 15f4ec85005f4ecbe10943595dcbff3c4117c5a5
     <script src="{{ asset('assets/js/popper.min.js') }}"></script>
     <script src="{{ asset('assets/js/moment.min.js') }}"></script>
     <script src="{{ asset('assets/js/simplebar.min.js') }}"></script>
     <script src='{{ asset('assets/js/daterangepicker.js') }}'></script>
     <script src='{{ asset('assets/js/jquery.stickOnScroll.js') }}'></script>
-
+char
     {{-- Tinycolor HARUS dimuat sebelum config.js --}}
     <script src="{{ asset('assets/js/tinycolor-min.js') }}"></script>
 
