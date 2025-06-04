@@ -38,12 +38,22 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+
+    // Rute dashboard umum untuk kedua role
+    Route::get('/dashboard', [RoleController::class, 'dashboard'])->name('dashboard');
+
+    // Rute untuk AJAX Chart Data (bisa diakses oleh admin atau nakes, filter di controller)
+    Route::get('/chart-data', [RoleController::class, 'getSkriningDataForChart'])->name('chart.data');
+
+
 require __DIR__ . '/auth.php';
 
 // ADMIN ROUTES
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin', [RoleController::class, 'admin'])->name('admin.dashboard');
-
+    Route::get('/admin', function () { // Arahkan admin ke rute dashboard umum
+        return redirect()->route('dashboard');
+    })->name('admin.dashboard');
+    
     // ROLE ROUTES
     Route::prefix('role')->group(function () {
         Route::get('/', [RoleController::class, 'index'])->name('role.index');
@@ -93,7 +103,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:nakes'])->group(function () {
-    Route::get('/nakes', [RoleController::class, 'nakes'])->name('nakes.dashboard');
+    Route::get('/nakes', function () { // Arahkan nakes ke rute dashboard umum
+        return redirect()->route('dashboard');
+    })->name('nakes.dashboard');
+
 
     // PASIEN ROUTES
     Route::prefix('pasien')->group(function () {
