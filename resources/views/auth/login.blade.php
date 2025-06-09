@@ -22,7 +22,7 @@
         <!-- Submit Button -->
         <div>
             <button type="submit" class="btn btn-gradient w-full py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition">
-                CONTINUE
+               MASUK
             </button>
         </div>
     </form>

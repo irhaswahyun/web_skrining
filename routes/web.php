@@ -60,7 +60,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::post('/store', [RoleController::class, 'store'])->name('role.store');
         Route::get('/edit/{id}', [RoleController::class, 'edit'])->name('role.edit');
         Route::put('/update/{id}', [RoleController::class, 'update'])->name('role.update');
-        Route::get('/delete/{id}', [RoleController::class, 'delete'])->name('role.delete');
+        Route::delete('/delete/{id}', [RoleController::class, 'delete'])->name('role.delete');
     });
 
     // PENGGUNA ROUTES
@@ -69,7 +69,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::post('/store', [PenggunaController::class, 'store'])->name('pengguna.store');
         Route::get('/edit/{id}', [PenggunaController::class, 'edit'])->name('pengguna.edit');
         Route::put('/update/{id}', [PenggunaController::class, 'update'])->name('pengguna.update');
-        Route::get('/delete/{id}', [PenggunaController::class, 'delete'])->name('pengguna.delete');
+        Route::delete('/delete/{id}', [PenggunaController::class, 'delete'])->name('pengguna.delete');
     });
 
     // DAFTAR PENYAKIT ROUTES
@@ -78,7 +78,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::post('/store', [Daftar_PenyakitController::class, 'store'])->name('daftar_penyakit.store');
         Route::get('/edit/{id}', [Daftar_PenyakitController::class, 'edit'])->name('daftar_penyakit.edit');
         Route::put('/update/{id}', [Daftar_PenyakitController::class, 'update'])->name('daftar_penyakit.update');
-        Route::get('/delete/{id}', [Daftar_PenyakitController::class, 'delete'])->name('daftar_penyakit.delete');
+        Route::delete('/delete/{id}', [Daftar_PenyakitController::class, 'delete'])->name('daftar_penyakit.delete');
     });
 
     // DAFTAR PERTANYAAN ROUTES
@@ -87,7 +87,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::post('/store', [Daftar_PertanyaanController::class, 'store'])->name('daftar_pertanyaan.store');
         Route::get('/edit/{id}', [Daftar_PertanyaanController::class, 'edit'])->name('daftar_pertanyaan.edit');
         Route::put('/update/{id}', [Daftar_PertanyaanController::class, 'update'])->name('daftar_pertanyaan.update');
-        Route::get('/delete/{id}', [Daftar_PertanyaanController::class, 'delete'])->name('daftar_pertanyaan.delete');
+        Route::delete('/delete/{id}', [Daftar_PertanyaanController::class, 'delete'])->name('daftar_pertanyaan.delete');
     });
 
     // FORM SKRINING ROUTES
@@ -114,7 +114,7 @@ Route::middleware(['auth', 'role:nakes'])->group(function () {
         Route::post('/store', [PasienController::class, 'store'])->name('pasien.store');
         Route::get('/edit/{id}', [PasienController::class, 'edit'])->name('pasien.edit');
         Route::put('/update/{id}', [PasienController::class, 'update'])->name('pasien.update');
-        Route::get('/delete/{id}', [PasienController::class, 'delete'])->name('pasien.delete');
+        Route::delete('/delete/{id}', [PasienController::class, 'delete'])->name('pasien.delete');
         Route::get('/get-data', [PasienController::class, 'getPasienData'])->name('pasien.getPasienData');
     });
 
@@ -135,21 +135,6 @@ Route::middleware(['auth', 'role:nakes'])->group(function () {
         Route::get('/get-history', [RiwayatSkriningController::class, 'getHistory'])->name('riwayat_skrining.get_history');
     });
 
-    // // REKAP HASIL SKRINING ROUTES
-    // Route::prefix('rekap-hasil-skrining')->group(function () {
-    //     // Route::get('/', [RekapSkriningController::class, 'index'])->name('rekap_hasil_skrining.index');
-    //     // Route::get('/summary', [RekapSkriningController::class, 'getRekapSummary'])->name('rekap_hasil_skrining.summary');
-    //     // Route::get('/pasien', [RekapSkriningController::class, 'getPasienByPenyakit'])->name('rekap_hasil_skrining.pasien');
-    //     // Route::get('/detail', [RekapSkriningController::class, 'getDetailSkrining'])->name('rekap_hasil_skrining.detail');
-    //     // Route::get('/pasien-list', [PasienSkriningController::class, 'index'])->name('rekap_hasil_skrining.pasien_list');
-    //     // Rute detail skrining tetap di RekapSkriningController karena itu adalah AJAX call untuk detail satu record
-    //     // Route::get('/detail', [RekapSkriningController::class, 'getDetailSkrining'])->name('rekap_hasil_skrining.detail');
-    //         Route::get('/', [RekapSkriningController::class, 'index'])->name('rekap_hasil_skrining.index');
-    //         Route::get('/summary', [RekapSkriningController::class, 'getSummary'])->name('rekap_hasil_skrining.summary');
-    //         // Route::get('/pasien-list', [RekapSkriningController::class, 'pasienList'])->name('rekap_hasil_skrining.pasien_list');
-    //         Route::get('/pasien-list', [PasienSkriningController::class, 'index'])->name('rekap_hasil_skrining.pasien_list');
-    //         Route::get('/detail', [RekapSkriningController::class, 'getDetailSkrining'])->name('rekap_hasil_skrining.detail'); // Rute untuk detail skrining
-    // });
 
     // Pastikan rute rekap skrining ini ada dan sesuai
     Route::prefix('rekap-hasil-skrining')->name('rekap_hasil_skrining.')->group(function () {

@@ -12226,7 +12226,7 @@ a.uppy-Dashboard-poweredBy {
 
 @media (min-width: 576px) {
   .modal-dialog {
-      max-width: 500px; /* Ubah sesuai lebar yang Anda inginkan */
+      max-width: 800px; /* Ubah sesuai lebar yang Anda inginkan */
       margin: 30px auto; /* Memberikan margin atas dan bawah */
   }
 }

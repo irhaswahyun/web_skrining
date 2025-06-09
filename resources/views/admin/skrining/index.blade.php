@@ -60,18 +60,16 @@
                                                     <td>{{ $skrining->Nama_Petugas }}</td>
                                                     <td>{{ $skrining->pasien->NIK ?? '-' }}</td>
                                                     <td>{{ $skrining->Nama_Pasien }}</td>
-                                                    <td>{{ $skrining->Tanggal_Skrining->format('Y-m-d') }}</td>
+                                                    <td>{{ $skrining->Tanggal_Skrining->format('d-m-Y') }}</td>
                                                     <td>{{ $skrining->formSkrining->nama_skrining ?? '-' }}</td>
                                                     <td>
-                                                        {{-- <button class="btn btn-sm btn-info btn-detail"
-                                                                data-id="{{ $skrining->id }}">Detail</button> --}}
                                                         <button class="btn btn-sm btn-primary btn-edit"
-                                                                data-id="{{ $skrining->id }}">
+                                                            data-id="{{ $skrining->id }}">
                                                             Edit
                                                         </button>
                                                         <button class="btn btn-danger btn-sm btn-delete"
-                                                                data-skrining-id="{{ $skrining->id }}"
-                                                                data-skrining-nama="{{ $skrining->Nama_Pasien }}">
+                                                            data-skrining-id="{{ $skrining->id }}"
+                                                            data-skrining-nama="{{ $skrining->Nama_Pasien }}">
                                                             Hapus
                                                         </button>
                                                     </td>
@@ -111,6 +109,7 @@
                                 <label for="NIK_Pasien">NIK Pasien</label>
                                 <input type="text" name="NIK_Pasien" id="NIK_Pasien" class="form-control"
                                     placeholder="Masukkan NIK Pasien" required>
+                                <small id="nik_length_info_tambah" class="form-text text-muted"></small>
                             </div>
                             <div class="form-group">
                                 <label for="Nama_Pasien">Nama Pasien</label>
@@ -119,7 +118,8 @@
                             </div>
                             <div class="form-group">
                                 <label for="Tanggal_Skrining">Tanggal Skrining</label>
-                                <input type="date" name="Tanggal_Skrining" class="form-control" required>
+                                {{-- PASTIKAN TYPE="TEXT" untuk menggunakan jQuery UI Datepicker --}}
+                                <input type="text" name="Tanggal_Skrining" id="tanggalSkriningTambah" class="form-control" placeholder="dd-mm-yyyy" required>
                             </div>
                             <div class="form-group">
                                 <label for="id_form_skrining">Formulir Skrining</label>
@@ -172,6 +172,7 @@
                                 <label for="edit_NIK_Pasien">NIK Pasien</label>
                                 <input type="text" class="form-control" id="edit_NIK_Pasien" name="NIK_Pasien"
                                     placeholder="Masukkan NIK Pasien" required>
+                                <small id="nik_length_info_edit" class="form-text text-muted"></small>
                             </div>
                             <div class="form-group">
                                 <label for="edit_Nama_Pasien">Nama Pasien</label>
@@ -180,8 +181,8 @@
                             </div>
                             <div class="form-group">
                                 <label for="edit_Tanggal_Skrining">Tanggal Skrining</label>
-                                <input type="date" class="form-control" id="edit_Tanggal_Skrining" name="Tanggal_Skrining"
-                                    required>
+                                {{-- PASTIKAN TYPE="TEXT" untuk menggunakan jQuery UI Datepicker --}}
+                                <input type="text" class="form-control" id="edit_Tanggal_Skrining" name="Tanggal_Skrining" placeholder="dd-mm-yyyy" required>
                             </div>
                             <div class="form-group">
                                 <label for="edit_id_form_skrining">Formulir Skrining</label>
@@ -207,39 +208,6 @@
                 </div>
             </div>
         </div>
-
-        {{-- MODAL DETAIL FORM SKRINING --}}
-        {{-- <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="detailModalLabel">Detail Form Skrining</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <h6 class="font-weight-bold">Nama Petugas:</h6>
-                        <p id="detail_Nama_Petugas"></p>
-                        <h6 class="font-weight-bold">NIK Pasien:</h6>
-                        <p id="detail_NIK_Pasien"></p>
-                        <h6 class="font-weight-bold">Nama Pasien:</h6>
-                        <p id="detail_Nama_Pasien"></p>
-                        <h6 class="font-weight-bold">Tanggal Skrining:</h6>
-                        <p id="detail_Tanggal_Skrining"></p>
-                        <h6 class="font-weight-bold">Nama Skrining:</h6>
-                        <p id="detail_nama_skrining"></p>
-                        <h6 class="font-weight-bold">Pertanyaan:</h6>
-                        <ul id="detail_daftar_pertanyaan">
-                        </ul>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                    </div>
-                </div>
-            </div>
-        </div> --}}
 
         {{-- MODAL KONFIRMASI HAPUS --}}
         <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog"
@@ -269,397 +237,583 @@
     @endsection
 
     @section('scripts')
-        <script>
-            $(document).ready(function() {
-                // Event untuk tombol "Tambah Baru"
-                $('#tambahSkriningBaru').click(function() {
-                    $('#tambahSkriningForm')[0].reset();
-                    $('#pertanyaan_list_tambah').html('<p>Pilih formulir skrining untuk memuat pertanyaan.</p>');
-                    $('#tambahSkriningModal').modal('show');
-                });
+<script>
+    $(document).ready(function() {
+        const NIK_LENGTH = 16; // Konstanta untuk panjang NIK
 
-                // Event untuk NIK Pasien di Modal Tambah
-                $('#NIK_Pasien').on('change', function() {
-                    var nik = $(this).val();
+        // Fungsi untuk mengupdate info panjang NIK
+        function updateNikLengthInfo(inputId, infoId) {
+            const currentLength = $(inputId).val().length;
+            const infoElement = $(infoId);
+            infoElement.text(`${currentLength}/${NIK_LENGTH} digit`);
 
-                    $.ajax({
-                        url: "{{ route('pasien.getPasienData') }}",
-                        method: 'GET',
-                        data: {
-                            NIK: nik
-                        },
-                        success: function(response) {
-                            if (response.success) {
-                                $('#Nama_Pasien').val(response.data.Nama_Pasien);
-                            } else {
-                                $('#Nama_Pasien').val('');
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error!',
-                                    text: response.message,
-                                });
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.error("Error fetching pasien data:", error);
-                            console.log(xhr.responseText);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error!',
-                                text: 'Terjadi kesalahan saat mencari data pasien. Silakan cek konsol browser.',
-                            });
-                        }
-                    });
-                });
+            if (currentLength === NIK_LENGTH) {
+                infoElement.removeClass('text-muted text-danger').addClass('text-success');
+            } else if (currentLength > NIK_LENGTH) {
+                infoElement.removeClass('text-muted text-success').addClass('text-danger');
+            } else {
+                infoElement.removeClass('text-success text-danger').addClass('text-muted');
+            }
+        }
 
-                // Event untuk id_form_skrining di Modal Tambah
-                $('#id_form_skrining').on('change', function() {
-                    var formSkriningId = $(this).val();
-                    var pertanyaanContainer = $('#pertanyaan_list_tambah');
+        // Panggil fungsi update saat input NIK berubah di modal Tambah
+        $('#NIK_Pasien').on('input', function() {
+            updateNikLengthInfo('#NIK_Pasien', '#nik_length_info_tambah');
+        });
 
-                    pertanyaanContainer.empty();
-                    pertanyaanContainer.html('<p>Memuat pertanyaan...</p>');
+        // Panggil fungsi update saat input NIK berubah di modal Edit
+        $('#edit_NIK_Pasien').on('input', function() {
+            updateNikLengthInfo('#edit_NIK_Pasien', '#nik_length_info_edit');
+        });
 
-                    if (formSkriningId) {
-                        $.ajax({
-                            url: "{{ route('skrining.get-pertanyaan-by-form-skrining', ':id') }}".replace(':id', formSkriningId),
-                            method: 'GET',
-                            success: function(response) {
-                                pertanyaanContainer.empty();
+        // Inisialisasi info NIK saat modal Tambah dibuka (jika ada nilai default atau untuk memastikan tampil)
+        $('#tambahSkriningModal').on('shown.bs.modal', function () {
+            updateNikLengthInfo('#NIK_Pasien', '#nik_length_info_tambah');
+        });
 
-                                if (response && response.length > 0) {
-                                    $.each(response, function(index, pertanyaan) {
-                                        var inputHtml = `<input type="text" class="form-control" name="jawaban[${pertanyaan.id}]" placeholder="Masukkan jawaban..." required>`;
-                                        var pertanyaanItem = `
-                                            <div class="form-group mb-3">
-                                                <label>${pertanyaan.pertanyaan}</label>
-                                                ${inputHtml}
-                                            </div>
-                                        `;
-                                        pertanyaanContainer.append(pertanyaanItem);
-                                    });
-                                } else {
-                                    pertanyaanContainer.html('<p>Tidak ada pertanyaan untuk formulir ini.</p>');
+        // Inisialisasi info NIK saat modal Edit dibuka
+        $('#editModal').on('shown.bs.modal', function () {
+            // Beri sedikit delay untuk memastikan NIK sudah terisi dari AJAX call
+            // Ini mungkin tidak lagi diperlukan jika loadPertanyaanEdit() dipanggil setelah semua terisi di success callback
+            // Namun, tetap jaga untuk kehati-hatian atau jika ada proses asinkron lain.
+            setTimeout(function() {
+                updateNikLengthInfo('#edit_NIK_Pasien', '#nik_length_info_edit');
+            }, 100);
+        });
+
+        // Inisialisasi Datepicker untuk modal Tambah
+        $('#tanggalSkriningTambah').datepicker({
+            dateFormat: 'dd-mm-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1945:2050',
+            showButtonPanel: true,
+            currentText: "Hari Ini",
+            closeText: "Selesai",
+            onClose: function(dateText, inst) {
+                if (dateText === '') {
+                    $(this).val('');
+                }
+                loadPertanyaanTambah();
+            }
+        });
+
+        // Inisialisasi Datepicker untuk modal Edit
+        $('#edit_Tanggal_Skrining').datepicker({
+            dateFormat: 'dd-mm-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: '1945:2050',
+            showButtonPanel: true,
+            currentText: "Hari Ini",
+            closeText: "Selesai",
+            onClose: function(dateText, inst) {
+                if (dateText === '') {
+                    $(this).val('');
+                }
+                loadPertanyaanEdit();
+            }
+        });
+
+        // Fungsi untuk memuat pertanyaan di modal Tambah
+        function loadPertanyaanTambah() {
+            var formSkriningId = $('#id_form_skrining').val();
+            var nikPasien = $('#NIK_Pasien').val();
+            // Format tanggal dari datepicker (dd-mm-yy) menjadi yyyy-mm-dd untuk backend
+            var tanggalSkriningFormatted = null;
+            var tanggalSkriningVal = $('#tanggalSkriningTambah').val();
+            if (tanggalSkriningVal) {
+                var parts = tanggalSkriningVal.split('-');
+                if (parts.length === 3) {
+                    tanggalSkriningFormatted = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                }
+            }
+
+            var pertanyaanContainer = $('#pertanyaan_list_tambah');
+            pertanyaanContainer.empty();
+            pertanyaanContainer.html('<p>Memuat pertanyaan...</p>');
+
+            // Pastikan semua input yang dibutuhkan ada sebelum memuat pertanyaan
+            if (formSkriningId && nikPasien && nikPasien.length === NIK_LENGTH && tanggalSkriningFormatted) {
+                $.ajax({
+                    url: "{{ route('skrining.get-pertanyaan-by-form-skrining', ':id') }}".replace(':id', formSkriningId),
+                    method: 'GET',
+                    data: {
+                        nik_pasien: nikPasien,
+                        tanggal_skrining: tanggalSkriningFormatted
+                    },
+                    success: function(response) {
+                        pertanyaanContainer.empty();
+
+                        if (response && response.length > 0) {
+                            $.each(response, function(index, pertanyaan) {
+                                var catatanHtml = '';
+                                if (pertanyaan.catatan) {
+                                    catatanHtml = `<small class="text-muted d-block mt-1 mb-2">Catatan: ${pertanyaan.catatan}</small>`;
                                 }
-                            },
-                            error: function(xhr, status, error) {
-                                console.error("Error fetching pertanyaan by form skrining:", error);
-                                console.log(xhr.responseText);
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error!',
-                                    text: 'Terjadi kesalahan saat memuat pertanyaan untuk formulir skrining.',
-                                });
-                                pertanyaanContainer.html('<p class="text-danger">Gagal memuat pertanyaan. Terjadi kesalahan.</p>');
-                            }
+                                // Mengisi value input dengan previous_answer jika ada
+                                var inputValue = pertanyaan.previous_answer !== null ? pertanyaan.previous_answer : '';
+                                var inputHtml = `<input type="text" class="form-control" name="jawaban[${pertanyaan.id}]" placeholder="Masukkan jawaban..." value="${inputValue}" required>`;
+                                var pertanyaanItem = `
+                                    <div class="form-group mb-3">
+                                        <label>${pertanyaan.pertanyaan}</label>
+                                        ${catatanHtml}
+                                        ${inputHtml}
+                                    </div>
+                                `;
+                                pertanyaanContainer.append(pertanyaanItem);
+                            });
+                        } else {
+                            pertanyaanContainer.html('<p>Tidak ada pertanyaan untuk formulir ini.</p>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error fetching pertanyaan by form skrining:", error);
+                        console.log(xhr.responseText);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Terjadi kesalahan saat memuat pertanyaan untuk formulir skrining.',
                         });
-                    } else {
-                        pertanyaanContainer.html('<p>Pilih formulir skrining untuk memuat pertanyaan.</p>');
+                        pertanyaanContainer.html('<p class="text-danger">Gagal memuat pertanyaan. Terjadi kesalahan.</p>');
                     }
                 });
+            } else {
+                pertanyaanContainer.html('<p>Pilih Formulir Skrining, masukkan NIK Pasien (16 digit), dan Tanggal Skrining untuk memuat pertanyaan.</p>');
+            }
+        }
 
-                // Event untuk submit form Tambah Skrining Baru
-                $('#tambahSkriningForm').on('submit', function(e) {
-                    e.preventDefault();
+        // Fungsi untuk memuat pertanyaan di modal Edit
+        function loadPertanyaanEdit() {
+            var formSkriningId = $('#edit_id_form_skrining').val();
+            var nikPasien = $('#edit_NIK_Pasien').val();
+            // Format tanggal dari datepicker (dd-mm-yy) menjadi yyyy-mm-dd untuk backend
+            var tanggalSkriningFormatted = null;
+            var tanggalSkriningVal = $('#edit_Tanggal_Skrining').val();
+            if (tanggalSkriningVal) {
+                var parts = tanggalSkriningVal.split('-');
+                if (parts.length === 3) {
+                    tanggalSkriningFormatted = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                }
+            }
 
-                    var form = $(this);
-                    var url = form.attr('action');
+            var pertanyaanContainer = $('#edit_pertanyaan_list');
+            pertanyaanContainer.empty();
+            pertanyaanContainer.html('<p>Memuat pertanyaan...</p>');
 
-                    $.ajax({
-                        url: url,
-                        type: 'POST',
-                        data: form.serialize(),
-                        success: function(response) {
-                            if (response.success) {
-                                $('#tambahSkriningModal').modal('hide');
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil!',
-                                    text: response.message,
-                                }).then(() => {
-                                    window.location.reload();
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Gagal!',
-                                    text: response.message || 'Terjadi kesalahan saat menyimpan data.',
-                                });
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.error("Error saving skrining:", error);
-                            console.log(xhr.responseText);
-                            var errorMessage = 'Terjadi kesalahan saat menyimpan data. Silakan cek konsol browser.';
-                            if (xhr.responseJSON && xhr.responseJSON.message) {
-                                errorMessage = xhr.responseJSON.message;
-                            } else if (xhr.responseJSON && xhr.responseJSON.errors) {
-                                errorMessage = Object.values(xhr.responseJSON.errors).join('<br>');
-                            }
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal!',
-                                html: errorMessage,
-                            });
-                        }
-                    });
-                });
+            // Pastikan semua input yang dibutuhkan ada sebelum memuat pertanyaan
+            if (formSkriningId && nikPasien && nikPasien.length === NIK_LENGTH && tanggalSkriningFormatted) {
+                $.ajax({
+                    url: "{{ route('skrining.get-pertanyaan-by-form-skrining', ':id') }}".replace(':id', formSkriningId),
+                    method: 'GET',
+                    data: {
+                        nik_pasien: nikPasien,
+                        tanggal_skrining: tanggalSkriningFormatted
+                    },
+                    success: function(response) {
+                        pertanyaanContainer.empty();
 
-
-                // Event untuk tombol "Edit"
-                $('.btn-edit').on('click', function() {
-                    var skriningId = $(this).data('id');
-
-                    $.ajax({
-                        url: "{{ route('skrining.show', ':id') }}".replace(':id', skriningId),
-                        method: 'GET',
-                        success: function(response) {
-                            console.log('Response for Edit Modal:', response);
-                            $('#editForm').attr('action', "{{ route('skrining.update', ':id') }}".replace(':id', skriningId));
-
-                            $('#edit_Nama_Petugas').val(response.Nama_Petugas);
-                            $('#edit_NIK_Pasien').val(response.NIK_Pasien);
-                            $('#edit_Nama_Pasien').val(response.Nama_Pasien);
-                            $('#edit_Tanggal_Skrining').val(response.Tanggal_Skrining);
-                            $('#edit_id_form_skrining').val(response.id_form_skrining);
-
-                            var pertanyaanContainer = $('#edit_pertanyaan_list');
-                            pertanyaanContainer.empty();
-
-                            if (response.pertanyaan && response.pertanyaan.length > 0) {
-                                $.each(response.pertanyaan, function(index, item) {
-                                    var inputHtml = `<input type="text" class="form-control" name="jawaban[${item.id}]" value="${item.jawaban || ''}" placeholder="Masukkan jawaban..." required>`;
-                                    var pertanyaanItem = `
-                                        <div class="form-group mb-3">
-                                            <label>${item.pertanyaan}</label>
-                                            ${inputHtml}
-                                        </div>
-                                    `;
-                                    pertanyaanContainer.append(pertanyaanItem);
-                                });
-                            } else {
-                                pertanyaanContainer.html('<p>Tidak ada pertanyaan terkait.</p>');
-                            }
-                            $('#editModal').modal('show');
-                        },
-                        error: function(xhr, status, error) {
-                            console.error("Error fetching skrining detail for edit:", error);
-                            console.log(xhr.responseText);
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error!',
-                                text: 'Terjadi kesalahan saat memuat data form skrining. Silakan cek konsol browser.',
-                            });
-                        }
-                    });
-                });
-
-                // Event change untuk dropdown formulir skrining di modal edit
-                $('#edit_id_form_skrining').on('change', function() {
-                    var formSkriningId = $(this).val();
-                    var pertanyaanContainer = $('#edit_pertanyaan_list');
-
-                    pertanyaanContainer.empty();
-                    pertanyaanContainer.html('<p>Memuat pertanyaan...</p>');
-
-                    if (formSkriningId) {
-                        $.ajax({
-                            url: "{{ route('skrining.get-pertanyaan-by-form-skrining', ':id') }}".replace(':id', formSkriningId),
-                            method: 'GET',
-                            success: function(response) {
-                                pertanyaanContainer.empty();
-
-                                if (response && response.length > 0) {
-                                    $.each(response, function(index, pertanyaan) {
-                                        var inputHtml = `<input type="text" class="form-control" name="jawaban[${pertanyaan.id}]" placeholder="Masukkan jawaban..." required>`;
-                                        var pertanyaanItem = `
-                                            <div class="form-group mb-3">
-                                                <label>${pertanyaan.pertanyaan}</label>
-                                                ${inputHtml}
-                                            </div>
-                                        `;
-                                        pertanyaanContainer.append(pertanyaanItem);
-                                    });
-                                } else {
-                                    pertanyaanContainer.html('<p>Tidak ada pertanyaan untuk formulir ini.</p>');
+                        if (response && response.length > 0) {
+                            $.each(response, function(index, pertanyaan) {
+                                var catatanHtml = '';
+                                if (pertanyaan.catatan) {
+                                    catatanHtml = `<small class="text-muted d-block mt-1 mb-2">Catatan: ${pertanyaan.catatan}</small>`;
                                 }
-                            },
-                            error: function(xhr, status, error) {
-                                console.error("Error fetching pertanyaan by form skrining for edit:", error);
-                                console.log(xhr.responseText);
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error!',
-                                    text: 'Terjadi kesalahan saat memuat pertanyaan untuk formulir skrining di modal edit.',
-                                });
-                                pertanyaanContainer.html('<p class="text-danger">Gagal memuat pertanyaan. Terjadi kesalahan.</p>');
-                            }
+                                // Mengisi value input dengan previous_answer jika ada
+                                var inputValue = pertanyaan.previous_answer !== null ? pertanyaan.previous_answer : '';
+                                var inputHtml = `<input type="text" class="form-control" name="jawaban[${pertanyaan.id}]" placeholder="Masukkan jawaban..." value="${inputValue}" required>`;
+                                var pertanyaanItem = `
+                                    <div class="form-group mb-3">
+                                        <label>${pertanyaan.pertanyaan}</label>
+                                        ${catatanHtml}
+                                        ${inputHtml}
+                                    </div>
+                                `;
+                                pertanyaanContainer.append(pertanyaanItem);
+                            });
+                        } else {
+                            pertanyaanContainer.html('<p>Tidak ada pertanyaan untuk formulir ini.</p>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error fetching pertanyaan by form skrining for edit:", error);
+                        console.log(xhr.responseText);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Terjadi kesalahan saat memuat pertanyaan untuk formulir skrining di modal edit.',
                         });
-                    } else {
-                        pertanyaanContainer.html('<p>Pilih formulir skrining untuk memuat pertanyaan.</p>');
+                        pertanyaanContainer.html('<p class="text-danger">Gagal memuat pertanyaan. Terjadi kesalahan.</p>');
                     }
                 });
+            } else {
+                pertanyaanContainer.html('<p>Pilih Formulir Skrining, masukkan NIK Pasien (16 digit), dan Tanggal Skrining untuk memuat pertanyaan.</p>');
+            }
+        }
 
 
-                $('#editModal').on('hidden.bs.modal', function() {
-                    $('#editForm')[0].reset();
-                    $('#edit_pertanyaan_list').empty();
-                    $('#edit_pertanyaan_list').append('<p>Memuat pertanyaan...</p>');
-                });
+        // Event untuk tombol "Tambah Baru"
+        $('#tambahSkriningBaru').click(function() {
+            $('#tambahSkriningForm')[0].reset();
+            $('#pertanyaan_list_tambah').html('<p>Pilih formulir skrining untuk memuat pertanyaan.</p>');
+            $('#tanggalSkriningTambah').datepicker('setDate', new Date());
+            updateNikLengthInfo('#NIK_Pasien', '#nik_length_info_tambah'); // Inisialisasi info NIK saat modal dibuka
+            $('#tambahSkriningModal').modal('show');
+        });
 
-                // Event untuk tombol "Detail"
-                // $('.btn-detail').on('click', function() {
-                //     var skriningId = $(this).data('id');
+        // Event untuk NIK Pasien di Modal Tambah
+        $('#NIK_Pasien').on('change', function() {
+            var nik = $(this).val();
+            $('#Nama_Pasien').val(''); // Kosongkan nama pasien setiap kali NIK berubah
 
-                //     $.get("{{ route('skrining.show', ':id') }}".replace(':id', skriningId), function(data) {
-                //         if (data) {
-                //             $('#detail_Nama_Petugas').text(data.Nama_Petugas);
-                //             $('#detail_NIK_Pasien').text(data.NIK_Pasien);
-                //             $('#detail_Nama_Pasien').text(data.Nama_Pasien);
-                //             $('#detail_Tanggal_Skrining').text(data.Tanggal_Skrining);
-                //             $('#detail_nama_penyakit').text(data.nama_penyakit);
-                //             $('#detail_nama_skrining').text(data.nama_skrining);
-
-                //             $('#detail_daftar_pertanyaan').empty();
-                //             if (data.pertanyaan && data.pertanyaan.length > 0) {
-                //                 $.each(data.pertanyaan, function(key, value) {
-                //                     $('#detail_daftar_pertanyaan').append(`<li><strong>${value.pertanyaan}:</strong> ${value.jawaban || '-'}</li>`);
-                //                 });
-                //             } else {
-                //                 $('#detail_daftar_pertanyaan').append('<li>Tidak ada pertanyaan terkait.</li>');
-                //             }
-
-                //             $('#detailModal').modal('show');
-                //         } else {
-                //             Swal.fire({
-                //                 icon: 'error',
-                //                 title: 'Error!',
-                //                 text: 'Data tidak ditemukan',
-                //             });
-                //         }
-                //     }).fail(function(xhr) {
-                //         console.error("Error fetching detail:", xhr.responseText);
-                //         Swal.fire({
-                //             icon: 'error',
-                //             title: 'Error!',
-                //             text: 'Terjadi kesalahan saat memuat data.',
-                //         });
-                //     });
-                // });
-
-                // Event untuk tombol "Delete"
-                $('.btn-delete').on('click', function() {
-                    var skriningId = $(this).data('skrining-id');
-                    var skriningNama = $(this).data('skrining-nama');
-                    var deleteUrl = "{{ route('skrining.delete', ':id') }}".replace(':id', skriningId);
-
-                    $('#skriningToDelete').text(skriningNama);
-                    $('#deleteForm').attr('action', deleteUrl);
-                    $('#deleteConfirmationModal').modal('show');
-                });
-
-                $('#deleteConfirmationModal').on('hidden.bs.modal', function() {
-                    $('#deleteForm').attr('action', '');
-                });
-
-                $('#searchSkrining').on('input', function() {
-                    var searchValue = $(this).val();
-                    var url = "{{ route('skrining.index') }}";
-
-                    url += (url.indexOf('?') > -1 ? '&' : '?') + 'search=' + searchValue;
-
-                    $.get(url, function(data) {
-                        $('tbody').html($(data).find('tbody').html());
-                    });
-                });
-
-                // Edit Skrining Submit
-                $('#editForm').on('submit', function(e) {
-                    e.preventDefault();
-
-                    var form = $(this);
-                    var url = form.attr('action');
-
-                    $.ajax({
-                        url: url,
-                        type: 'POST',
-                        data: form.serialize(),
-                        success: function(response) {
-                            if (response.success) {
-                                $('#editModal').modal('hide');
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil!',
-                                    text: response.message,
-                                }).then(() => {
-                                    window.location.reload();
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Gagal!',
-                                    text: response.message || 'Terjadi kesalahan saat menyimpan perubahan.',
-                                });
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.error("Error updating skrining:", error);
-                            console.log(xhr.responseText);
-                            var errorMessage = 'Terjadi kesalahan saat menyimpan perubahan. Silakan cek konsol browser.';
-                            if (xhr.responseJSON && xhr.responseJSON.message) {
-                                errorMessage = xhr.responseJSON.message;
-                            } else if (xhr.responseJSON && xhr.responseJSON.errors) {
-                                errorMessage = Object.values(xhr.responseJSON.errors).join('<br>');
-                            }
+            if (nik && nik.length === NIK_LENGTH) { // Hanya panggil AJAX jika NIK 16 digit
+                $.ajax({
+                    url: "{{ route('pasien.getPasienData') }}",
+                    method: 'GET',
+                    data: { NIK: nik },
+                    success: function(response) {
+                        if (response.success && response.data) { // Periksa response.data
+                            $('#Nama_Pasien').val(response.data.Nama_Pasien);
+                            loadPertanyaanTambah(); // Panggil ini setelah nama pasien terisi
+                        } else {
                             Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal!',
-                                html: errorMessage,
+                                icon: 'warning', // Ubah ke warning karena NIK tidak ditemukan, bukan error umum
+                                title: 'Informasi!',
+                                text: response.message || 'Data pasien tidak ditemukan untuk NIK ini.',
                             });
+                            $('#Nama_Pasien').val(''); // Pastikan nama pasien kosong jika tidak ditemukan
+                            loadPertanyaanTambah(); // Tetap panggil ini untuk memperbarui pesan pertanyaan
                         }
-                    });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error fetching pasien data:", error);
+                        console.log(xhr.responseText);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Terjadi kesalahan saat mencari data pasien. Silakan cek konsol browser.',
+                        });
+                        $('#Nama_Pasien').val(''); // Pastikan nama pasien kosong jika ada error
+                        loadPertanyaanTambah();
+                    }
                 });
+            } else {
+                $('#Nama_Pasien').val(''); // Kosongkan jika NIK tidak valid
+                $('#pertanyaan_list_tambah').empty().append('<p>Pilih Formulir Skrining, masukkan NIK Pasien (16 digit), dan Tanggal Skrining untuk memuat pertanyaan.</p>');
+            }
+        });
 
-                // Delete Skrining Submit
-                $('#deleteForm').on('submit', function(e) {
-                    e.preventDefault();
+        // Event untuk id_form_skrining di Modal Tambah
+        $('#id_form_skrining').on('change', function() {
+            loadPertanyaanTambah();
+        });
 
-                    var form = $(this);
-                    var url = form.attr('action');
+        // Event untuk submit form Tambah Skrining Baru
+        $('#tambahSkriningForm').on('submit', function(e) {
+            e.preventDefault();
 
-                    $.ajax({
-                        url: url,
-                        type: 'POST',
-                        data: form.serialize(),
-                        success: function(response) {
-                            $('#deleteConfirmationModal').modal('hide');
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil!',
-                                text: response.message,
-                            }).then(() => {
-                                window.location.reload();
-                            });
-                        },
-                        error: function(xhr, status, error) {
-                            console.error("Error deleting skrining:", error);
-                            console.log(xhr.responseText);
-                            var errorMessage = 'Terjadi kesalahan saat menghapus data. Silakan cek konsol browser.';
-                            if (xhr.responseJSON && xhr.responseJSON.message) {
-                                errorMessage = xhr.responseJSON.message;
-                            } else if (xhr.responseJSON && xhr.responseJSON.errors) {
-                                errorMessage = Object.values(xhr.responseJSON.errors).join('<br>');
-                            }
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal!',
-                                html: errorMessage,
-                            });
+            var form = $(this);
+            var url = form.attr('action');
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: form.serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        $('#tambahSkriningModal').modal('hide');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: response.message,
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        // Jika ada validasi error dari backend, tampilkan di sini
+                        var errorMessage = response.message || 'Terjadi kesalahan saat menyimpan data.';
+                        if (response.errors) {
+                            errorMessage = Object.values(response.errors).join('<br>');
                         }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            html: errorMessage, // Gunakan html agar <br> bekerja
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error saving skrining:", error);
+                    console.log(xhr.responseText);
+                    var errorMessage = 'Terjadi kesalahan saat menyimpan data. Silakan cek konsol browser.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        errorMessage = Object.values(xhr.responseJSON.errors).join('<br>');
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        html: errorMessage,
                     });
-                });
-
-                feather.replace();
+                }
             });
-        </script>
-    @endsection
+        });
+
+        // Event untuk tombol "Edit"
+        $('.btn-edit').on('click', function() {
+            var skriningId = $(this).data('id');
+
+            $.ajax({
+                url: "{{ route('skrining.show', ':id') }}".replace(':id', skriningId),
+                method: 'GET',
+                success: function(response) {
+                    console.log('Response for Edit Modal:', response);
+                    $('#editForm').attr('action', "{{ route('skrining.update', ':id') }}".replace(':id', skriningId));
+
+                    // Pastikan semua field diisi sesuai response
+                    $('#edit_Nama_Petugas').val(response.Nama_Petugas);
+                    $('#edit_NIK_Pasien').val(response.NIK_Pasien);
+                    $('#edit_Nama_Pasien').val(response.Nama_Pasien);
+
+                    if (response.Tanggal_Skrining) {
+                        var dateObj = $.datepicker.parseDate('yy-mm-dd', response.Tanggal_Skrining);
+                        $('#edit_Tanggal_Skrining').datepicker('setDate', dateObj);
+                    } else {
+                        $('#edit_Tanggal_Skrining').val('');
+                        $('#edit_Tanggal_Skrining').datepicker('setDate', null);
+                    }
+
+                    // *** PENTING: SETELAH MENGISI SEMUA DATA DI ATAS, BARU SET VALUE UNTUK SELECT FORM SKRINING ***
+                    // Ini penting agar `loadPertanyaanEdit()` yang dipanggil setelahnya memiliki nilai yang benar
+                    // jika ada event 'change' pada elemen ini.
+                    $('#edit_id_form_skrining').val(response.id_form_skrining);
+
+                    // Panggil fungsi loadPertanyaanEdit setelah data dasar terisi
+                    // Ini akan memuat pertanyaan dan mengisi dengan jawaban yang ada
+                    loadPertanyaanEdit();
+
+                    // Perbarui info NIK setelah NIK terisi di modal edit
+                    updateNikLengthInfo('#edit_NIK_Pasien', '#nik_length_info_edit');
+
+                    $('#editModal').modal('show');
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching skrining detail for edit:", error);
+                    console.log(xhr.responseText);
+                    var errorMessage = 'Terjadi kesalahan saat memuat data form skrining.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: errorMessage + ' Silakan cek konsol browser.',
+                    });
+                }
+            });
+        });
+
+        // Event change untuk dropdown formulir skrining di modal edit
+        $('#edit_id_form_skrining').on('change', function() {
+            loadPertanyaanEdit();
+        });
+
+        // Event change untuk NIK Pasien di modal edit
+        $('#edit_NIK_Pasien').on('change', function() {
+            // Ketika NIK pasien diubah di modal edit, lakukan pencarian nama pasien
+            var nik = $(this).val();
+            $('#edit_Nama_Pasien').val(''); // Kosongkan nama pasien setiap kali NIK berubah
+
+            if (nik && nik.length === NIK_LENGTH) {
+                $.ajax({
+                    url: "{{ route('pasien.getPasienData') }}",
+                    method: 'GET',
+                    data: { NIK: nik },
+                    success: function(response) {
+                        if (response.success && response.data) {
+                            $('#edit_Nama_Pasien').val(response.data.Nama_Pasien);
+                            loadPertanyaanEdit(); // Panggil ini setelah nama pasien terisi
+                        } else {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Informasi!',
+                                text: response.message || 'Data pasien tidak ditemukan untuk NIK ini.',
+                            });
+                            $('#edit_Nama_Pasien').val('');
+                            loadPertanyaanEdit();
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error fetching pasien data for edit:", error);
+                        console.log(xhr.responseText);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Terjadi kesalahan saat mencari data pasien untuk edit. Silakan cek konsol browser.',
+                        });
+                        $('#edit_Nama_Pasien').val('');
+                        loadPertanyaanEdit();
+                    }
+                });
+            } else {
+                $('#edit_Nama_Pasien').val('');
+                $('#edit_pertanyaan_list').empty().append('<p>Pilih Formulir Skrining, masukkan NIK Pasien (16 digit), dan Tanggal Skrining untuk memuat pertanyaan.</p>');
+            }
+        });
+
+        $('#editModal').on('hidden.bs.modal', function() {
+            $('#editForm')[0].reset();
+            $('#edit_pertanyaan_list').empty();
+            $('#edit_pertanyaan_list').append('<p>Memuat pertanyaan...</p>');
+            // Reset info NIK saat modal ditutup
+            $('#nik_length_info_edit').empty();
+        });
+
+        $('#tambahSkriningModal').on('hidden.bs.modal', function() {
+            // Reset info NIK saat modal ditutup
+            $('#nik_length_info_tambah').empty();
+        });
+
+
+        // Event untuk tombol "Delete"
+        $('.btn-delete').on('click', function() {
+            var skriningId = $(this).data('skrining-id');
+            var skriningNama = $(this).data('skrining-nama');
+            var deleteUrl = "{{ route('skrining.delete', ':id') }}".replace(':id', skriningId);
+
+            $('#skriningToDelete').text(skriningNama);
+            $('#deleteForm').attr('action', deleteUrl);
+            $('#deleteConfirmationModal').modal('show');
+        });
+
+        $('#deleteConfirmationModal').on('hidden.bs.modal', function() {
+            $('#deleteForm').attr('action', '');
+        });
+
+        $('#searchSkrining').on('input', function() {
+            var searchValue = $(this).val();
+            var url = "{{ route('skrining.index') }}";
+
+            // Pastikan parameter search tidak digandakan jika ada paginasi atau parameter lain
+            url += (url.indexOf('?') > -1 ? '&' : '?') + 'search=' + encodeURIComponent(searchValue);
+
+            // Menggunakan AJAX untuk memuat ulang hanya bagian tabel, bukan seluruh halaman
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(data) {
+                    // Hanya mengambil bagian tbody dari response dan mengganti tbody yang ada
+                    // Anda mungkin perlu menyesuaikan selector ini jika struktur HTML Anda berbeda
+                    $('tbody').html($(data).find('tbody').html());
+                    // Jika Anda menggunakan paginasi AJAX, Anda juga perlu memperbarui bagian paginasi
+                    // Misalnya: $('.pagination-container').html($(data).find('.pagination-container').html());
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error searching skrining:", error);
+                    console.log(xhr.responseText);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Terjadi kesalahan saat mencari data skrining.',
+                    });
+                }
+            });
+        });
+
+        // Edit Skrining Submit
+        $('#editForm').on('submit', function(e) {
+            e.preventDefault();
+
+            var form = $(this);
+            var url = form.attr('action');
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: form.serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        $('#editModal').modal('hide');
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: response.message,
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        var errorMessage = response.message || 'Terjadi kesalahan saat menyimpan perubahan.';
+                        if (response.errors) {
+                            errorMessage = Object.values(response.errors).join('<br>');
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            html: errorMessage,
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error updating skrining:", error);
+                    console.log(xhr.responseText);
+                    var errorMessage = 'Terjadi kesalahan saat menyimpan perubahan. Silakan cek konsol browser.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        errorMessage = Object.values(xhr.responseJSON.errors).join('<br>');
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        html: errorMessage,
+                    });
+                }
+            });
+        });
+
+        // Submit form hapus
+    $('#deleteForm').on('submit', function(e) {
+        e.preventDefault();
+
+        let form = $(this);
+        let url = form.attr('action');
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: form.serialize(),
+            success: function(response) {
+                if (response.success) {
+                    $('#deleteConfirmationModal').modal('hide');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: response.message
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: response.message || 'Terjadi kesalahan saat menghapus data.'
+                    });
+                }
+            },
+            error: function(xhr) {
+                let msg = 'Terjadi kesalahan.';
+                if (xhr.responseJSON?.message) {
+                    msg = xhr.responseJSON.message;
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal!',
+                    text: msg
+                });
+            }
+        });
+    });
+    });
+</script>
+@endsection

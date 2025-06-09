@@ -20,69 +20,52 @@
     <link rel="stylesheet" href="{{ asset('assets/css/jquery.steps.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/jquery.timepicker.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/quill.snow.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/daterangepicker.css') }}">
+    {{-- MENGHAPUS daterangepicker.css karena Anda tidak menginginkannya dan bisa konflik --}}
+    {{-- <link rel="stylesheet" href="{{ asset('assets/css/daterangepicker.css') }}"> --}}
     <link rel="stylesheet" href="{{ asset('assets/css/app-light.css') }}" id="lightTheme">
     <link rel="stylesheet" href="{{ asset('assets/css/app-dark.css') }}" id="darkTheme" disabled>
-    {{-- Baris ini dikomentari karena Anda menyatakan tidak ada file admin.css --}}
-    {{-- <link rel="stylesheet" href="{{ asset('assets/css/admin.css') }}"> --}}
-    {{-- Pastikan ini adalah versi select2 yang ingin Anda gunakan. Jika ada versi lokal di assets/css/select2.css, pertimbangkan untuk menghapus CDN ini atau sebaliknya --}}
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-   
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" 
-    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" 
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-    
 
-    {{-- ================================================================================= --}}
-    {{-- END CSS SECTION                                                                   --}}
-    {{-- ================================================================================= --}}
+    {{-- **PENTING: Pastikan CSS jQuery UI dimuat di sini untuk styling kalender** --}}
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
 </head>
 
 <body class="vertical light">
     <div class="wrapper">
         @include('partials.admin.navbar')
-
-        {{-- Ini adalah lokasi placeholder untuk tombol/switch mode gelap/terang --}}
-        {{-- Anda bisa memindahkannya ke dalam partials.admin.navbar atau partials.admin.sidebar --}}
-        {{-- Sesuaikan kelas CSS-nya agar sesuai dengan tata letak Anda --}}
-        {{-- <div style="position: absolute; top: 20px; right: 20px; z-index: 1000;">
-            <button id="modeSwitcher" class="btn btn-sm btn-outline-secondary">
-                <span class="fe fe-moon" style="font-size: 1.2em;"></span> </button>
-        </div> --}}
-
         @include('partials.admin.sidebar')
-
         <main role="main" class="main-content">
             @yield('content')
-        </main> {{-- Tutup main-content --}}
-
-    </div> {{-- Tutup wrapper --}}
+        </main>
+    </div>
 
     {{-- ================================================================================= --}}
-    {{-- START JAVASCRIPT SECTION                                                          --}}
+    {{-- START JAVASCRIPT SECTION (URUTANNYA SANGAT PENTING!)                                --}}
     {{-- ================================================================================= --}}
 
-   
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {{-- 1. jQuery harus dimuat PERTAMA KALI (ini adalah inti dari semua yang lain) --}}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    {{-- 2. jQuery UI harus dimuat KEDUA (karena bergantung pada jQuery) --}}
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
+    {{-- 3. JQUERY UI I18N (untuk Bahasa Indonesia) harus dimuat KETIGA (karena bergantung pada jQuery UI) --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/i18n/jquery.ui.datepicker-id.min.js"></script>
+
+    {{-- 4. Kemudian, library lain yang bergantung pada jQuery atau jQuery UI bisa dimuat setelahnya --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('assets/js/popper.min.js') }}"></script>
-    <script src="{{ asset('assets/js/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/moment.min.js') }}"></script> {{-- Moment.js masih berguna untuk hal lain --}}
     <script src="{{ asset('assets/js/simplebar.min.js') }}"></script>
-    <script src='{{ asset('assets/js/daterangepicker.js') }}'></script>
+    {{-- MENGHAPUS daterangepicker.js karena Anda tidak menginginkannya dan bisa konflik --}}
+    {{-- <script src='{{ asset('assets/js/daterangepicker.js') }}'></script> --}}
     <script src='{{ asset('assets/js/jquery.stickOnScroll.js') }}'></script>
-char
-    {{-- Tinycolor HARUS dimuat sebelum config.js --}}
     <script src="{{ asset('assets/js/tinycolor-min.js') }}"></script>
-
-    {{-- Select2 (pilih salah satu CDN atau lokal) --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-    {{-- <script src='{{ asset('assets/js/select2.min.js') }}'></script> --}} {{-- Duplikat, hapus --}}
-
-    {{-- DataTables (Tambahkan di sini jika Anda menggunakannya) --}}
-    {{-- <script src="{{ asset('path/to/jquery.dataTables.min.js') }}"></script> --}}
-    {{-- <script src="{{ asset('path/to/dataTables.bootstrap4.min.js') }}"></script> --}}
-
-    {{-- Plugin-plugin lain --}}
+    <script src='{{ asset('assets/js/select2.min.js') }}'></script>
     <script src="{{ asset('assets/js/d3.min.js') }}"></script>
     <script src="{{ asset('assets/js/topojson.min.js') }}"></script>
     <script src="{{ asset('assets/js/datamaps.all.min.js') }}"></script>
@@ -98,61 +81,28 @@ char
     <script src='{{ asset('assets/js/uppy.min.js') }}'></script>
     <script src='{{ asset('assets/js/quill.min.js') }}'></script>
     <script src="{{ asset('assets/js/feather.min.js') }}"></script>
-
-
-    {{-- 4. SWEETALERT2 --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
-    {{-- 5. SCRIPT YANG MENDEFINISIKAN 'colors' dan 'base' (config.js) --}}
-    {{-- Ini harus dimuat SETELAH tinycolor.js DAN SETELAH elemen HTML seperti #modeSwitcher, #darkTheme, #lightTheme ada di DOM. --}}
     <script src="{{ asset('assets/js/config.js') }}"></script>
+    <script src="{{ asset('assets/js/Chart.min.js') }}"></script>
+    <script src="{{ asset('assets/js/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/apexcharts.custom.js') }}"></script>
 
-
-    {{-- 6. LIBRARY CHARTING (Chart.js, ApexCharts) DAN SCRIPT KUSTOM YANG MENGGUNAKAN 'colors'/'base' --}}
-    <script src="{{ asset('assets/js/Chart.min.js') }}"></script> {{-- Dimuat sebelum script yang menggunakan Chart --}}
-    <script src="{{ asset('assets/js/apexcharts.min.js') }}"></script> {{-- Dimuat sebelum script yang menggunakan ApexCharts --}}
-    <script src="{{ asset('assets/js/apexcharts.custom.js') }}"></script> {{-- Dimuat setelah apexcharts.min.js --}}
-
-    {{-- Sekarang script ini seharusnya menemukan 'base' dan 'colors' karena config.js sudah dimuat --}}
     <script>
-        Chart.defaults.global.defaultFontFamily = base.defaultFontFamily;
-        Chart.defaults.global.defaultFontColor = colors.mutedColor;
-    </script>
-
-
-    {{-- 7. SCRIPT BAWAAN TEMPLATE / SCRIPT KUSTOM UTAMA LAINNYA --}}
-    <script src="{{ asset('assets/js/apps.js') }}"></script> {{-- Ini adalah script utama template Anda --}}
-
-
-    {{-- 8. SCRIPT CUSTOM ANDA (TERMASUK GOOGLE ANALYTICS DAN INISIALISASI SELECT2) --}}
-    <script>
-        // Jalankan kode jQuery setelah DOM siap
+        // Set default bahasa untuk datepicker ke Bahasa Indonesia
+        // Ini harus dilakukan setelah file lokalisasi jQuery UI dimuat (yaitu jquery.ui.datepicker-id.min.js)
+        // Dan juga setelah DOM siap atau di dalam $(document).ready()
         $(document).ready(function() {
-            // Inisialisasi Select2
-            $('#pertanyaan_ids').select2(); // Aktifkan Select2 pada select dengan id pertanyaan_ids
-            $('.select2').select2({
-                theme: 'bootstrap4',
-            });
-            $('.select2-multi').select2({
-                multiple: true,
-                theme: 'bootstrap4',
-            });
+            $.datepicker.setDefaults($.datepicker.regional['id']);
 
-            // Tambahkan inisialisasi plugin lain yang ada di sini
-            // Contoh:
-            // $('.drgpicker').daterangepicker({
-            //     singleDatePicker: true,
-            //     timePicker: false,
-            //     locale: { format: 'YYYY-MM-DD' }
-            // });
-            // $('#some-mask').mask('000-000-0000');
-            // var editor = new Quill('#editor', {
-            //     theme: 'snow'
-            // });
+            // Inisialisasi Select2 umum (jika ada)
+            $('#pertanyaan_ids').select2(); // Jika ada select2 dengan ID ini
+            $('.select2').select2({ theme: 'bootstrap4' });
+            $('.select2-multi').select2({ multiple: true, theme: 'bootstrap4' });
         });
 
-        // Jalankan kode setelah seluruh konten DOM dimuat
+        Chart.defaults.global.defaultFontFamily = base.defaultFontFamily;
+        Chart.defaults.global.defaultFontColor = colors.mutedColor;
+
         document.addEventListener('DOMContentLoaded', function() {
             @if (session('success'))
                 Swal.fire({
@@ -171,7 +121,7 @@ char
                     confirmButtonText: 'OK',
                 });
             @endif
-            feather.replace(); // Dijalankan setelah feather.min.js dimuat
+            feather.replace();
         });
 
         // Google Analytics
@@ -181,13 +131,9 @@ char
         gtag('config', 'UA-56159088-1');
     </script>
 
-
-    {{-- Ini adalah tempat untuk script-script spesifik dari masing-masing view. Pastikan ini yang PALING AKHIR. --}}
+    {{-- Ini adalah tempat @yield('scripts') Anda, tempat script dari index.blade.php akan dimuat. --}}
     @yield('scripts')
 
-    {{-- ================================================================================= --}}
-    {{-- END JAVASCRIPT SECTION                                                            --}}
-    {{-- ================================================================================= --}}
 </body>
 
 </html>
