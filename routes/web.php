@@ -118,16 +118,23 @@ Route::middleware(['auth', 'role:nakes'])->group(function () {
         Route::get('/get-data', [PasienController::class, 'getPasienData'])->name('pasien.getPasienData');
     });
 
-     // SKRINING ROUTES
-    Route::prefix('skrining')->group(function () {
-        Route::get('/', [SkriningController::class, 'index'])->name('skrining.index');
-        Route::post('/store', [SkriningController::class, 'store'])->name('skrining.store');
-        Route::put('/update/{id}', [SkriningController::class, 'update'])->name('skrining.update');
-        Route::delete('/{id}', [SkriningController::class, 'delete'])->name('skrining.delete');
-        Route::get('/show/{id}', [SkriningController::class, 'show'])->name('skrining.show');
-        Route::get('/get-pertanyaan-by-form-skrining/{id}', [SkriningController::class, 'getPertanyaanByFormSkrining'])->name('skrining.get-pertanyaan-by-form-skrining');
-        // Route::get('/get-form-skrinings-by-kategori', [SkriningController::class, 'getFormSkriningsByKategori'])->name('skrining.get-form-skrinings-by-kategori'); // Rute ini dihapus
-    });
+     // SKRINING ROUTES (Ini yang terkait dengan pendataan skrining pasien)
+Route::prefix('skrining')->group(function () {
+    Route::get('/', [SkriningController::class, 'index'])->name('skrining.index');
+    Route::post('/store', [SkriningController::class, 'store'])->name('skrining.store');
+    Route::put('/update/{id}', [SkriningController::class, 'update'])->name('skrining.update');
+    Route::delete('/{id}', [SkriningController::class, 'delete'])->name('skrining.delete'); // Pastikan ini juga benar
+    Route::get('/show/{id}', [SkriningController::class, 'show'])->name('skrining.show');
+
+    // ******* Rute KRITIS yang MENYEBABKAN ERROR 404 INI ********
+    // Pastikan ini ada dan penamaannya konsisten:
+    // URL: /skrining/pertanyaan/{id}
+    // Nama Rute: skrining.get-pertanyaan-by-form-skrining
+    Route::get('/pertanyaan/{id}', [SkriningController::class, 'getPertanyaanByFormSkrining'])->name('skrining.get-pertanyaan-by-form-skrining');
+
+    // Rute untuk mendapatkan rekomendasi form skrining
+    Route::get('/recommended-forms', [SkriningController::class, 'getRecommendedFormSkrinings'])->name('skrining.getRecommendedFormSkrinings');
+});
 
     // RIWAYAT SKRINING ROUTES
     Route::prefix('riwayat-skrining')->group(function () {

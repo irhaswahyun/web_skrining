@@ -146,7 +146,12 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <a href="#" id="deleteConfirmButton" class="btn btn-danger">Hapus</a>
+                    {{-- <a href="#" id="deleteConfirmButton" class="btn btn-danger">Hapus</a> --}}
+                    <form id="delete-form" action="" method="POST" style="display: inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">Hapus</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -181,7 +186,7 @@
                 var deleteUrl = "{{ route('role.delete', ':id') }}".replace(':id', roleId);
 
                 $('#roleToDelete').text(roleNama);
-                $('#deleteConfirmButton').attr('href', deleteUrl);
+                $('#delete-form').attr('action', deleteUrl);
                 $('#deleteConfirmationModal').modal('show');
             });
 

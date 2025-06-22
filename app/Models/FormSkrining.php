@@ -9,29 +9,29 @@ class FormSkrining extends Model
 {
     use HasFactory;
 
-    protected $table = 'form_skrinings';
-    protected $primaryKey = 'id';
-    
+    protected $table = 'form_skrinings'; // Pastikan nama tabel benar
     protected $fillable = [
-        'nama_form',
         'nama_skrining',
-        'id_daftar_penyakit',
+        'nama_form',
+        'kategori', // Penting: Pastikan ini masuk fillable
     ];
 
-    public function penyakit()
-    {
-        return $this->belongsTo(DaftarPenyakit::class, 'id_daftar_penyakit', 'id');
-    }
+    // PENTING: Cast kolom 'kategori' sebagai array.
+    // Kolom 'kategori' di tabel form_skrinings HARUS menyimpan data JSON array (misal: ["Lansia", "Anak"]).
+    // Jika tidak, whereJsonContains tidak akan bekerja dengan benar.
+    protected $casts = [
+        'kategori' => 'array',
+    ];
 
+    // Relasi many-to-many dengan DaftarPertanyaan
     public function pertanyaan()
     {
-        return $this->belongsToMany(DaftarPertanyaan::class, 'id_form_skrinings','penyakit_pertanyaans', 'id_daftar_penyakit', 'id_daftar_pertanyaan');
+        return $this->belongsToMany(DaftarPertanyaan::class, 'form_skrining_pertanyaan', 'form_skrining_id', 'daftar_pertanyaan_id');
     }
 
-    // Perbaikan pada getPertanyaanTerkait
+    // Metode helper untuk mendapatkan pertanyaan terkait
     public function getPertanyaanTerkait()
     {
-        // Menggunakan relasi 'pertanyaan' yang seharusnya didefinisikan di model DaftarPenyakit
-        return $this->penyakit->pertanyaan ?? collect(); // Menggunakan null coalescing untuk menghindari error jika penyakit tidak ada
+        return $this->pertanyaan()->orderBy('created_at', 'asc')->get();
     }
 }

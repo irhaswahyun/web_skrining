@@ -1,29 +1,46 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Skrining Puskesmas Mojopanggung</title>
+    <link rel="icon" href="{{ asset('assets/images/Iconlogin.png') }}" type="image/png">
+    <link rel="stylesheet" href="{{ asset('assets/css/app-light.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="login-wrapper">
 
-        <!-- Email Address -->
-        <div class="text-start mb-4">
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
-            <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300" />
-            <x-input-error :messages="$errors->get('email')" class="mt-1" />
-        </div>
+        <!-- Garis Hijau Kiri dan Kanan -->
+        <div class="green-line-left"></div>
+        <div class="green-line-right"></div>
 
-        <!-- Password -->
-        <div class="text-start mb-4">
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input id="password" type="password" name="password" required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:border-blue-300" />
-            <x-input-error :messages="$errors->get('password')" class="mt-1" />
-        </div>
+        <!-- Box Login -->
+        <form method="POST" action="{{ route('login') }}" class="login-box">
+            @csrf
 
+            <!-- Logo -->
+            <img src="{{ asset('assets/images/Iconlogin.png') }}" alt="Logo Login">
 
-        <!-- Submit Button -->
-        <div>
-            <button type="submit" class="btn btn-gradient w-full py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition">
-               MASUK
-            </button>
-        </div>
-    </form>
-</x-guest-layout>
+            <!-- Judul -->
+            <h5>Login ke Sistem Skrining</h5>
+
+            <!-- Username -->
+            <div>
+                <label for="email">Username</label>
+                <input type="email" name="email" id="email" value="{{ old('email') }}" required autofocus>
+                <x-input-error :messages="$errors->get('email')" class="mt-1" />
+            </div>
+
+            <!-- Password -->
+            <div>
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" required>
+                <x-input-error :messages="$errors->get('password')" class="mt-1" />
+            </div>
+
+            <!-- Tombol -->
+            <button type="submit" class="btn-gradient">MASUK</button>
+        </form>
+    </div>
+</body>
+</html>

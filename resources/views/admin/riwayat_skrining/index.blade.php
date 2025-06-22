@@ -24,7 +24,8 @@
                                     <div class="col-md-6 offset-md-3">
                                         <div class="input-group">
                                             <input type="text" class="form-control" placeholder="Masukkan NIK Pasien"
-                                                id="nikPasienInput" name="nik" autocomplete="off">
+                                                id="nikPasienInput" name="nik" autocomplete="off"
+                                                value="{{ request('nik') }}">
                                             <div class="input-group-append">
                                                 <button class="btn btn-primary" type="button" id="searchRiwayatBtn">
                                                     <i data-feather="search"></i> Cari Riwayat
@@ -44,17 +45,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    {{-- Info Box 2: Jenis Skrining Dilakukan --}}
-                                    {{-- <div class="col-md-4 px-2">
-                                        <div class="info-box custom-info-box-green">
-                                            <span class="info-box-icon"><i class="far fa-check-square"></i></span>
-                                            <div class="info-box-content text-center d-flex flex-column justify-content-center align-items-center">
-                                                <span class="info-box-text">Jenis Skrining Dilakukan</span>
-                                                <span class="info-box-number" id="jumlahJenisSkriningDilakukan">0</span>
-                                            </div>
-                                        </div>
-                                    </div> --}}
-                                    {{-- Info Box 3: Total Jenis Skrining Tersedia --}}
+                                    {{-- Info Box 2: Total Jenis Skrining Tersedia --}}
                                     <div class="col-md-4 px-2">
                                         <div class="info-box custom-info-box-purple">
                                             <span class="info-box-icon"><i class="far fa-list-alt"></i></span>
@@ -115,12 +106,10 @@
                     <p id="detail_riwayat_Nama_Petugas"></p>
                     <h6 class="font-weight-bold">Nama Skrining:</h6>
                     <p id="detail_riwayat_Nama_Skrining"></p>
-                    {{-- <h6 class="font-weight-bold">Nama Penyakit:</h6>
-                    <p id="detail_riwayat_Nama_Penyakit"></p> --}}
                     <h6 class="font-weight-bold">Tanggal Skrining:</h6>
                     <p id="detail_riwayat_Tanggal_Skrining"></p>
-                    {{-- <h6 class="font-weight-bold">Kondisi:</h6>
-                    <p id="detail_riwayat_Kondisi"></p> --}}
+                    <h6 class="font-weight-bold">Kondisi:</h6>
+                    <p id="detail_riwayat_Kondisi"></p>
                     <h6 class="font-weight-bold">Pertanyaan & Jawaban:</h6>
                     <div id="detail_riwayat_daftar_pertanyaan_formatted">
                         <p>Memuat pertanyaan...</p>
@@ -131,158 +120,184 @@
                 </div>
             </div>
         </div>
-    @endsection
+    </div>
+@endsection
 
-    @section('scripts')
-        <script>
-            $(document).ready(function() {
-                feather.replace(); // Inisialisasi ikon Feather
+@section('scripts')
+    {{-- Memuat Font Awesome (untuk ikon spinner) --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    {{-- Memuat SweetAlert2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-                // Event untuk tombol "Cari Riwayat"
-                $('#searchRiwayatBtn').on('click', function() {
+    <script>
+        $(document).ready(function() {
+            feather.replace(); // Inisialisasi ikon Feather
+
+            // Event untuk tombol "Cari Riwayat"
+            $('#searchRiwayatBtn').on('click', function() {
+                fetchRiwayatSkrining();
+            });
+
+            // Event untuk input NIK (tekan Enter)
+            $('#nikPasienInput').on('keypress', function(e) {
+                if (e.which == 13) { // Jika tombol Enter ditekan
                     fetchRiwayatSkrining();
-                });
+                }
+            });
 
-                // Event untuk input NIK (tekan Enter)
-                $('#nikPasienInput').on('keypress', function(e) {
-                    if (e.which == 13) { // Jika tombol Enter ditekan
-                        fetchRiwayatSkrining();
-                    }
-                });
+            function fetchRiwayatSkrining() {
+                var nik = $('#nikPasienInput').val();
+                var tableBody = $('#riwayatSkriningTableBody');
 
-                function fetchRiwayatSkrining() {
-                    var nik = $('#nikPasienInput').val();
-                    var tableBody = $('#riwayatSkriningTableBody');
+                // Reset summary counts sebelum AJAX call
+                $('#totalSkriningDilakukan').text('0');
+                $('#totalJenisSkriningTersedia').text('0');
 
-                    // Reset summary counts
-                    $('#totalSkriningDilakukan').text('0');
-                    $('#jumlahJenisSkriningDilakukan').text('0');
-                    $('#totalJenisSkriningTersedia').text('0');
+                tableBody.empty(); // Kosongkan tabel sebelum memuat data baru
+                tableBody.append('<tr><td colspan="8" class="text-center">Memuat riwayat skrining...</td></tr>');
 
-                    tableBody.empty(); // Kosongkan tabel sebelum memuat data baru
-                    tableBody.append('<tr><td colspan="8" class="text-center">Memuat riwayat skrining...</td></tr>');
+                if (!nik) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Peringatan!',
+                        text: 'NIK Pasien tidak boleh kosong.',
+                    });
+                    tableBody.empty().append('<tr><td colspan="8" class="text-center">Masukkan NIK Pasien untuk melihat riwayat skrining.</td></tr>');
+                    return;
+                }
 
-                    $.ajax({
-                        url: "{{ route('riwayat_skrining.get_history') }}",
-                        method: 'GET',
-                        data: {
-                            nik: nik
-                        },
-                        success: function(response) {
-                            tableBody.empty(); // Kosongkan lagi setelah data diterima
+                $.ajax({
+                    url: "{{ route('riwayat_skrining.get_history') }}",
+                    method: 'GET',
+                    data: {
+                        nik_pasien: nik
+                    },
+                    success: function(response) {
+                        tableBody.empty();
 
-                            if (response.success) {
-                                // Update summary counts
+                        if (response.success) {
+                            // Periksa apakah response.summary ada sebelum mengakses propertinya
+                            if (response.summary) { // PENTING: Perbaikan di sini
                                 $('#totalSkriningDilakukan').text(response.summary.total_skrining_dilakukan);
-                                $('#jumlahJenisSkriningDilakukan').text(response.summary.jumlah_jenis_skrining_dilakukan);
                                 $('#totalJenisSkriningTersedia').text(response.summary.total_jenis_skrining_tersedia);
-
-                                if (response.data.length > 0) {
-                                    $.each(response.data, function(index, skrining) {
-                                        var row = `
-                                            <tr>
-                                                <td>${index + 1}</td>
-                                                <td>${skrining.NIK}</td>
-                                                <td>${skrining.Nama_Pasien}</td>
-                                                <td>${skrining.Nama_Petugas}</td>
-                                                <td>${skrining.Nama_Skrining}</td>
-                                                <td>${skrining.Tanggal_Skrining}</td>
-                                                <td>${skrining.Kondisi}</td>
-                                                <td>
-                                                    <button class="btn btn-sm btn-info btn-detail-riwayat"
-                                                            data-skrining-id="${skrining.id}"
-                                                            data-skrining-data='${JSON.stringify(skrining)}'>Detail</button>
-                                                </td>
-                                            </tr>
-                                        `;
-                                        tableBody.append(row);
-                                    });
-                                } else {
-                                    tableBody.append('<tr><td colspan="8" class="text-center">' + (response.message || 'Tidak ada riwayat skrining ditemukan untuk NIK ini.') + '</td></tr>');
-                                }
                             } else {
-                                tableBody.append('<tr><td colspan="8" class="text-center">' + (response.message || 'Terjadi kesalahan saat memuat data.') + '</td></tr>');
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Gagal!',
-                                    text: response.message || 'Terjadi kesalahan saat memuat data.',
+                                // Fallback jika summary tidak ada (seharusnya tidak terjadi dengan fix backend)
+                                $('#totalSkriningDilakukan').text('0');
+                                $('#totalJenisSkriningTersedia').text('0');
+                            }
+
+
+                            if (response.riwayat.length > 0) {
+                                $.each(response.riwayat, function(index, skrining) {
+                                    var row = `
+                                        <tr>
+                                            <td>${index + 1}</td>
+                                            <td>${skrining.NIK_Pasien ?? '-'}</td>
+                                            <td>${skrining.Nama_Pasien ?? '-'}</td>
+                                            <td>${skrining.Nama_Petugas ?? '-'}</td>
+                                            <td>${skrining.Nama_Skrining_Form ?? '-'}</td>
+                                            <td>${skrining.Tanggal_Skrining ?? '-'}</td>
+                                            <td>${skrining.Kondisi ?? '-'}</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-info btn-detail-riwayat"
+                                                        data-skrining-id="${skrining.id}"
+                                                        data-skrining-data='${JSON.stringify(skrining)}'>Detail</button>
+                                            </td>
+                                        </tr>
+                                    `;
+                                    tableBody.append(row);
                                 });
+                            } else {
+                                tableBody.append('<tr><td colspan="8" class="text-center">Tidak ada riwayat skrining ditemukan untuk NIK ini.</td></tr>');
                             }
-                        },
-                        error: function(xhr, status, error) {
-                            console.error("Error fetching riwayat skrining:", error);
-                            console.log(xhr.responseText);
-                            var errorMessage = 'Terjadi kesalahan saat mengambil riwayat skrining. Silakan coba lagi.';
-                            if (xhr.responseJSON && xhr.responseJSON.message) {
-                                errorMessage = xhr.responseJSON.message;
-                            }
-                            tableBody.empty();
-                            tableBody.append('<tr><td colspan="8" class="text-center text-danger">' + errorMessage + '</td></tr>');
+                        } else {
+                            tableBody.append('<tr><td colspan="8" class="text-center">' + (response.message || 'Terjadi kesalahan saat memuat data.') + '</td></tr>');
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Gagal!',
-                                text: errorMessage,
+                                text: response.message || 'Terjadi kesalahan saat memuat data.',
                             });
                         }
-                    });
-                }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error fetching riwayat skrining:", error);
+                        console.log(xhr.responseText);
 
-                // Event untuk tombol "Detail" di Riwayat Skrining
-                $(document).on('click', '.btn-detail-riwayat', function() {
-                    var skriningData = $(this).data('skrining-data');
-
-                    if (skriningData) {
-                        $('#detail_riwayat_NIK').text(skriningData.NIK);
-                        $('#detail_riwayat_Nama_Pasien').text(skriningData.Nama_Pasien);
-                        $('#detail_riwayat_Nama_Petugas').text(skriningData.Nama_Petugas);
-                        $('#detail_riwayat_Nama_Skrining').text(skriningData.Nama_Skrining);
-                        $('#detail_riwayat_Nama_Penyakit').text(skriningData.Nama_Penyakit);
-                        $('#detail_riwayat_Tanggal_Skrining').text(skriningData.Tanggal_Skrining);
-                        $('#detail_riwayat_Kondisi').text(skriningData.Kondisi);
-
-                        var detailPertanyaanContainer = $('#detail_riwayat_daftar_pertanyaan_formatted');
-                        detailPertanyaanContainer.empty();
-
-                        if (skriningData.detail_jawaban && skriningData.detail_jawaban.length > 0) {
-                            $.each(skriningData.detail_jawaban, function(key, value) {
-                                var answerContent = value.jawaban || '-';
-                                var questionItem = `
-                                    <div class="form-group mb-3">
-                                        <label>${value.pertanyaan}</label>
-                                        <p class="form-control-plaintext border rounded p-2 bg-light">${answerContent}</p>
-                                    </div>
-                                `;
-                                detailPertanyaanContainer.append(questionItem);
-                            });
-                        } else {
-                            detailPertanyaanContainer.html('<p>Tidak ada pertanyaan terkait.</p>');
+                        var errorMessage = 'Terjadi kesalahan saat mengambil riwayat skrining. Silakan coba lagi.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            errorMessage = Object.values(xhr.responseJSON.errors).map(function(err) {
+                                return Array.isArray(err) ? err.join(', ') : err;
+                            }).join('<br>');
                         }
-
-                        $('#detailRiwayatModal').modal('show');
-                    } else {
+                        tableBody.empty();
+                        tableBody.append('<tr><td colspan="8" class="text-center text-danger">' + errorMessage + '</td></tr>');
                         Swal.fire({
                             icon: 'error',
-                            title: 'Error!',
-                            text: 'Data riwayat skrining tidak ditemukan.',
+                            title: 'Gagal!',
+                            html: errorMessage,
                         });
                     }
                 });
+            }
 
-                // Reset modal saat ditutup
-                $('#detailRiwayatModal').on('hidden.bs.modal', function() {
-                    $('#detail_riwayat_NIK').text('');
-                    $('#detail_riwayat_Nama_Pasien').text('');
-                    $('#detail_riwayat_Nama_Petugas').text('');
-                    $('#detail_riwayat_Nama_Skrining').text('');
-                    $('#detail_riwayat_Nama_Penyakit').text('');
-                    $('#detail_riwayat_Tanggal_Skrining').text('');
-                    $('#detail_riwayat_Kondisi').text('');
-                    $('#detail_riwayat_daftar_pertanyaan_formatted').empty();
-                    $('#detail_riwayat_daftar_pertanyaan_formatted').append('<p>Memuat pertanyaan...</p>');
-                });
+            // Event untuk tombol "Detail" di Riwayat Skrining
+            $(document).on('click', '.btn-detail-riwayat', function() {
+                var skriningData = $(this).data('skrining-data');
 
+                if (skriningData) {
+                    $('#detail_riwayat_NIK').text(skriningData.NIK_Pasien ?? '-');
+                    $('#detail_riwayat_Nama_Pasien').text(skriningData.Nama_Pasien ?? '-');
+                    $('#detail_riwayat_Nama_Petugas').text(skriningData.Nama_Petugas ?? '-');
+                    $('#detail_riwayat_Nama_Skrining').text(skriningData.Nama_Skrining_Form ?? '-');
+                    $('#detail_riwayat_Tanggal_Skrining').text(skriningData.Tanggal_Skrining ?? '-');
+                    $('#detail_riwayat_Kondisi').text(skriningData.Kondisi ?? '-');
+
+                    var detailPertanyaanContainer = $('#detail_riwayat_daftar_pertanyaan_formatted');
+                    detailPertanyaanContainer.empty();
+
+                    if (skriningData.detail_jawaban && skriningData.detail_jawaban.length > 0) {
+                        $.each(skriningData.detail_jawaban, function(key, value) {
+                            var answerContent = value.jawaban ?? '-';
+                            var questionItem = `
+                                <div class="form-group mb-3">
+                                    <label>${value.pertanyaan ?? '-'}</label>
+                                    <p class="form-control-plaintext border rounded p-2 bg-light">${answerContent}</p>
+                                </div>
+                            `;
+                            detailPertanyaanContainer.append(questionItem);
+                        });
+                    } else {
+                        detailPertanyaanContainer.html('<p>Tidak ada pertanyaan terkait.</p>');
+                    }
+
+                    $('#detailRiwayatModal').modal('show');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Data riwayat skrining tidak ditemukan.',
+                    });
+                }
             });
-        </script>
-    @endsection
 
-    
+            // Reset modal saat ditutup
+            $('#detailRiwayatModal').on('hidden.bs.modal', function() {
+                $('#detail_riwayat_NIK').text('');
+                $('#detail_riwayat_Nama_Pasien').text('');
+                $('#detail_riwayat_Nama_Petugas').text('');
+                $('#detail_riwayat_Nama_Skrining').text('');
+                $('#detail_riwayat_Tanggal_Skrining').text('');
+                $('#detail_riwayat_Kondisi').text('');
+                $('#detail_riwayat_daftar_pertanyaan_formatted').empty();
+            });
+
+            // Inisialisasi awal jika ada NIK di URL saat halaman dimuat
+            @if(request('nik'))
+                $('#nikPasienInput').val("{{ request('nik') }}");
+                fetchRiwayatSkrining();
+            @endif
+        });
+    </script>
+@endsection

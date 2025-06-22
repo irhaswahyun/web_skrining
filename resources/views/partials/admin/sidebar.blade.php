@@ -50,11 +50,11 @@
                     <span class="ml-3 item-text">Manajemen <br>Forms Skrining</span>
                 </a>
                 <ul class="collapse list-unstyled pl-4 w-100" id="forms">
-                    <li class="nav-item">
-                        <a class="nav-link pl-3 {{ request()->routeIs('daftar_penyakit.index') ? 'active' : '' }}"
-                            href="{{ route('daftar_penyakit.index') }}"><span class="ml-1 item-text">Daftar
-                                Penyakit</span></a>
-                    </li>
+                    <!--<li class="nav-item">-->
+                    <!--    <a class="nav-link pl-3 {{ request()->routeIs('daftar_penyakit.index') ? 'active' : '' }}"-->
+                    <!--        href="{{ route('daftar_penyakit.index') }}"><span class="ml-1 item-text">Daftar-->
+                    <!--            Penyakit</span></a>-->
+                    <!--</li>-->
                     <li class="nav-item">
                         <a class="nav-link pl-3 {{ request()->routeIs('daftar_pertanyaan.index') ? 'active' : '' }}"
                             href="{{ route('daftar_pertanyaan.index') }}"><span class="ml-1 item-text">Daftar

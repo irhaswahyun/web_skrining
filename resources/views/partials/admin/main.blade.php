@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="{{ asset('favicon.ico') }}"> {{-- Pastikan favicon.ico ada di public/ --}}
+    <link rel="icon" href="{{ asset('assets/images/LogoSidebar') }}"> {{-- Pastikan favicon.ico ada di public/ --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Web Skrining Puskesmas Mojopanggung</title>
     <link rel="stylesheet" href="{{ asset('assets/css/simplebar.css') }}">

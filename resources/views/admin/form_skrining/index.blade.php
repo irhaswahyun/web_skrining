@@ -45,7 +45,7 @@
                                         <tr>
                                             <th><b>No</b></th>
                                             <th><b>Nama Skrining</b></th>
-                                            <th><b>Nama Penyakit</b></th>
+                                            <th><b>Kategori</b></th> {{-- Kolom baru untuk Kategori --}}
                                             <th><b>Jumlah Pertanyaan</b></th>
                                             <th><b>Aksi</b></th>
                                         </tr>
@@ -55,7 +55,13 @@
                                             <tr>
                                                 <td>{{ $i + 1 }}</td>
                                                 <td>{{ $skrining->nama_skrining }}</td>
-                                                <td>{{ $skrining->penyakit->Nama_Penyakit ?? '-' }}</td> {{-- Pastikan ini sesuai dengan nama kolom di database Anda --}}
+                                                <td>
+                                                    @if ($skrining->kategori && is_array($skrining->kategori) && count($skrining->kategori) > 0)
+                                                        {{ implode(', ', $skrining->kategori) }}
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
                                                 <td>{{ $skrining->pertanyaans_count }}</td>
                                                 <td>
                                                     <button class="btn btn-sm btn-info btn-detail"
@@ -79,8 +85,7 @@
                     </div>
                 </div>
             </div>
-    </div>
-    </section>
+        </section>
     </div>
 
     {{-- MODAL TAMBAH FORM SKRINING BARU --}}
@@ -102,21 +107,32 @@
                             <label for="nama_skrining">Nama Skrining</label>
                             <input type="text" name="nama_skrining" class="form-control"
                                 placeholder="Masukkan nama skrining" required>
+                            @error('nama_skrining')
+                                <div class="text-danger mt-1">{{ $message }}</div>
+                            @enderror
                         </div>
+
+                        {{-- BAGIAN BARU: PEMILIHAN KATEGORI UNTUK TAMBAH --}}
                         <div class="form-group">
-                            <label for="id_daftar_penyakit">Nama Penyakit</label>
-                            <select name="id_daftar_penyakit" class="form-control" required>
-                                <option value="">-- Pilih Penyakit --</option>
-                                @foreach ($penyakits as $penyakit)
-                                    <option value="{{ $penyakit->id }}">{{ $penyakit->Nama_Penyakit }}</option> {{-- Pastikan ini sesuai --}}
-                                @endforeach
+                            <label for="kategori_tambah">Pilih Kategori Pasien (Bisa Pilih Banyak)</label>
+                            <select name="kategori[]" id="kategori_tambah" class="form-control select2-multiple" multiple="multiple" style="width: 100%;" required>
+                                {{-- Opsi kategori diisi dari $kategoriOptions yang sudah tersedia --}}
+                                @isset($kategoriOptions)
+                                    @foreach ($kategoriOptions as $kategoriItem)
+                                        <option value="{{ $kategoriItem }}">{{ $kategoriItem }}</option>
+                                    @endforeach
+                                @endisset
                             </select>
+                            @error('kategori')
+                                <div class="text-danger mt-1">{{ $message }}</div>
+                            @enderror
                         </div>
+
                         <div class="form-group">
                             <label>Pertanyaan</label>
-                            <div class="form-check">
+                            <div class="form-check" id="tambah_pertanyaan_list">
                                 {{-- Loop semua pertanyaan dari controller index --}}
-                                @foreach ($pertanyaans as $pertanyaan)
+                                @foreach ($pertanyaans as $pertanyaan) {{-- Variabel ini harusnya sudah tersedia dari method index --}}
                                     <div>
                                         <input type="checkbox" name="pertanyaan_ids[]" value="{{ $pertanyaan->id }}"
                                             id="tambah_pertanyaan_{{ $pertanyaan->id }}" class="form-check-input">
@@ -125,6 +141,9 @@
                                         </label>
                                     </div>
                                 @endforeach
+                                @error('pertanyaan_ids')
+                                    <div class="text-danger mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -156,22 +175,31 @@
                             <label for="edit_nama_skrining">Nama Skrining</label>
                             <input type="text" class="form-control" id="edit_nama_skrining" name="nama_skrining"
                                 placeholder="Masukkan nama skrining" required>
+                            @error('nama_skrining')
+                                <div class="text-danger mt-1">{{ $message }}</div>
+                            @enderror
                         </div>
+
+                        {{-- BAGIAN BARU: PEMILIHAN KATEGORI UNTUK EDIT --}}
                         <div class="form-group">
-                            <label for="edit_id_daftar_penyakit">Nama Penyakit</label>
-                            <select class="form-control" id="edit_id_daftar_penyakit" name="id_daftar_penyakit" required>
-                                <option value="">-- Pilih Penyakit --</option>
-                                @foreach ($penyakits as $penyakit)
-                                    <option value="{{ $penyakit->id }}">{{ $penyakit->Nama_Penyakit }}</option>  {{-- Pastikan ini sesuai --}}
-                                @endforeach
+                            <label for="kategori_edit">Pilih Kategori Pasien (Bisa Pilih Banyak)</label>
+                            <select name="kategori[]" id="kategori_edit" class="form-control select2-multiple" multiple="multiple" style="width: 100%;">
+                                {{-- Opsi akan diisi oleh JavaScript dari respons AJAX --}}
                             </select>
+                            @error('kategori')
+                                <div class="text-danger mt-1">{{ $message }}</div>
+                            @enderror
                         </div>
+
                         <div class="form-group">
                             <label>Pertanyaan</label>
                             {{-- CONTAINER tempat pertanyaan (checkboxes) akan diisi oleh JavaScript --}}
                             <div class="form-check" id="edit_pertanyaan_list">
                                 <p>Memuat pertanyaan...</p> {{-- Placeholder loading --}}
                             </div>
+                            @error('pertanyaan_ids')
+                                <div class="text-danger mt-1">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -197,8 +225,13 @@
                 <div class="modal-body">
                     <h6 class="font-weight-bold">Nama Skrining:</h6>
                     <p id="detail_nama_skrining"></p>
-                    <h6 class="font-weight-bold">Nama Penyakit:</h6>
-                    <p id="detail_nama_penyakit"></p>
+
+                    {{-- BAGIAN BARU: DETAIL KATEGORI --}}
+                    <h6 class="font-weight-bold">Kategori Pasien:</h6>
+                    <ul id="detail_kategori_pasien" class="list-unstyled">
+                        {{-- Akan diisi via JS --}}
+                    </ul>
+
                     <h6 class="font-weight-bold">Daftar Pertanyaan:</h6>
                     <ul id="detail_daftar_pertanyaan">
                     </ul>
@@ -238,8 +271,27 @@
 @endsection
 
 @section('scripts')
+    {{-- Memuat Select2 CSS dan JS --}}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
     <script>
         $(document).ready(function() {
+            // Inisialisasi Select2 untuk modal tambah
+            $('#kategori_tambah').select2({
+                placeholder: "Pilih kategori",
+                allowClear: true,
+                dropdownParent: $('#tambahSkriningModal') // Penting untuk modal Bootstrap
+            });
+
+            // Inisialisasi Select2 untuk modal edit
+            $('#kategori_edit').select2({
+                placeholder: "Pilih kategori",
+                allowClear: true,
+                dropdownParent: $('#editModal') // Penting untuk modal Bootstrap
+            });
+
+
             // Event untuk tombol "Tambah Baru"
             $('#tambahSkriningBaru').click(function() {
                 $('#tambahSkriningModal').modal('show');
@@ -248,28 +300,43 @@
             // Event untuk tombol "Edit"
             $('.btn-edit').on('click', function() {
                 var formSkriningId = $(this).data('id');
-                // Menggunakan helper route() untuk mendapatkan URL update yang benar
                 var urlUpdate = "{{ route('form_skrining.update', ':id') }}";
                 urlUpdate = urlUpdate.replace(':id', formSkriningId);
 
                 $('#editForm').attr('action', urlUpdate);
 
                 $.ajax({
-                    // Menggunakan helper route()
-                    url: "{{ route('form_skrining.detail', ':id') }}".replace(':id', formSkriningId),
+                    url: "{{ route('form_skrining.edit', ':id') }}".replace(':id', formSkriningId),
                     method: 'GET',
                     success: function(response) {
                         console.log('Response for Edit Modal:', response);
 
                         $('#edit_nama_skrining').val(response.formSkrining.nama_skrining);
-                        $('#edit_id_daftar_penyakit').val(response.formSkrining.penyakit.id);
+
+                        // Hapus baris ini karena kolom 'id_daftar_penyakit' sudah dihapus
+                        // $('#edit_id_daftar_penyakit').val(response.formSkrining.penyakit.id);
+
+                        // --- Logic untuk Kategori (BARU) ---
+                        var kategoriSelect = $('#kategori_edit');
+                        kategoriSelect.empty(); // Kosongkan opsi sebelumnya
+
+                        var kategoriOptions = response.kategoriOptions; // Ambil dari response
+                        var selectedKategori = response.formSkrining.kategori || []; // Ambil dari formSkrining
+
+                        $.each(kategoriOptions, function(index, kategoriItem) {
+                            var option = new Option(kategoriItem, kategoriItem, false, false);
+                            kategoriSelect.append(option);
+                        });
+                        // Set opsi yang sudah terpilih di Select2
+                        kategoriSelect.val(selectedKategori).trigger('change');
+                        // --- Akhir Logic untuk Kategori ---
+
 
                         var pertanyaanContainer = $('#edit_pertanyaan_list');
                         pertanyaanContainer.empty();
 
-                        var allPertanyaans = @json($pertanyaans);
-
-                        var relatedPertanyaanIds = response.formSkrining.related_pertanyaan.map(p => p.id);
+                        var allPertanyaans = response.allPertanyaans; // Ambil dari response
+                        var relatedPertanyaanIds = response.relatedPertanyaanIds; // Ambil dari response
 
                         if (allPertanyaans && allPertanyaans.length > 0) {
                             $.each(allPertanyaans, function(index, pertanyaan) {
@@ -305,6 +372,8 @@
                 $('#editForm')[0].reset();
                 $('#edit_pertanyaan_list').empty();
                 $('#edit_pertanyaan_list').append('<p>Memuat pertanyaan...</p>');
+                // Reset Select2 di modal edit
+                $('#kategori_edit').val(null).trigger('change');
             });
 
             // Event untuk tombol "Detail"
@@ -314,9 +383,21 @@
                 $.get("{{ route('form_skrining.detail', ':id') }}".replace(':id', skriningId), function(data) {
                     if (data.formSkrining) {
                         $('#detail_nama_skrining').text(data.formSkrining.nama_skrining);
-                        // PERHATIKAN BARIS INI.  Ganti Nama_Penyakit jika perlu.
-                        $('#detail_nama_penyakit').text(data.formSkrining.penyakit ? data.formSkrining.penyakit.Nama_Penyakit : '-');
-                        // ----------------------------------------------------
+
+                        // Hapus baris ini karena Nama Penyakit sudah tidak relevan
+                        // $('#detail_nama_penyakit').text(data.formSkrining.penyakit ? data.formSkrining.penyakit.Nama_Penyakit : '-');
+
+                        // --- Logic untuk Kategori (BARU) ---
+                        var detailKategoriList = $('#detail_kategori_pasien');
+                        detailKategoriList.empty();
+                        if (data.formSkrining.kategori && Array.isArray(data.formSkrining.kategori) && data.formSkrining.kategori.length > 0) {
+                            $.each(data.formSkrining.kategori, function(index, kategori) {
+                                detailKategoriList.append('<li>' + kategori + '</li>');
+                            });
+                        } else {
+                            detailKategoriList.append('<li>Tidak ada kategori spesifik</li>');
+                        }
+                        // --- Akhir Logic untuk Kategori ---
 
                         $('#detail_daftar_pertanyaan').empty();
                         if (data.formSkrining.related_pertanyaan && data.formSkrining.related_pertanyaan.length > 0) {
@@ -351,10 +432,17 @@
                 var searchValue = $(this).val();
                 var url = "{{ route('form_skrining.index') }}";
 
+                // Menggunakan parameter 'search' untuk request AJAX
                 url += (url.indexOf('?') > -1 ? '&' : '?') + 'search=' + searchValue;
 
+                // Melakukan AJAX request dan memperbarui hanya bagian tbody
                 $.get(url, function(data) {
-                    $('tbody').html($(data).find('tbody').html());
+                    // Membuat objek jQuery dari HTML yang diterima dan mencari tbody
+                    var newTbody = $(data).find('tbody').html();
+                    $('tbody').html(newTbody);
+                }).fail(function(xhr) {
+                    console.error("Error during search:", xhr.responseText);
+                    alert('Terjadi kesalahan saat melakukan pencarian.');
                 });
             });
 
@@ -362,4 +450,3 @@
         });
     </script>
 @endsection
-
