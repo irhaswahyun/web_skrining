@@ -119,22 +119,27 @@ Route::middleware(['auth', 'role:nakes'])->group(function () {
     });
 
      // SKRINING ROUTES (Ini yang terkait dengan pendataan skrining pasien)
-Route::prefix('skrining')->group(function () {
-    Route::get('/', [SkriningController::class, 'index'])->name('skrining.index');
-    Route::post('/store', [SkriningController::class, 'store'])->name('skrining.store');
-    Route::put('/update/{id}', [SkriningController::class, 'update'])->name('skrining.update');
-    Route::delete('/{id}', [SkriningController::class, 'delete'])->name('skrining.delete'); // Pastikan ini juga benar
-    Route::get('/show/{id}', [SkriningController::class, 'show'])->name('skrining.show');
+    Route::prefix('skrining')->group(function () {
+        Route::get('/', [SkriningController::class, 'index'])->name('skrining.index');
+        Route::post('/store', [SkriningController::class, 'store'])->name('skrining.store');
+        Route::put('/update/{id}', [SkriningController::class, 'update'])->name('skrining.update');
+        //Route::get('/{id}/edit', [SkriningController::class, 'edit'])->name('skrining.edit');
+        Route::delete('/{id}', [SkriningController::class, 'delete'])->name('skrining.delete'); // Pastikan ini juga benar
+        Route::get('/show/{id}', [SkriningController::class, 'show'])->name('skrining.show');
+        
+        // --- ROUTE BARU YANG PERLU ANDA TAMBAHKAN ---
+        Route::get('/skrining-data', [SkriningController::class, 'getSkriningData'])->name('skrining.getData');
+        Route::get('/diagnosa/{id}', [SkriningController::class, 'getDiagnosa'])->name('skrining.getDiagnosa');
 
-    // ******* Rute KRITIS yang MENYEBABKAN ERROR 404 INI ********
-    // Pastikan ini ada dan penamaannya konsisten:
-    // URL: /skrining/pertanyaan/{id}
-    // Nama Rute: skrining.get-pertanyaan-by-form-skrining
-    Route::get('/pertanyaan/{id}', [SkriningController::class, 'getPertanyaanByFormSkrining'])->name('skrining.get-pertanyaan-by-form-skrining');
+        // ******* Rute KRITIS yang MENYEBABKAN ERROR 404 INI ********
+        // Pastikan ini ada dan penamaannya konsisten:
+        // URL: /skrining/pertanyaan/{id}
+        // Nama Rute: skrining.get-pertanyaan-by-form-skrining
+        Route::get('/pertanyaan/{id}', [SkriningController::class, 'getPertanyaanByFormSkrining'])->name('skrining.get-pertanyaan-by-form-skrining');
 
-    // Rute untuk mendapatkan rekomendasi form skrining
-    Route::get('/recommended-forms', [SkriningController::class, 'getRecommendedFormSkrinings'])->name('skrining.getRecommendedFormSkrinings');
-});
+        // Rute untuk mendapatkan rekomendasi form skrining
+        Route::get('/recommended-forms', [SkriningController::class, 'getRecommendedFormSkrinings'])->name('skrining.getRecommendedFormSkrinings');
+    });
 
     // RIWAYAT SKRINING ROUTES
     Route::prefix('riwayat-skrining')->group(function () {

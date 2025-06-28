@@ -38,5 +38,9 @@ class Skrining extends Model
         return $this->hasMany(Jawaban::class, 'ID_Skrining', 'id');
     }
 
+    public function diagnosa()
+    {
+        return $this->hasOne(Diagnosa::class, 'skrining_id');
+    }
     
 }

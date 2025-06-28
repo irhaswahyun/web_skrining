@@ -8,25 +8,38 @@ use App\Models\Skrining;
 use App\Models\Jawaban;
 use App\Models\FormSkrining;
 use App\Models\Pasien;
+use App\Models\Diagnosa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\Rule;
+use App\Services\Diagnosa\Factories\DiagnoserFactory; // Pastikan namespace ini benar
 use Carbon\Carbon;
 
 class SkriningController extends Controller
 {
+    protected DiagnoserFactory $diagnoserFactory;
+
+    // Injeksi DiagnoserFactory melalui constructor
+    public function __construct(DiagnoserFactory $diagnoserFactory)
+    {
+        $this->diagnoserFactory = $diagnoserFactory;
+    }
+
+    /**
+     * Menampilkan daftar data skrining.
+     */
     public function index(Request $request)
     {
         $search = $request->input('search');
 
-        $skrinings = Skrining::with('pasien', 'formSkrining')
+        $skrinings = Skrining::with('pasien', 'formSkrining', 'diagnosa') // Tambahkan 'diagnosa' untuk relasi
             ->when($search, function ($query) use ($search) {
                 $query->whereHas('pasien', function ($subQuery) use ($search) {
                     $subQuery->where('Nama_Pasien', 'like', '%' . $search . '%');
                 });
             })
-            ->orderBy('Tanggal_Skrining', 'asc')
+            ->orderBy('Tanggal_Skrining', 'asc') // Mengurutkan dari terbaru
             ->paginate(100);
 
         $formSkrinings = FormSkrining::all();
@@ -36,6 +49,31 @@ class SkriningController extends Controller
         return view('admin.skrining.index', compact('skrinings', 'formSkrinings', 'penyakits', 'pertanyaans'));
     }
 
+    /**
+     * Mengambil data skrining untuk tabel AJAX.
+     */
+    public function getSkriningData(Request $request)
+    {
+        // Ambil semua data skrining dengan relasi yang diperlukan untuk tabel
+        // Pastikan relasi 'pasien', 'formSkrining', dan 'diagnosa' sudah didefinisikan di model Skrining
+        $skrinings = Skrining::with(['pasien', 'formSkrining', 'diagnosa'])
+                ->orderBy('Tanggal_Skrining', 'asc') // Pastikan diurutkan DESC
+                ->orderBy('id', 'asc') // Tambahan pengurutan berdasarkan ID
+                ->get();
+
+        // Mengubah format tanggal_skrining jika diperlukan untuk tampilan frontend
+        $skrinings->map(function ($item) {
+            $item->Tanggal_Skrining_Formatted = Carbon::parse($item->Tanggal_Skrining)->format('d-m-Y');
+            return $item;
+        });
+
+        return response()->json($skrinings);
+    }
+
+
+    /**
+     * Mengambil pertanyaan berdasarkan ID Form Skrining.
+     */
     public function getPertanyaanByFormSkrining(Request $request, $id)
     {
         try {
@@ -43,15 +81,12 @@ class SkriningController extends Controller
             $pertanyaanList = $formSkrining->pertanyaan;
 
             $nikPasien = $request->query('nik_pasien');
-            $tanggalSkriningRaw = $request->query('tanggal_skrining'); // Diharapkan format YYYY-MM-DD dari frontend
+            $tanggalSkriningRaw = $request->query('tanggal_skrining');
 
             if ($nikPasien && $tanggalSkriningRaw) {
                 try {
-                    // Pastikan parsing tanggal dari frontend (YYYY-MM-DD) ke YYYY-MM-DD untuk query DB
-                    // Jika datepicker mengirim dd-mm-yyyy, ini yang harus digunakan:
-                    // $parsedDate = Carbon::createFromFormat('d-m-Y', $tanggalSkriningRaw)->format('Y-m-d');
+                    // Pastikan format tanggal yang diterima dari frontend adalah Y-m-d
                     $parsedDate = Carbon::createFromFormat('Y-m-d', $tanggalSkriningRaw)->format('Y-m-d');
-
 
                     $skriningsToday = Skrining::where('NIK_Pasien', $nikPasien)
                         ->whereDate('Tanggal_Skrining', $parsedDate)
@@ -65,25 +100,46 @@ class SkriningController extends Controller
                         }
                     }
 
+                    // Map pertanyaanList untuk menambahkan properti 'previous_answer'
+                    // Karena JavaScript Anda sebelumnya mengharapkan 'previous_answer'
                     $pertanyaanList = $pertanyaanList->map(function ($pertanyaan) use ($previousAnswers) {
+                        // Ubah ini dari 'jawaban_tersimpan' menjadi 'previous_answer'
                         $pertanyaan->previous_answer = $previousAnswers[$pertanyaan->id] ?? null;
                         return $pertanyaan;
                     });
 
                 } catch (\Exception $e) {
-                    return response()->json($pertanyaanList);
+                    // Jika ada error dalam parsing tanggal atau query,
+                    // Tetap kembalikan pertanyaanList tapi dengan pesan error untuk frontend jika perlu
+                    // Namun, karena JS Anda mengharapkan array langsung, kita harus konsisten.
+                    // Sebaiknya log error ini untuk debugging.
+                    \Log::error("Error in getPertanyaanByFormSkrining date parsing/query: " . $e->getMessage());
+                    // Kita masih akan mengembalikan pertanyaanList (mungkin tanpa jawaban sebelumnya)
+                    // dan biarkan frontend menangani 'previous_answer' yang null.
+                    // Pertahankan $pertanyaanList apa adanya jika ada error di sini.
                 }
             }
 
-            return response()->json($pertanyaanList);
+            // =================================================================
+            // >>> PENTING: UBAH BAGIAN INI AGAR MENGEMBALIKAN ARRAY LANGSUNG <<<
+            // =================================================================
+            return response()->json($pertanyaanList); // Hanya kirim array pertanyaanList
+            // =================================================================
 
         } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Formulir Skrining tidak ditemukan.'], 404);
+            // Untuk ModelNotFoundException, kita harus mengembalikan respons yang bisa dipahami JavaScript.
+            // Karena ini adalah error, mungkin lebih baik tetap dalam format objek.
+            // JavaScript Anda di `error` callback sudah menangani `xhr.responseText`.
+            return response()->json(['success' => false, 'message' => 'Formulir Skrining tidak ditemukan.'], 404);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Terjadi kesalahan saat memuat pertanyaan untuk formulir skrining. Pastikan NIK dan Tanggal Skrining sudah benar.'], 500);
+            // Untuk error umum, juga kembalikan dalam format objek agar JavaScript bisa menangkapnya di `error` callback.
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan server: ' . $e->getMessage(), 'error_details' => $e->getMessage()], 500);
         }
     }
 
+    /**
+     * Mengambil rekomendasi form skrining berdasarkan NIK Pasien.
+     */
     public function getRecommendedFormSkrinings(Request $request)
     {
         try {
@@ -99,14 +155,17 @@ class SkriningController extends Controller
             if ($pasien) {
                 $kategoriPasien = $pasien->Kategori;
 
+                // Pastikan kategori pasien di-decode dengan benar jika disimpan sebagai JSON string
                 if (is_string($kategoriPasien)) {
                     $decodedKategori = json_decode($kategoriPasien, true);
                     if (json_last_error() === JSON_ERROR_NONE && is_array($decodedKategori)) {
                         $kategoriPasien = $decodedKategori;
                     } else {
+                        // Jika bukan JSON array yang valid, anggap sebagai string tunggal
                         $kategoriPasien = [$kategoriPasien];
                     }
                 } elseif (!is_array($kategoriPasien)) {
+                    // Default jika kategori tidak ada atau tidak valid
                     $kategoriPasien = ['Umum'];
                 }
 
@@ -126,12 +185,16 @@ class SkriningController extends Controller
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['success' => false, 'message' => 'NIK Pasien tidak valid atau tidak ditemukan.'], 400);
+            return response()->json(['success' => false, 'message' => 'NIK Pasien tidak valid atau tidak ditemukan.', 'errors' => $e->errors()], 400);
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat memuat rekomendasi formulir.'], 500);
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat memuat rekomendasi formulir.', 'error' => $e->getMessage()], 500);
         }
     }
 
+
+    /**
+     * Menyimpan data skrining baru.
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -141,9 +204,9 @@ class SkriningController extends Controller
                 'string',
                 'max:255',
                 Rule::unique('skrinings')->where(function ($query) use ($request) {
-                    $tanggalSkriningRaw = $request->Tanggal_Skrining; // format dd-mm-yyyy dari frontend
+                    $tanggalSkriningRaw = $request->Tanggal_Skrining;
                     try {
-                        $tanggalSkrining = Carbon::createFromFormat('d-m-Y', $tanggalSkriningRaw)->format('Y-m-d');
+                        $tanggalSkrining = Carbon::createFromFormat('Y-m-d', $tanggalSkriningRaw)->format('Y-m-d');
                     } catch (\Exception $e) {
                         return $query->whereRaw('0=1');
                     }
@@ -153,21 +216,17 @@ class SkriningController extends Controller
                 }),
             ],
             'Nama_Pasien' => 'required|string|max:255',
-            'Tanggal_Skrining' => 'required|date_format:d-m-Y',
+            'Tanggal_Skrining' => 'required|date_format:Y-m-d',
             'id_form_skrining' => 'required|exists:form_skrinings,id',
             'jawaban' => 'required|array',
             'jawaban.*' => 'nullable|string|max:1000',
         ], [
             'NIK_Pasien.unique' => 'Pasien ini sudah melakukan skrining untuk jenis formulir yang sama pada tanggal yang sama.',
-            'Tanggal_Skrining.date_format' => 'Format Tanggal Skrining harus dd-mm-yyyy.',
+            'Tanggal_Skrining.date_format' => 'Format Tanggal Skrining harus YYYY-MM-DD.',
         ]);
 
+        DB::beginTransaction();
         try {
-            $formSkrining = FormSkrining::find($request->id_form_skrining);
-            if (!$formSkrining) {
-                return response()->json(['success' => false, 'message' => 'Formulir Skrining tidak ditemukan.'], 404);
-            }
-
             $pasien = Pasien::where('NIK', $request->NIK_Pasien)->first();
             if (!$pasien) {
                 Pasien::create([
@@ -180,15 +239,16 @@ class SkriningController extends Controller
                     'Wilayah' => '-',
                     'No_telp' => '-',
                 ]);
+                $pasien = Pasien::where('NIK', $request->NIK_Pasien)->first();
             }
 
-            $tanggalSkriningFormatted = Carbon::createFromFormat('d-m-Y', $request->Tanggal_Skrining)->format('Y-m-d');
+            $tanggalSkriningUntukDb = $request->Tanggal_Skrining;
 
             $skrining = Skrining::create([
                 'Nama_Petugas' => $request->Nama_Petugas,
                 'NIK_Pasien' => $request->NIK_Pasien,
                 'Nama_Pasien' => $request->Nama_Pasien,
-                'Tanggal_Skrining' => $tanggalSkriningFormatted,
+                'Tanggal_Skrining' => $tanggalSkriningUntukDb,
                 'id_form_skrining' => $request->id_form_skrining,
             ]);
 
@@ -202,126 +262,207 @@ class SkriningController extends Controller
                 }
             }
 
-            return response()->json(['success' => true, 'message' => 'Skrining berhasil ditambahkan!']);
+            $formSkrining = FormSkrining::find($skrining->id_form_skrining);
+            $jenisPenyakit = strtolower($formSkrining->nama_skrining);
+
+            $diagnoser = $this->diagnoserFactory->getDiagnoser($jenisPenyakit);
+
+            if (!$diagnoser) {
+                DB::commit();
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Skrining berhasil disimpan. Hasil otomatis tidak tersedia untuk jenis ini.',
+                    'skrining_id' => $skrining->id,
+                    'skrining' => $skrining->load(['pasien', 'formSkrining']), // <--- PENTING: SUDAH DITAMBAHKAN DI SINI
+                    'diagnosa' => null
+                ], 200);
+            }
+
+            $skrining->load([
+                'pasien',
+                'formSkrining.pertanyaan',
+                'jawabans.pertanyaan'
+            ]);
+
+            $diagnosaResult = $diagnoser->analyze($skrining);
+
+            $diagnosa = Diagnosa::create([
+                'skrining_id' => $skrining->id,
+                'jenis_penyakit' => $jenisPenyakit,
+                'hasil_utama' => $diagnosaResult['hasil_utama'],
+                'rekomendasi_tindak_lanjut' => $diagnosaResult['rekomendasi_tindak_lanjut'],
+                'detail_diagnosa' => $diagnosaResult['detail_diagnosa'],
+                'catatan' => $diagnosaResult['catatan'],
+                'tanggal_diagnosa' => now(),
+            ]);
+
+            if (in_array($diagnosa->hasil_utama, ['Malaria Terkonfirmasi, Rujuk FKLNT'])) {
+                $pasien->update(['is_riwayat_malaria_positif' => true]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Skrining berhasil disimpan dan hasil skrining telah ditentukan!',
+                'skrining_id' => $skrining->id,
+                'skrining' => $skrining->load(['pasien', 'formSkrining']),
+                'diagnosa' => $diagnosa->load('skrining')
+            ]);
 
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Gagal menambahkan skrining. Silakan coba lagi.'], 500);
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyimpan skrining atau mendiagnosa.',
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
         }
     }
+    /**
+     * Menampilkan detail skrining untuk modal edit.
+     */
+    // public function show($id)
+    // {
+    //     try {
+    //         // Load relasi yang diperlukan: pasien, formSkrining dengan pertanyaan, jawaban dengan pertanyaan, dan diagnosa
+    //         $skrining = Skrining::with(['pasien', 'formSkrining.pertanyaan', 'jawabans.pertanyaan', 'diagnosa'])->find($id);
+
+    //         if (!$skrining) {
+    //             return response()->json(['success' => false, 'message' => 'Data skrining tidak ditemukan.'], 404);
+    //         }
+
+    //         // Ambil semua form skrining yang tersedia untuk dropdown di frontend
+    //         $formSkrinings = FormSkrining::all();
+
+    //         // Kumpulkan jawaban yang sudah ada dalam format yang mudah digunakan di frontend
+    //         $existingJawaban = [];
+    //         foreach ($skrining->jawabans as $jawaban) {
+    //             $existingJawaban[$jawaban->ID_DaftarPertanyaan] = $jawaban->jawaban;
+    //         }
+
+    //         // Tambahkan jawaban yang sudah ada ke data pertanyaan
+    //         // Ini akan diproses oleh JavaScript di frontend saat mengisi form edit
+    //         foreach ($skrining->formSkrining->pertanyaan as $pertanyaan) {
+    //             $pertanyaan->jawaban_tersimpan = $existingJawaban[$pertanyaan->id] ?? null;
+    //         }
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'data' => $skrining,
+    //             'formSkrinings' => $formSkrinings,
+    //         ]);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['success' => false, 'message' => 'Gagal memuat data skrining untuk edit: ' . $e->getMessage()], 500);
+    //     }
+    // }
 
     public function show($id)
     {
         try {
-            // Eager load relasi yang dibutuhkan
             $skrining = Skrining::with([
                 'pasien',
-                'formSkrining', // Load FormSkrining terlebih dahulu
-                'jawabans.daftarPertanyaan'
-            ])->findOrFail($id); // Gunakan findOrFail untuk langsung 404 jika tidak ditemukan
+                'formSkrining.pertanyaan', // Relasi Many-to-Many via pivot table
+                'jawabans.pertanyaan',
+                'diagnosa'
+            ])->find($id);
 
-            // Muat relasi pertanyaan hanya jika formSkrining ada
-            if ($skrining->formSkrining) {
-                $skrining->load('formSkrining.pertanyaan');
+            if (!$skrining) {
+                return response()->json(['success' => false, 'message' => 'Data skrining tidak ditemukan.'], 404);
             }
 
-            // Pastikan relasi 'pasien' dan 'formSkrining' tidak null sebelum mengakses propertinya
-            $namaPasien = $skrining->pasien->Nama_Pasien ?? '-';
-            $nikPasien = $skrining->pasien->NIK ?? '-';
-            $namaSkrining = $skrining->formSkrining->nama_skrining ?? '-';
+            // Ambil semua form skrining yang tersedia untuk dropdown di frontend
+            $formSkrinings = FormSkrining::all();
 
-            $detailData = [
-                'id' => $skrining->id,
-                'Nama_Petugas' => $skrining->Nama_Petugas,
-                'NIK_Pasien' => $nikPasien,
-                'Nama_Pasien' => $namaPasien,
-                // Format Tanggal_Skrining kembali ke dd-mm-yyyy untuk tampilan di frontend
-                'Tanggal_Skrining' => Carbon::parse($skrining->Tanggal_Skrining)->format('d-m-Y'),
-                'id_form_skrining' => $skrining->id_form_skrining,
-                'nama_skrining' => $namaSkrining,
-                'pertanyaan' => [],
-            ];
+            // Kumpulkan jawaban yang sudah ada dalam format yang mudah digunakan di frontend
+            $existingJawaban = [];
+            foreach ($skrining->jawabans as $jawaban) {
+                $existingJawaban[$jawaban->ID_DaftarPertanyaan] = $jawaban->jawaban;
+            }
 
-            // Inisialisasi array pertanyaan
-            $pertanyaanArray = [];
-
-            // Pastikan relasi formSkrining dan pertanyaannya ada sebelum iterasi
-            if ($skrining->formSkrining && $skrining->formSkrining->pertanyaan) {
+            // Tambahkan jawaban yang sudah ada ke data pertanyaan
+            // Ini akan diproses oleh JavaScript di frontend saat mengisi form edit
+            // Pastikan $skrining->formSkrining ada sebelum mengakses propertinya.
+            if ($skrining->formSkrining) {
                 foreach ($skrining->formSkrining->pertanyaan as $pertanyaan) {
-                    $jawabanObj = $skrining->jawabans->firstWhere('ID_DaftarPertanyaan', $pertanyaan->id);
-                    $pertanyaanArray[] = [
-                        'id' => $pertanyaan->id,
-                        'pertanyaan' => $pertanyaan->pertanyaan,
-                        'jawaban' => $jawabanObj ? $jawabanObj->jawaban : '',
-                    ];
+                    $pertanyaan->jawaban_tersimpan = $existingJawaban[$pertanyaan->id] ?? null;
                 }
             }
-            $detailData['pertanyaan'] = $pertanyaanArray; // Assign array yang sudah terisi atau kosong
 
-            return response()->json($detailData);
-
-        } catch (ModelNotFoundException $e) {
-            // Menangkap jika Skrining tidak ditemukan
-            return response()->json(['message' => 'Skrining tidak ditemukan.', 'error_detail' => $e->getMessage()], 404);
+            return response()->json([
+                'success' => true,
+                'data' => $skrining,
+                'formSkrinings' => $formSkrinings,
+            ]);
         } catch (\Exception $e) {
-            // Menangkap error umum lainnya
-            return response()->json(['message' => 'Terjadi kesalahan saat memuat data detail. Silakan coba lagi.', 'error_detail' => $e->getMessage()], 500);
+            // Log error untuk debugging lebih lanjut
+            \Log::error("Error in SkriningController@show: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal memuat data skrining untuk edit: ' . $e->getMessage()], 500);
         }
     }
 
+    /**
+     * Memperbarui data skrining yang sudah ada.
+     */
     public function update(Request $request, $id)
     {
+        // Validasi data input untuk update
         $request->validate([
             'Nama_Petugas' => 'required|string|max:255',
-            'NIK_Pasien' => 'required|string|max:255',
+            'NIK_Pasien' => 'required|string|max:255', // Sesuaikan max length jika NIK 16 digit
             'Nama_Pasien' => 'required|string|max:255',
-            'Tanggal_Skrining' => 'required|date_format:d-m-Y',
-            'id_form_skrining_edit' => 'required|exists:form_skrinings,id',
+            'Tanggal_Skrining' => 'required|date_format:Y-m-d', // PENTING: Validasi ini HARUS Y-m-d
+            'id_form_skrining_edit' => 'required|exists:form_skrinings,id', // Nama input di frontend adalah id_form_skrining_edit
             'jawaban' => 'required|array',
             'jawaban.*' => 'nullable|string|max:1000',
         ], [
             'NIK_Pasien.unique' => 'Pasien ini sudah melakukan skrining untuk jenis formulir yang sama pada tanggal yang sama.',
-            'Tanggal_Skrining.date_format' => 'Format Tanggal Skrining harus dd-mm-yyyy.',
+            'Tanggal_Skrining.date_format' => 'Format Tanggal Skrining harus YYYY-MM-DD.',
         ]);
 
+        DB::beginTransaction(); // Mulai transaksi database
         try {
             $skrining = Skrining::find($id);
             if (!$skrining) {
+                DB::rollBack();
                 return response()->json(['success' => false, 'message' => 'Skrining tidak ditemukan.'], 404);
             }
 
             $formSkrining = FormSkrining::find($request->id_form_skrining_edit);
             if (!$formSkrining) {
+                DB::rollBack();
                 return response()->json(['success' => false, 'message' => 'Formulir Skrining untuk update tidak ditemukan.'], 404);
             }
 
-            $tanggalSkriningRaw = $request->Tanggal_Skrining;
-            try {
-                $tanggalSkrining = Carbon::createFromFormat('d-m-Y', $tanggalSkriningRaw)->format('Y-m-d');
-            } catch (\Exception $e) {
-                return response()->json(['success' => false, 'message' => 'Format Tanggal Skrining tidak valid.'], 422);
-            }
-
+            // Periksa unique constraint secara manual untuk update (exclude skrining saat ini)
+            $tanggalSkriningForUnique = Carbon::createFromFormat('Y-m-d', $request->Tanggal_Skrining)->format('Y-m-d');
             $existingSkrining = Skrining::where('NIK_Pasien', $request->NIK_Pasien)
-                                        ->where('id_form_skrining', $request->id_form_skrining_edit)
-                                        ->whereDate('Tanggal_Skrining', $tanggalSkrining)
-                                        ->where('id', '!=', $id)
-                                        ->first();
+                                         ->where('id_form_skrining', $request->id_form_skrining_edit)
+                                         ->whereDate('Tanggal_Skrining', $tanggalSkriningForUnique)
+                                         ->where('id', '!=', $id) // Exclude current skrining
+                                         ->first();
 
             if ($existingSkrining) {
+                DB::rollBack();
                 return response()->json(['success' => false, 'message' => 'Pasien ini sudah melakukan skrining untuk jenis formulir yang sama pada tanggal yang sama.'], 422);
             }
 
-            $tanggalSkriningFormatted = Carbon::createFromFormat('d-m-Y', $request->Tanggal_Skrining)->format('Y-m-d');
+            // Tanggal_Skrining sudah divalidasi sebagai Y-m-d, jadi langsung gunakan dari request
+            $tanggalSkriningUntukDb = $request->Tanggal_Skrining;
 
+            // Update data skrining
             $skrining->update([
                 'Nama_Petugas' => $request->Nama_Petugas,
                 'NIK_Pasien' => $request->NIK_Pasien,
                 'Nama_Pasien' => $request->Nama_Pasien,
-                'Tanggal_Skrining' => $tanggalSkriningFormatted,
-                'id_form_skrining' => $request->id_form_skrining_edit,
+                'Tanggal_Skrining' => $tanggalSkriningUntukDb,
+                'id_form_skrining' => $request->id_form_skrining_edit, // Menggunakan nama input dari frontend
             ]);
 
-            $skrining->jawabans()->delete();
+            // Hapus semua jawaban lama dan simpan yang baru
+            $skrining->jawabans()->delete(); // Pastikan relasi jawabans() ada di model Skrining
 
             foreach ($request->jawaban as $pertanyaan_id => $isi_jawaban) {
                 if (!is_null($isi_jawaban) && $isi_jawaban !== '') {
@@ -333,25 +474,106 @@ class SkriningController extends Controller
                 }
             }
 
-            return response()->json(['success' => true, 'message' => 'Skrining berhasil diperbarui!']);
+            // RE-DIAGNOSA SETELAH UPDATE (DIREKOMENDASIKAN)
+            // Ini akan memastikan diagnosa terupdate sesuai perubahan jawaban
+            $jenisPenyakit = strtolower($formSkrining->nama_skrining);
+            $diagnoser = $this->diagnoserFactory->getDiagnoser($jenisPenyakit);
+
+            $diagnosa = null; // Inisialisasi variabel diagnosa
+
+            if ($diagnoser) { // Hanya diagnosa jika ada diagnoser yang sesuai
+                $skrining->load([
+                    'pasien',
+                    'formSkrining.pertanyaan',
+                    'jawabans.pertanyaan'
+                ]);
+                $diagnosaResult = $diagnoser->analyze($skrining);
+
+                // Update atau buat diagnosa baru
+                $diagnosa = Diagnosa::updateOrCreate(
+                    ['skrining_id' => $skrining->id],
+                    [
+                        'jenis_penyakit' => $jenisPenyakit,
+                        'hasil_utama' => $diagnosaResult['hasil_utama'],
+                        'rekomendasi_tindak_lanjut' => $diagnosaResult['rekomendasi_tindak_lanjut'],
+                        'detail_diagnosa' => $diagnosaResult['detail_diagnosa'],
+                        'catatan' => $diagnosaResult['catatan'],
+                        'tanggal_diagnosa' => now(),
+                    ]
+                );
+
+                // Perbarui status riwayat malaria pasien jika diperlukan setelah re-diagnosa
+                if (in_array($diagnosaResult['hasil_utama'], ['Malaria Terkonfirmasi, Rujuk FKLNT'])) { // Sesuaikan nama hasil diagnosa
+                    $pasien = Pasien::where('NIK', $skrining->NIK_Pasien)->first(); // Ambil pasien lagi
+                    if ($pasien) $pasien->update(['is_riwayat_malaria_positif' => true]);
+                }
+            }
+
+            DB::commit(); // Selesaikan transaksi database
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Skrining berhasil diperbarui!',
+                'skrining_id' => $skrining->id, // Mengembalikan ID skrining
+                'diagnosa' => $diagnosa ? $diagnosa->load('skrining') : null // Mengembalikan data diagnosa, atau null jika tidak ada
+            ]);
 
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Gagal memperbarui skrining. Silakan coba lagi.'], 500);
+            DB::rollBack(); // Batalkan transaksi jika ada error
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memperbarui skrining.',
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ], 500);
         }
     }
 
+    /**
+     * Mengambil data diagnosa berdasarkan ID skrining.
+     */
+    public function getDiagnosa($id)
+    {
+        try {
+            // Ambil data skrining beserta diagnosanya berdasarkan ID
+            $skrining = Skrining::with('diagnosa')->find($id); // Asumsi ada relasi 'diagnosa' di model Skrining
+
+            if (!$skrining) {
+                return response()->json(['success' => false, 'message' => 'Skrining tidak ditemukan.'], 404);
+            }
+
+            if (!$skrining->diagnosa) {
+                return response()->json(['success' => false, 'message' => 'Data hasil skrining tidak ditemukan untuk skrining ini.'], 404);
+            }
+
+            return response()->json(['success' => true, 'diagnosa' => $skrining->diagnosa]);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat memuat diagnosa: ' . $e->getMessage()], 500);
+        }
+    }
+
+
+    /**
+     * Menghapus data skrining.
+     */
     public function delete($id)
     {
         DB::beginTransaction();
         try {
             $skrining = Skrining::findOrFail($id);
+            // Hapus semua jawaban terkait terlebih dahulu
             $skrining->jawabans()->delete();
+            // Hapus diagnosa terkait (jika ada)
+            $skrining->diagnosa()->delete();
+            // Kemudian hapus skriningnya
             $skrining->delete();
             DB::commit();
             return response()->json(['success' => true, 'message' => 'Data skrining berhasil dihapus.'], 200);
         } catch (\Exception $e) {
             DB::rollback();
-            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat menghapus data skrining.'], 500);
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat menghapus data skrining.', 'error' => $e->getMessage()], 500);
         }
     }
 }

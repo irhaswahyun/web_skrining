@@ -83,7 +83,8 @@
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
+        </section>
     </div>
 
     {{-- MODAL DETAIL RIWAYAT SKRINING --}}
@@ -109,7 +110,7 @@
                     <h6 class="font-weight-bold">Tanggal Skrining:</h6>
                     <p id="detail_riwayat_Tanggal_Skrining"></p>
                     <h6 class="font-weight-bold">Kondisi:</h6>
-                    <p id="detail_riwayat_Kondisi"></p>
+                    <p id="detail_riwayat_Kondisi"></p> {{-- Ini akan diisi dari skriningData.Kondisi --}}
                     <h6 class="font-weight-bold">Pertanyaan & Jawaban:</h6>
                     <div id="detail_riwayat_daftar_pertanyaan_formatted">
                         <p>Memuat pertanyaan...</p>
@@ -177,7 +178,7 @@
 
                         if (response.success) {
                             // Periksa apakah response.summary ada sebelum mengakses propertinya
-                            if (response.summary) { // PENTING: Perbaikan di sini
+                            if (response.summary) {
                                 $('#totalSkriningDilakukan').text(response.summary.total_skrining_dilakukan);
                                 $('#totalJenisSkriningTersedia').text(response.summary.total_jenis_skrining_tersedia);
                             } else {
@@ -252,7 +253,7 @@
                     $('#detail_riwayat_Nama_Petugas').text(skriningData.Nama_Petugas ?? '-');
                     $('#detail_riwayat_Nama_Skrining').text(skriningData.Nama_Skrining_Form ?? '-');
                     $('#detail_riwayat_Tanggal_Skrining').text(skriningData.Tanggal_Skrining ?? '-');
-                    $('#detail_riwayat_Kondisi').text(skriningData.Kondisi ?? '-');
+                    $('#detail_riwayat_Kondisi').text(skriningData.Kondisi ?? '-'); // Mengambil dari properti Kondisi
 
                     var detailPertanyaanContainer = $('#detail_riwayat_daftar_pertanyaan_formatted');
                     detailPertanyaanContainer.empty();

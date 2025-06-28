@@ -20,16 +20,16 @@ class DaftarPertanyaan extends Model
     ];
 
     // Relasi many-to-many dengan DaftarPenyakit melalui tabel pivot penyakit_pertanyaans
-    public function penyakit()
-    {
-        return $this->belongsToMany(DaftarPenyakit::class, 
-        'penyakit_pertanyaans', 
-        'id_daftar_pertanyaan', 
-        'id_daftar_penyakit');
-    }
+    // public function penyakit()
+    // {
+    //     return $this->belongsToMany(DaftarPenyakit::class, 
+    //     'penyakit_pertanyaans', 
+    //     'id_daftar_pertanyaan', 
+    //     'id_daftar_penyakit');
+    // }
 
     // Relasi one-to-many dengan Jawaban (satu pertanyaan bisa punya banyak jawaban)
-    public function jawaban()
+    public function jawabans()
     {
         
         // Foreign key di tabel 'jawabans' adalah 'ID_DaftarPertanyaan'

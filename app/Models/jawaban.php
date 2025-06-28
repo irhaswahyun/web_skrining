@@ -19,7 +19,7 @@ class Jawaban extends Model
     ];
 
     // Relasi many-to-one dengan DaftarPertanyaan
-    public function daftarPertanyaan()
+    public function pertanyaan()
     {
         // foreign key 'ID_DaftarPertanyaan' di tabel 'jawabans'
         // Pastikan nama kolom 'ID_DaftarPertanyaan' di tabel 'jawabans' dan tipe datanya BIGINT UNSIGNED
