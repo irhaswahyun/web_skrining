@@ -21,9 +21,9 @@ class RoleMiddleware
         }
 
         // Jika role tidak sesuai
-        if (Auth::user()->role != $role) {
-            return redirect()->route('unauthorized');
-        }
+        // if (Auth::user()->role != $role) {
+        //     return redirect()->route('unauthorized');
+        // }
         return $next($request);
     }
 }

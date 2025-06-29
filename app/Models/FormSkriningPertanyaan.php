@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class PenyakitPertanyaan extends Model
+class FormSkriningPertanyaan extends Model
 {
     use HasFactory;
 
-    protected $table = 'penyakit_pertanyaans';
-    protected $fillable = ['id_daftar_penyakit', 'id_daftar_pertanyaan'];
+    protected $table = 'form_skrining_pertanyaans';
+    protected $fillable = ['id_form_skrining', 'id_daftar_pertanyaan'];
 
     public function daftarPertanyaan()
     {

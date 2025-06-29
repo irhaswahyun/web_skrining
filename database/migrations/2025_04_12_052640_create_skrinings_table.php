@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('NIK_Pasien');
             $table->string('Nama_Pasien');
             $table->date('Tanggal_Skrining');
-            $table->string('id_daftar_penyakit');
+            // $table->string('id_daftar_penyakit');
             $table->timestamps();
         });
     }

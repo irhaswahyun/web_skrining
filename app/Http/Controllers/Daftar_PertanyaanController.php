@@ -10,7 +10,7 @@ class Daftar_PertanyaanController extends Controller
 {
     public function index(Request $request)
     {
-        $query = DaftarPertanyaan::with('jawaban');
+        $query = DaftarPertanyaan::with('jawabans');
 
         if ($request->search) {
             $query->where('pertanyaan', 'LIKE', '%' . $request->search . '%');

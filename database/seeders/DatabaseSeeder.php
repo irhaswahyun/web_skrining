@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
         Role::firstOrCreate(['id' => 3], ['Nama_Role' => 'Admin', 'created_at' => now(), 'updated_at' => now()]);
 
         // Menambahkan user setelah role ada
-        User::create([
+        User::insert([
             [
                 'nama' => 'Irhas Wahyu Ningtyas',
             'email' => 'iir@gmail.com',

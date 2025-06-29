@@ -37,6 +37,6 @@ class User extends Authenticatable
         return $this->role()->first()->Nama_Role;
     }
 
-    CONST ROLE_ADMIN = 'admin';
-    CONST ROLE_NAKES = 'nakes';
+    CONST ROLE_ADMIN = 'Admin';
+    CONST ROLE_NAKES = 'Nakes';
 }

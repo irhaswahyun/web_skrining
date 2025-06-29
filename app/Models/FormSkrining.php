@@ -12,7 +12,7 @@ class FormSkrining extends Model
     protected $table = 'form_skrinings'; // Pastikan nama tabel benar
     protected $fillable = [
         'nama_skrining',
-        'nama_form',
+        // 'nama_form',
         'kategori', // Penting: Pastikan ini masuk fillable
     ];
 
@@ -26,7 +26,7 @@ class FormSkrining extends Model
     // Relasi many-to-many dengan DaftarPertanyaan
     public function pertanyaan()
     {
-        return $this->belongsToMany(DaftarPertanyaan::class, 'form_skrining_pertanyaan', 'form_skrining_id', 'daftar_pertanyaan_id');
+        return $this->belongsToMany(DaftarPertanyaan::class, 'form_skrining_pertanyaans', 'id_form_skrining', 'id_daftar_pertanyaan');
     }
 
     // Metode helper untuk mendapatkan pertanyaan terkait
@@ -34,4 +34,9 @@ class FormSkrining extends Model
     {
         return $this->pertanyaan()->orderBy('created_at', 'asc')->get();
     }
+
+    public function penyakit()
+{
+    return $this->belongsTo(DaftarPenyakit::class, 'penyakit_id'); // sesuaikan foreign key-nya
+}
 }

@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('penyakit_pertanyaans', function (Blueprint $table) {
+        Schema::create('form_skrining_pertanyaans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_daftar_penyakit')->references('id')->on('daftar_penyakits')->onDelete('cascade');
+            $table->foreignId('id_form_skrining')->references('id')->on('form_skrinings')->onDelete('cascade');
             $table->foreignId('id_daftar_pertanyaan')->references('id')->on('daftar_pertanyaans')->onDelete('cascade');
             $table->timestamps();
         });

@@ -132,66 +132,83 @@ class RekapSkriningController extends Controller
 
     public function pasienList(Request $request)
 {
-    $wilayah = trim($request->query('wilayah', null));
-    $namaFormSkrining = trim($request->query('nama_form_skrining'));
+    // Get and sanitize parameters
+    $wilayah = trim($request->query('wilayah', ''));
+    $namaFormSkrining = trim($request->query('nama_form_skrining', ''));
     $bulan = $request->query('bulan', null);
     $tahun = $request->query('tahun', null);
 
-    // --- STEP 1: Cek input dari URL ---
-    // dd([
-    //     'wilayah_dari_url' => $wilayah,
-    //     'nama_form_skrining_dari_url' => $namaFormSkrining,
-    //     'bulan_dari_url' => $bulan,
-    //     'tahun_dari_url' => $tahun,
-    //     'tipe_nama_form_skrining' => gettype($namaFormSkrining),
-    //     'tipe_wilayah' => gettype($wilayah),
-    //     'url_lengkap' => $request->fullUrl(),
-    // ]);
-    // Saat Anda menjalankan ini, pastikan nilai-nilai di atas SAMA PERSIS dengan yang Anda harapkan.
-    // Misalnya, nama_form_skrining_dari_url harus "Skrining Flu", bukan "Tidak Diketahui" atau string kosong.
-    // Jika di sini sudah salah, berarti masalahnya ada di LINKING DARI HALAMAN REKAP (index.blade.php)
+    // Debugging: Log incoming parameters
+    Log::debug('PasienList Parameters:', [
+        'wilayah' => $wilayah,
+        'nama_form_skrining' => $namaFormSkrining,
+        'bulan' => $bulan,
+        'tahun' => $tahun,
+        'full_url' => $request->fullUrl()
+    ]);
 
+    // Initialize empty collection
     $dataPasienSkrining = collect();
 
     try {
-        if (empty($wilayah) || empty($namaFormSkrining) || empty($bulan) || empty($tahun)) {
-            Log::warning("Pasien list request missing parameters. Wilayah: {$wilayah}, Form: {$namaFormSkrining}, Bulan: {$bulan}, Tahun: {$tahun}");
-            return view('admin.rekap_hasil_skrining.pasien_list', compact('dataPasienSkrining', 'wilayah', 'namaFormSkrining', 'bulan', 'tahun'));
-        }
-
+        // Build the query
         $query = Skrining::with(['pasien', 'formSkrining.penyakit']);
 
-        // --- STEP 2: Cek query SQL yang dihasilkan ---
-        // Ini akan sangat membantu melihat apakah filter yang dibuat sudah benar
-        $tempQuery = clone $query; // Kloning query agar tidak terhenti di dd()
-        // Anda bisa coba salah satu dd() di bawah ini
-        // dd($tempQuery->toSql(), $tempQuery->getBindings()); // Menampilkan SQL mentah dan binding parameter
-        // dd($tempQuery->get()->toArray()); // Menjalankan query dan menampilkan hasilnya
+        // Apply form screening filter
+        if (!empty($namaFormSkrining)) {
+            $query->whereHas('formSkrining', function ($q) use ($namaFormSkrining) {
+                $q->where(DB::raw('LOWER(nama_skrining)'), strtolower($namaFormSkrining));
+            });
+        }
 
-        $query->whereHas('formSkrining', function ($q) use ($namaFormSkrining) {
-            $q->where(DB::raw('LOWER(nama_skrining)'), '=', strtolower($namaFormSkrining));
-        });
-
-        $query->whereYear('Tanggal_Skrining', $tahun)
-              ->whereMonth('Tanggal_Skrining', $bulan);
-
-        $query->whereHas('pasien', function ($q) use ($wilayah) {
-            if ($wilayah === 'Tidak Diketahui') {
-                $q->whereNull('Wilayah')->orWhere('Wilayah', '');
-            } else {
-                $q->where(DB::raw('LOWER(Wilayah)'), '=', strtolower($wilayah));
+        // Apply date filters
+        if ($tahun) {
+            $query->whereYear('Tanggal_Skrining', $tahun);
+            
+            if ($bulan) {
+                $query->whereMonth('Tanggal_Skrining', $bulan);
             }
-        });
+        }
 
-        $dataPasienSkrining = $query->get();
+        // Apply wilayah filter if provided
+        if (!empty($wilayah)) {
+            if ($wilayah === 'Tidak Diketahui') {
+                $query->where(function($q) {
+                    $q->whereNull('Wilayah')
+                      ->orWhere('Wilayah', '');
+                });
+            } else {
+                $query->whereHas('pasien', function ($q) use ($wilayah) {
+                    $q->where(DB::raw('LOWER(Wilayah)'), strtolower($wilayah));
+                });
+            }
+        }
 
-        // --- STEP 3: Cek hasil akhir setelah semua filter diterapkan ---
-        // dd($dataPasienSkrining->toArray()); // Apakah di sini sudah ada data?
+        // Get the results
+        $dataPasienSkrining = $query->orderBy('Tanggal_Skrining', 'desc')->get();
 
-        return view('admin.rekap_hasil_skrining.pasien_list', compact('dataPasienSkrining', 'wilayah', 'namaFormSkrining', 'bulan', 'tahun'));
+        // Debugging: Log query results
+        Log::debug('PasienList Results:', [
+            'count' => $dataPasienSkrining->count(),
+            'first_item' => $dataPasienSkrining->first()
+        ]);
+
+        // Return the view with proper path
+        return view('admin.rekap_hasil_skrining.pasien_list', [
+            'dataPasienSkrining' => $dataPasienSkrining,
+            'wilayah' => $wilayah,
+            'nama_form_skrining' => $namaFormSkrining,
+            'bulan' => $bulan,
+            'tahun' => $tahun
+        ]);
 
     } catch (\Exception $e) {
-        // ... (error handling) ...
+        Log::error('Error in pasienList: ' . $e->getMessage());
+        
+        return view('admin.rekap_hasil_skrining.pasien_list', [
+            'dataPasienSkrining' => collect(),
+            'error' => 'Terjadi kesalahan saat memuat data'
+        ]);
     }
 }
     public function getDetailSkrining(Request $request)

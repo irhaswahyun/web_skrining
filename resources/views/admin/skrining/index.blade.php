@@ -63,14 +63,16 @@
                                                     <td>{{ $skrining->Nama_Petugas }}</td>
                                                     <td>{{ $skrining->pasien->NIK ?? '-' }}</td>
                                                     <td>{{ $skrining->Nama_Pasien }}</td>
-                                                    <td>{{ \Carbon\Carbon::parse($skrining->Tanggal_Skrining)->format('Y-m-d') }}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($skrining->Tanggal_Skrining)->format('Y-m-d') }}
+                                                    </td>
                                                     <td>{{ $skrining->formSkrining->nama_skrining ?? '-' }}</td>
                                                     <td>
                                                         <button class="btn btn-sm btn-primary btn-edit"
                                                             data-id="{{ $skrining->id }}">
                                                             Edit
                                                         </button>
-                                                        <button class="btn btn-sm btn-success btn-view-diagnosa" data-id="{{ $skrining->id }}">Lihat Hasil Skrining</button>
+                                                        <button class="btn btn-sm btn-success btn-view-diagnosa"
+                                                            data-id="{{ $skrining->id }}">Lihat Hasil Skrining</button>
                                                         <button class="btn btn-danger btn-sm btn-delete"
                                                             data-skrining-id="{{ $skrining->id }}"
                                                             data-skrining-nama="{{ $skrining->Nama_Pasien }}">
@@ -112,7 +114,8 @@
                         </div>
                         <div class="form-group">
                             <label for="Tanggal_Skrining">Tanggal Skrining</label>
-                            <input type="text" name="Tanggal_Skrining" id="tanggalSkriningTambah" class="form-control" placeholder="Y-m-d" required>
+                            <input type="text" name="Tanggal_Skrining" id="tanggalSkriningTambah" class="form-control"
+                                placeholder="Y-m-d" required>
                         </div>
                         <div class="form-group">
                             <label for="NIK_Pasien">NIK Pasien</label>
@@ -142,7 +145,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnTutupTambah">Tutup</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                            id="btnTutupTambah">Tutup</button>
                         <button type="submit" class="btn btn-success" id="btnSimpanSkriningTambah">Simpan</button>
                     </div>
                 </form>
@@ -172,7 +176,8 @@
                         </div>
                         <div class="form-group">
                             <label for="edit_Tanggal_Skrining">Tanggal Skrining</label>
-                            <input type="text" class="form-control" id="edit_Tanggal_Skrining" name="Tanggal_Skrining" placeholder="Y-m-d" required>
+                            <input type="text" class="form-control" id="edit_Tanggal_Skrining"
+                                name="Tanggal_Skrining" placeholder="Y-m-d" required>
                         </div>
                         <div class="form-group">
                             <label for="edit_NIK_Pasien">NIK Pasien</label>
@@ -187,9 +192,10 @@
                         </div>
                         <div class="form-group">
                             <label for="edit_id_form_skrining">Formulir Skrining</label>
-                            <select class="form-control" id="edit_id_form_skrining" name="id_form_skrining_edit" required>
+                            <select class="form-control" id="edit_id_form_skrining" name="id_form_skrining_edit"
+                                required>
                                 @isset($formSkrinings)
-                                    @foreach($formSkrinings as $formSkrining)
+                                    @foreach ($formSkrinings as $formSkrining)
                                         <option value="{{ $formSkrining->id }}">{{ $formSkrining->nama_skrining }}</option>
                                     @endforeach
                                 @endisset
@@ -239,11 +245,11 @@
 
     {{-- MODAL HASIL DIAGNOSA --}}
     <div class="modal fade" id="hasilDiagnosaDisplayModal" tabindex="-1" role="dialog"
-        aria-labelledby="hasilDiagnosaDisplayModalLabel" aria-hidden="true">
+        aria-labelledby="hasilDiagnosaDisplayModal" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="hasilDiagnosaDisplayModalLabel">Hasil Skrining</h5>
+                    <h5 class="modal-title" id="hasilDiagnosaDisplayModal">Hasil Skrining</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -253,7 +259,8 @@
                         <h4 class="text-success mb-3">Hasil Skrining Pasien :</h4>
                         <p id="hasilUtamaDiagnosaDisplay"><strong>Hasil Utama :</strong></p>
                         <p id="rekomendasiDiagnosaDisplay"><strong>Rekomendasi Tindak Lanjut :</strong></p>
-                        <div id="detailDiagnosaDisplay" style="margin-top: 15px; border-top: 1px dashed #a5d6a7; padding-top: 15px;">
+                        <div id="detailDiagnosaDisplay"
+                            style="margin-top: 15px; border-top: 1px dashed #a5d6a7; padding-top: 15px;">
                             <h5 class="mb-2">Detail Analisis :</h5>
                             <ul>
                                 <li id="gejalaTeridentifikasiDisplay"><strong>Gejala Teridentifikasi :</strong></li>
@@ -265,7 +272,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnTutupDiagnosa">Tutup</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                        id="btnTutupDiagnosa">Tutup</button>
                     <button type="button" class="btn btn-success" id="btnSkriningSelesai">Skrining Selesai</button>
                 </div>
             </div>
@@ -322,16 +330,38 @@
 
             // Fungsi untuk menampilkan diagnosa di modal baru
             function displayDiagnosaInNewModal(diagnosaData) {
-                $('#hasilUtamaDiagnosaDisplay').html('<strong>Hasil Utama :</strong> ' + diagnosaData.hasil_utama.replace(/_/g, ' ').toUpperCase());
-                $('#rekomendasiDiagnosaDisplay').html('<strong>Rekomendasi Tindak Lanjut :</strong> ' + diagnosaData.rekomendasi_tindak_lanjut);
+                $('#hasilUtamaDiagnosaDisplay').html('<strong>Hasil Utama :</strong> ' + diagnosaData.hasil_utama
+                    .replace(/_/g, ' ').toUpperCase());
+                $('#rekomendasiDiagnosaDisplay').html('<strong>Rekomendasi Tindak Lanjut :</strong> ' + diagnosaData
+                    .rekomendasi_tindak_lanjut);
+
+                if (diagnosaData) {
+                    // Asumsi ada modal dengan ID 'diagnosaModal' dan elemen-elemen untuk menampilkan hasil
+                    $('#diagnosaModalLabel').text('Hasil Skrining untuk ' + diagnosaData.skrining
+                    .Nama_Pasien); // Contoh judul
+                    $('#diagnosaHasilUtama').text(diagnosaData.hasil_utama);
+                    $('#diagnosaRekomendasi').text(diagnosaData.rekomendasi_tindak_lanjut);
+                    $('#diagnosaDetail').text(diagnosaData.detail_diagnosa); // Jika Anda menampilkan detail
+                    $('#diagnosaCatatan').text(diagnosaData.catatan); // Jika Anda menampilkan catatan
+
+                    // Tampilkan modal diagnosa
+                    $('#diagnosaModal').modal('show');
+                } else {
+                    Swal.fire('Info', 'Belum ada hasil skrining otomatis untuk data ini.', 'info');
+                }
 
                 if (diagnosaData.detail_diagnosa) {
                     const detailDiagnosa = diagnosaData.detail_diagnosa;
-                    $('#gejalaTeridentifikasiDisplay').html('<strong>Gejala Teridentifikasi :</strong> ' + (detailDiagnosa.status_gejala_teridentifikasi || '-'));
-                    $('#riwayatMalariaObatDisplay').html('<strong>Riwayat Malaria/Obat </strong> ' + (detailDiagnosa.status_riwayat_malaria_atau_obat_input || '-'));
-                    $('#alurDiagnosaDisplay').html('<strong>Rekomendasi Tindak Lanjut :</strong> ' + (detailDiagnosa.alur_diagnosa_terpilih || '-'));
-                    const alasanDiagnosaText = Array.isArray(detailDiagnosa.alasan_diagnosa) ? detailDiagnosa.alasan_diagnosa.join(', ') : (detailDiagnosa.alasan_diagnosa || '-');
-                    $('#alasanDiagnosaDisplay').html('<strong>Alasan Tindak Lanjut :</strong> ' + alasanDiagnosaText);
+                    $('#gejalaTeridentifikasiDisplay').html('<strong>Gejala Teridentifikasi :</strong> ' + (
+                        detailDiagnosa.status_gejala_teridentifikasi || '-'));
+                    $('#riwayatMalariaObatDisplay').html('<strong>Riwayat Malaria/Obat </strong> ' + (detailDiagnosa
+                        .status_riwayat_malaria_atau_obat_input || '-'));
+                    $('#alurDiagnosaDisplay').html('<strong>Rekomendasi Tindak Lanjut :</strong> ' + (detailDiagnosa
+                        .alur_diagnosa_terpilih || '-'));
+                    const alasanDiagnosaText = Array.isArray(detailDiagnosa.alasan_diagnosa) ? detailDiagnosa
+                        .alasan_diagnosa.join(', ') : (detailDiagnosa.alasan_diagnosa || '-');
+                    $('#alasanDiagnosaDisplay').html('<strong>Alasan Tindak Lanjut :</strong> ' +
+                        alasanDiagnosaText);
                 } else {
                     $('#gejalaTeridentifikasiDisplay').html('');
                     $('#riwayatMalariaObatDisplay').html('');
@@ -342,6 +372,23 @@
                 $('#hasilDiagnosaDisplayModal').modal('show');
                 $('#cetakHasilUtama').show();
             }
+
+            // Pastikan fungsi displayDiagnosaInNewModal Anda sudah ada dan benar
+            // function displayDiagnosaInNewModal(diagnosa) {
+            //     if (diagnosa) {
+            //         // Asumsi ada modal dengan ID 'diagnosaModal' dan elemen-elemen untuk menampilkan hasil
+            //         $('#diagnosaModalLabel').text('Hasil Skrining untuk ' + diagnosa.skrining.Nama_Pasien); // Contoh judul
+            //         $('#diagnosaHasilUtama').text(diagnosa.hasil_utama);
+            //         $('#diagnosaRekomendasi').text(diagnosa.rekomendasi_tindak_lanjut);
+            //         $('#diagnosaDetail').text(diagnosa.detail_diagnosa); // Jika Anda menampilkan detail
+            //         $('#diagnosaCatatan').text(diagnosa.catatan); // Jika Anda menampilkan catatan
+
+            //         // Tampilkan modal diagnosa
+            //         $('#diagnosaModal').modal('show');
+            //     } else {
+            //         Swal.fire('Info', 'Belum ada hasil skrining otomatis untuk data ini.', 'info');
+            //     }
+            // }
 
             // Fungsi untuk memuat pertanyaan di modal Tambah
             function loadPertanyaanTambah() {
@@ -354,8 +401,11 @@
                 pertanyaanContainer.html('<p><i class="fas fa-spinner fa-spin"></i> Memuat pertanyaan...</p>');
                 $('#pertanyaan_container_tambah').hide();
 
-                if (!formSkriningId || !nikPasien || nikPasien.length !== NIK_LENGTH || !tanggalSkriningUntukBackend) {
-                    pertanyaanContainer.html('<p>Pilih Formulir Skrining, masukkan NIK Pasien (16 digit), dan Tanggal Skrining untuk memuat pertanyaan.</p>');
+                if (!formSkriningId || !nikPasien || nikPasien.length !== NIK_LENGTH || !
+                    tanggalSkriningUntukBackend) {
+                    pertanyaanContainer.html(
+                        '<p>Pilih Formulir Skrining, masukkan NIK Pasien (16 digit), dan Tanggal Skrining untuk memuat pertanyaan.</p>'
+                    );
                     return;
                 }
 
@@ -372,10 +422,13 @@
                             $.each(response, function(index, pertanyaan) {
                                 var catatanHtml = '';
                                 if (pertanyaan.catatan) {
-                                    catatanHtml = `<small class="text-muted d-block mt-1 mb-2">Catatan: ${pertanyaan.catatan}</small>`;
+                                    catatanHtml =
+                                        `<small class="text-muted d-block mt-1 mb-2">Catatan: ${pertanyaan.catatan}</small>`;
                                 }
-                                var inputValue = pertanyaan.previous_answer !== null ? pertanyaan.previous_answer : '';
-                                var inputHtml = `<input type="text" class="form-control" name="jawaban[${pertanyaan.id}]" placeholder="Masukkan jawaban..." value="${inputValue}" required>`;
+                                var inputValue = pertanyaan.previous_answer !== null ?
+                                    pertanyaan.previous_answer : '';
+                                var inputHtml =
+                                    `<input type="text" class="form-control" name="jawaban[${pertanyaan.id}]" placeholder="Masukkan jawaban..." value="${inputValue}" required>`;
                                 var pertanyaanItem = `
                                     <div class="form-group mb-3">
                                         <label>${pertanyaan.pertanyaan}</label>
@@ -397,7 +450,9 @@
                             title: 'Error!',
                             text: 'Terjadi kesalahan saat memuat pertanyaan untuk formulir skrining. Pastikan NIK dan Tanggal Skrining sudah benar.'
                         });
-                        pertanyaanContainer.html('<p class="text-danger">Gagal memuat pertanyaan. Terjadi kesalahan.</p>');
+                        pertanyaanContainer.html(
+                            '<p class="text-danger">Gagal memuat pertanyaan. Terjadi kesalahan.</p>'
+                        );
                         $('#pertanyaan_container_tambah').show();
                     }
                 });
@@ -405,7 +460,8 @@
 
             // Fungsi untuk memuat pertanyaan di modal Edit
             function loadPertanyaanEdit(formSkriningId, existingJawabanArray = []) {
-                $('#edit_pertanyaan_list').html('<p><i class="fas fa-spinner fa-spin"></i> Memuat pertanyaan...</p>');
+                $('#edit_pertanyaan_list').html(
+                    '<p><i class="fas fa-spinner fa-spin"></i> Memuat pertanyaan...</p>');
 
                 if (!formSkriningId) {
                     $('#edit_pertanyaan_list').html('<p>Silakan pilih formulir skrining.</p>');
@@ -416,7 +472,7 @@
                 var nikPasien = $('#edit_NIK_Pasien').val();
                 var tanggalSkriningFormatted = null;
                 var tanggalInput = $('#edit_Tanggal_Skrining').val();
-                
+
                 if (tanggalInput) {
                     const parts = tanggalInput.split('-');
                     if (parts.length === 3) {
@@ -445,7 +501,9 @@
                             pertanyaanList = response.pertanyaan;
                         } else {
                             console.error("Struktur respons pertanyaan tidak valid:", response);
-                            $('#edit_pertanyaan_list').html('<p class="text-danger">Gagal memuat pertanyaan: Struktur data tidak dikenal.</p>');
+                            $('#edit_pertanyaan_list').html(
+                                '<p class="text-danger">Gagal memuat pertanyaan: Struktur data tidak dikenal.</p>'
+                            );
                             return;
                         }
 
@@ -453,26 +511,31 @@
                             $.each(pertanyaanList, function(index, pertanyaan) {
                                 var catatanHtml = '';
                                 if (pertanyaan.catatan) {
-                                    catatanHtml = `<small class="text-muted d-block mt-1 mb-2">Catatan: ${pertanyaan.catatan}</small>`;
+                                    catatanHtml =
+                                        `<small class="text-muted d-block mt-1 mb-2">Catatan: ${pertanyaan.catatan}</small>`;
                                 }
 
                                 var inputValue = '';
-                                if (pertanyaan.previous_answer !== undefined && pertanyaan.previous_answer !== null) {
+                                if (pertanyaan.previous_answer !== undefined && pertanyaan
+                                    .previous_answer !== null) {
                                     inputValue = pertanyaan.previous_answer;
-                                } else if (pertanyaan.jawaban_tersimpan !== undefined && pertanyaan.jawanyaan_tersimpan !== null) {
+                                } else if (pertanyaan.jawaban_tersimpan !== undefined &&
+                                    pertanyaan.jawanyaan_tersimpan !== null) {
                                     inputValue = pertanyaan.jawaban_tersimpan;
                                 }
 
                                 if (existingJawabanArray && existingJawabanArray.length > 0) {
                                     let foundAnswer = existingJawabanArray.find(
-                                        jawaban => jawaban.ID_DaftarPertanyaan == pertanyaan.id
+                                        jawaban => jawaban.ID_DaftarPertanyaan == pertanyaan
+                                        .id
                                     );
                                     if (foundAnswer) {
                                         inputValue = foundAnswer.jawaban;
                                     }
                                 }
 
-                                var inputHtml = `<input type="text" class="form-control" name="jawaban[${pertanyaan.id}]" value="${inputValue || ''}" placeholder="Masukkan jawaban...">`;
+                                var inputHtml =
+                                    `<input type="text" class="form-control" name="jawaban[${pertanyaan.id}]" value="${inputValue || ''}" placeholder="Masukkan jawaban...">`;
 
                                 var questionHtml = `
                                     <div class="form-group mb-3">
@@ -485,7 +548,8 @@
                                 $('#edit_pertanyaan_list').append(questionHtml);
                             });
                         } else {
-                            $('#edit_pertanyaan_list').html('<p>Tidak ada pertanyaan untuk formulir ini.</p>');
+                            $('#edit_pertanyaan_list').html(
+                                '<p>Tidak ada pertanyaan untuk formulir ini.</p>');
                         }
 
                         if (response.message) {
@@ -510,7 +574,7 @@
             // Fungsi untuk memuat ulang data tabel skrining
             function loadSkriningTable() {
                 console.log("Memuat ulang data tabel skrining...");
-                
+
                 $.ajax({
                     url: "{{ route('skrining.getData') }}",
                     method: 'GET',
@@ -558,13 +622,17 @@
                                 tbody.append(row);
                             });
                         } else {
-                            tbody.append('<tr><td colspan="7" class="text-center">Tidak ada data skrining.</td></tr>');
+                            tbody.append(
+                                '<tr><td colspan="7" class="text-center">Tidak ada data skrining.</td></tr>'
+                            );
                         }
                     },
                     error: function(xhr, status, error) {
                         console.error("Error loading skrining table:", error);
                         Swal.fire('Error', 'Gagal memuat data skrining.', 'error');
-                        $('table.table-custom tbody').html('<tr><td colspan="7" class="text-center text-danger">Gagal memuat data.</td></tr>');
+                        $('table.table-custom tbody').html(
+                            '<tr><td colspan="7" class="text-center text-danger">Gagal memuat data.</td></tr>'
+                        );
                     }
                 });
             }
@@ -601,7 +669,8 @@
                     if (dateText === '') {
                         $(this).val('');
                     }
-                    if ($('#edit_id_form_skrining').val() && $('#edit_NIK_Pasien').val().length === NIK_LENGTH) {
+                    if ($('#edit_id_form_skrining').val() && $('#edit_NIK_Pasien').val().length ===
+                        NIK_LENGTH) {
                         var skriningId = $('#editForm').attr('action').split('/').pop();
                         loadPertanyaanEdit(skriningId);
                     }
@@ -615,9 +684,12 @@
                 $('#Nama_Pasien').val('');
                 $('#tanggalSkriningTambah').datepicker('setDate', new Date());
                 updateNikLengthInfo('#NIK_Pasien', '#nik_length_info_tambah');
-                $('#id_form_skrining').html('<option value="">-- Masukkan NIK Pasien untuk Rekomendasi --</option>');
-                $('#form_skrining_recommendation_info').text('Form skrining akan direkomendasikan setelah NIK pasien dimasukkan.');
-                $('#pertanyaan_list_tambah').html('<p>Pilih formulir skrining untuk memuat pertanyaan.</p>');
+                $('#id_form_skrining').html(
+                    '<option value="">-- Masukkan NIK Pasien untuk Rekomendasi --</option>');
+                $('#form_skrining_recommendation_info').text(
+                    'Form skrining akan direkomendasikan setelah NIK pasien dimasukkan.');
+                $('#pertanyaan_list_tambah').html(
+                    '<p>Pilih formulir skrining untuk memuat pertanyaan.</p>');
                 $('#pertanyaan_container_tambah').hide();
                 $('#btnSimpanSkriningTambah').prop('disabled', false).text('Simpan');
                 $('#btnTutupTambah').text('Batal');
@@ -630,14 +702,17 @@
                 var nik = $(this).val();
                 $('#Nama_Pasien').val('');
                 $('#id_form_skrining').html('<option value="">-- Memuat Rekomendasi... --</option>');
-                $('#form_skrining_recommendation_info').html('<i class="fas fa-spinner fa-spin"></i> Mencari rekomendasi...');
+                $('#form_skrining_recommendation_info').html(
+                    '<i class="fas fa-spinner fa-spin"></i> Mencari rekomendasi...');
                 $('#pertanyaan_container_tambah').hide();
 
                 if (nik && nik.length === NIK_LENGTH) {
                     $.ajax({
                         url: "{{ route('pasien.getPasienData') }}",
                         method: 'GET',
-                        data: { NIK: nik },
+                        data: {
+                            NIK: nik
+                        },
                         success: function(responsePasien) {
                             if (responsePasien.success && responsePasien.data) {
                                 var pasien = responsePasien.data;
@@ -646,64 +721,126 @@
                                 $.ajax({
                                     url: "{{ route('skrining.getRecommendedFormSkrinings') }}",
                                     method: 'GET',
-                                    data: { nik_pasien: nik },
+                                    data: {
+                                        nik_pasien: nik
+                                    },
                                     success: function(responseForms) {
                                         if (responseForms.success) {
-                                            var recommendedForms = responseForms.recommendedForms;
-                                            $('#id_form_skrining').html('<option value="">-- Pilih Formulir --</option>');
+                                            var recommendedForms = responseForms
+                                                .recommendedForms;
+                                            $('#id_form_skrining').html(
+                                                '<option value="">-- Pilih Formulir --</option>'
+                                            );
                                             if (recommendedForms.length > 0) {
-                                                $('#form_skrining_recommendation_info').html('<span class="text-success">Rekomendasi Formulir Skrining:</span>');
-                                                $.each(recommendedForms, function(index, form) {
-                                                    $('#id_form_skrining').append('<option value="' + form.id + '">' + form.nama_skrining + '</option>');
+                                                $('#form_skrining_recommendation_info')
+                                                    .html(
+                                                        '<span class="text-success">Rekomendasi Formulir Skrining:</span>'
+                                                    );
+                                                $.each(recommendedForms, function(
+                                                    index, form) {
+                                                    $('#id_form_skrining')
+                                                        .append(
+                                                            '<option value="' +
+                                                            form.id + '">' +
+                                                            form
+                                                            .nama_skrining +
+                                                            '</option>');
                                                 });
-                                                if (recommendedForms.length === 1 && $('#id_form_skrining').val() === "") {
-                                                    $('#id_form_skrining').val(recommendedForms[0].id).trigger('change');
+                                                if (recommendedForms.length === 1 &&
+                                                    $('#id_form_skrining').val() ===
+                                                    "") {
+                                                    $('#id_form_skrining').val(
+                                                            recommendedForms[0].id)
+                                                        .trigger('change');
                                                 }
                                             } else {
-                                                $('#form_skrining_recommendation_info').html('<span class="text-warning">Tidak ada rekomendasi formulir untuk kategori pasien ini.</span>');
+                                                $('#form_skrining_recommendation_info')
+                                                    .html(
+                                                        '<span class="text-warning">Tidak ada rekomendasi formulir untuk kategori pasien ini.</span>'
+                                                    );
                                                 @isset($formSkrinings)
-                                                    $.each(@json($formSkrinings), function(index, form) {
-                                                        $('#id_form_skrining').append('<option value="' + form.id + '">' + form.nama_skrining + '</option>');
-                                                    });
+                                                    $.each(@json($formSkrinings),
+                                                        function(index, form) {
+                                                            $('#id_form_skrining')
+                                                                .append(
+                                                                    '<option value="' +
+                                                                    form.id +
+                                                                    '">' + form
+                                                                    .nama_skrining +
+                                                                    '</option>'
+                                                                );
+                                                        });
                                                 @endisset
                                             }
-                                            if ($('#id_form_skrining').val() && $('#tanggalSkriningTambah').val() && nik.length === NIK_LENGTH) {
+                                            if ($('#id_form_skrining').val() && $(
+                                                    '#tanggalSkriningTambah')
+                                                .val() && nik.length === NIK_LENGTH
+                                                ) {
                                                 loadPertanyaanTambah();
                                             }
                                         } else {
-                                            $('#form_skrining_recommendation_info').html('<span class="text-danger">' + (responseForms.message || 'Error mencari rekomendasi formulir.') + '</span>');
-                                            $('#id_form_skrining').html('<option value="">-- Gagal memuat --</option>');
+                                            $('#form_skrining_recommendation_info')
+                                                .html('<span class="text-danger">' +
+                                                    (responseForms.message ||
+                                                        'Error mencari rekomendasi formulir.'
+                                                    ) + '</span>');
+                                            $('#id_form_skrining').html(
+                                                '<option value="">-- Gagal memuat --</option>'
+                                            );
                                         }
                                     },
                                     error: function(xhrForms) {
-                                        $('#form_skrining_recommendation_info').html('<span class="text-danger">Error memuat rekomendasi: ' + (xhrForms.responseJSON ? xhrForms.responseJSON.message : 'Koneksi gagal.') + '</span>');
-                                        $('#id_form_skrining').html('<option value="">-- Gagal memuat --</option>');
-                                        console.error("Error fetching recommended forms:", xhrForms.responseText);
+                                        $('#form_skrining_recommendation_info')
+                                            .html(
+                                                '<span class="text-danger">Error memuat rekomendasi: ' +
+                                                (xhrForms.responseJSON ? xhrForms
+                                                    .responseJSON.message :
+                                                    'Koneksi gagal.') + '</span>');
+                                        $('#id_form_skrining').html(
+                                            '<option value="">-- Gagal memuat --</option>'
+                                        );
+                                        console.error(
+                                            "Error fetching recommended forms:",
+                                            xhrForms.responseText);
                                     }
                                 });
 
                             } else {
                                 $('#Nama_Pasien').val('');
-                                $('#form_skrining_recommendation_info').html('<span class="text-danger">NIK tidak ditemukan.</span>');
-                                $('#id_form_skrining').html('<option value="">-- Masukkan NIK Pasien untuk Rekomendasi --</option>');
-                                $('#pertanyaan_list_tambah').html('<p>Pilih formulir skrining untuk memuat pertanyaan.</p>');
+                                $('#form_skrining_recommendation_info').html(
+                                    '<span class="text-danger">NIK tidak ditemukan.</span>');
+                                $('#id_form_skrining').html(
+                                    '<option value="">-- Masukkan NIK Pasien untuk Rekomendasi --</option>'
+                                );
+                                $('#pertanyaan_list_tambah').html(
+                                    '<p>Pilih formulir skrining untuk memuat pertanyaan.</p>'
+                                );
                                 $('#pertanyaan_container_tambah').hide();
                             }
                         },
                         error: function(xhrPasien) {
                             $('#Nama_Pasien').val('');
-                            $('#form_skrining_recommendation_info').html('<span class="text-danger">Error mencari data pasien: ' + (xhrPasien.responseJSON ? xhrPasien.responseJSON.message : 'Koneksi gagal.') + '</span>');
-                            $('#id_form_skrining').html('<option value="">-- Gagal memuat --</option>');
-                            $('#pertanyaan_list_tambah').html('<p>Pilih formulir skrining untuk memuat pertanyaan.</p>');
+                            $('#form_skrining_recommendation_info').html(
+                                '<span class="text-danger">Error mencari data pasien: ' + (
+                                    xhrPasien.responseJSON ? xhrPasien.responseJSON
+                                    .message : 'Koneksi gagal.') + '</span>');
+                            $('#id_form_skrining').html(
+                                '<option value="">-- Gagal memuat --</option>');
+                            $('#pertanyaan_list_tambah').html(
+                                '<p>Pilih formulir skrining untuk memuat pertanyaan.</p>');
                             $('#pertanyaan_container_tambah').hide();
-                            console.error("Error fetching pasien data:", xhrPasien.responseText);
+                            console.error("Error fetching pasien data:", xhrPasien
+                                .responseText);
                         }
                     });
                 } else {
                     $('#Nama_Pasien').val('');
-                    $('#id_form_skrining').html('<option value="">-- Masukkan NIK Pasien untuk Rekomendasi --</option>');
-                    $('#form_skrining_recommendation_info').text('Form skrining akan direkomendasikan setelah NIK pasien dimasukkan.');
-                    $('#pertanyaan_list_tambah').html('<p>Pilih formulir skrining untuk memuat pertanyaan.</p>');
+                    $('#id_form_skrining').html(
+                        '<option value="">-- Masukkan NIK Pasien untuk Rekomendasi --</option>');
+                    $('#form_skrining_recommendation_info').text(
+                        'Form skrining akan direkomendasikan setelah NIK pasien dimasukkan.');
+                    $('#pertanyaan_list_tambah').html(
+                        '<p>Pilih formulir skrining untuk memuat pertanyaan.</p>');
                     $('#pertanyaan_container_tambah').hide();
                 }
             });
@@ -714,47 +851,52 @@
             });
 
             // Event untuk submit form Tambah Skrining Baru
-$('#tambahSkriningForm').submit(function(e) {
-    e.preventDefault();
-    var form = $(this);
-    var url = form.attr('action');
-    var formData = new FormData(form[0]); // PERBAIKI: 'new new FormData' jadi 'new FormData'
+            $('#tambahSkriningForm').submit(function(e) {
+                e.preventDefault();
+                var form = $(this);
+                var url = form.attr('action');
+                var formData = new FormData(form[0]); // PERBAIKI: 'new new FormData' jadi 'new FormData'
 
-    $('#btnSimpanSkriningTambah').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Menyimpan...');
+                $('#btnSimpanSkriningTambah').prop('disabled', true).html(
+                    '<i class="fas fa-spinner fa-spin"></i> Menyimpan...');
 
-    $.ajax({
-        url: url,
-        method: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function(response) {
-            $('#tambahSkriningModal').modal('hide');
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        $('#tambahSkriningModal').modal('hide');
 
-            if (response.success) {
-                Swal.fire('Berhasil!', response.message, 'success');
-                // lastDisplayedSkriningId = response.skrining_id; // Ini opsional, bisa dihapus jika tidak digunakan
+                        if (response.success) {
+                            Swal.fire('Berhasil!', response.message, 'success');
+                            // lastDisplayedSkriningId = response.skrining_id; // Ini opsional, bisa dihapus jika tidak digunakan
 
-                const newSkrining = response.skrining; // Ini sekarang akan berisi objek skrining lengkap
-                const newDiagnosa = response.diagnosa; // Data diagnosa
+                            const newSkrining = response
+                                .skrining; // Ini sekarang akan berisi objek skrining lengkap
+                            const newDiagnosa = response.diagnosa; // Data diagnosa
 
-                if (newSkrining) { // Pastikan objek skrining ada
-                    const tableBody = $('.table-custom tbody'); // Pastikan ini selector yang benar untuk tbody
-                    
-                    // Mendapatkan nomor urut yang benar
-                    // Jika Anda ingin nomor urut selalu dimulai dari 1 di tampilan saat ini,
-                    // dan item baru selalu paling atas, Anda mungkin perlu logika yang lebih canggih
-                    // jika ada pagination atau sorting.
-                    // Untuk saat ini, kita bisa menghitung ulang atau memberi nomor urut dummy.
-                    // Jika loadSkriningTable() dipanggil di awal, nomor urutnya akan benar.
-                    // Untuk penambahan dinamis, kita bisa pakai nomor baris + 1 atau fetch dari server.
-                    // Contoh sederhana:
-                    const rowNumber = tableBody.children('tr').length + 1; // Mendapatkan jumlah baris yang sudah ada, lalu ditambah 1 untuk yang baru
+                            if (newSkrining) { // Pastikan objek skrining ada
+                                const tableBody = $(
+                                    '.table-custom tbody'
+                                    ); // Pastikan ini selector yang benar untuk tbody
 
-                    const newRow = `
+                                // Mendapatkan nomor urut yang benar
+                                // Jika Anda ingin nomor urut selalu dimulai dari 1 di tampilan saat ini,
+                                // dan item baru selalu paling atas, Anda mungkin perlu logika yang lebih canggih
+                                // jika ada pagination atau sorting.
+                                // Untuk saat ini, kita bisa menghitung ulang atau memberi nomor urut dummy.
+                                // Jika loadSkriningTable() dipanggil di awal, nomor urutnya akan benar.
+                                // Untuk penambahan dinamis, kita bisa pakai nomor baris + 1 atau fetch dari server.
+                                // Contoh sederhana:
+                                const rowNumber = tableBody.children('tr').length +
+                                    1; // Mendapatkan jumlah baris yang sudah ada, lalu ditambah 1 untuk yang baru
+
+                                const newRow = `
                         <tr>
                             <td>${rowNumber}</td> 
                             <td>${newSkrining.Nama_Petugas}</td>
@@ -764,64 +906,50 @@ $('#tambahSkriningForm').submit(function(e) {
                             <td>${newSkrining.form_skrining.nama_skrining || '-'}</td>
                             <td>
                                 <button class="btn btn-sm btn-primary btn-edit" data-id="${newSkrining.id}">Edit</button>
-                                ${newDiagnosa ? `<button class="btn btn-sm btn-success btn-view-diagnosa" data-id="${newSkrining.id}">Lihat Hasil Skrining</button>` : `<button class="btn btn-sm btn-warning btn-view-diagnosa" data-id="${newSkrining.id}">Lihat Diagnosa</button>`}
+                                ${newDiagnosa ? `<button class="btn btn-sm btn-success btn-view-diagnosa1" data-id="${newSkrining.id}">Lihat Hasil Skrining</button>` : `<button class="btn btn-sm btn-warning btn-view-diagnosa" data-id="${newSkrining.id}">Lihat Diagnosa</button>`}
                                 <button class="btn btn-danger btn-sm btn-delete" data-skrining-id="${newSkrining.id}" data-skrining-nama="${newSkrining.Nama_Pasien}">Hapus</button>
                             </td>
                         </tr>
                     `;
-                    tableBody.append(newRow); // Tambahkan di paling atas
+                                tableBody.append(newRow); // Tambahkan di paling atas
 
-                    // Panggil fungsi untuk menampilkan diagnosa di modal baru
-                    displayDiagnosaInNewModal(newDiagnosa); // Ini harus dipanggil jika Anda ingin modal diagnosa muncul
-                                                            // segera setelah skrining berhasil disimpan.
+                                // Panggil fungsi untuk menampilkan diagnosa di modal baru
+                                displayDiagnosaInNewModal(
+                                    newDiagnosa
+                                    ); // Ini harus dipanggil jika Anda ingin modal diagnosa muncul
+                                // segera setelah skrining berhasil disimpan.
 
-                    // Jika Anda menggunakan event delegation untuk tombol-tombol di tabel,
-                    // Anda tidak perlu memanggil fungsi terpisah untuk melampirkan event listener
-                    // setelah menambahkan baris baru.
-                    // Contoh event delegation: $(document).on('click', '.btn-edit', function() { ... });
-                    // Jika Anda tidak menggunakan event delegation, Anda mungkin perlu
-                    // memanggil fungsi seperti `attachTableEventListeners()` di sini.
+                                // Jika Anda menggunakan event delegation untuk tombol-tombol di tabel,
+                                // Anda tidak perlu memanggil fungsi terpisah untuk melampirkan event listener
+                                // setelah menambahkan baris baru.
+                                // Contoh event delegation: $(document).on('click', '.btn-edit', function() { ... });
+                                // Jika Anda tidak menggunakan event delegation, Anda mungkin perlu
+                                // memanggil fungsi seperti `attachTableEventListeners()` di sini.
 
-                } else {
-                    console.error("Objek skrining tidak ditemukan dalam respons.");
-                    Swal.fire('Error!', 'Terjadi kesalahan: Data skrining tidak lengkap dari server.', 'error');
-                }
+                            } else {
+                                console.error("Objek skrining tidak ditemukan dalam respons.");
+                                Swal.fire('Error!',
+                                    'Terjadi kesalahan: Data skrining tidak lengkap dari server.',
+                                    'error');
+                            }
 
-            } else {
-                Swal.fire('Error!', response.message, 'error');
-            }
-            $('#btnSimpanSkriningTambah').prop('disabled', false).text('Simpan');
-        },
-        error: function(xhr, status, error) {
-            console.error("Error submitting form:", error);
-            // Tambahkan detail error dari respons jika ada
-            let errorMessage = 'Terjadi kesalahan saat menyimpan data skrining.';
-            if (xhr.responseJSON && xhr.responseJSON.message) {
-                errorMessage = xhr.responseJSON.message;
-            }
-            Swal.fire('Error!', errorMessage, 'error');
-            $('#btnSimpanSkriningTambah').prop('disabled', false).text('Simpan');
-        }
-    });
-});
-
-// Pastikan fungsi displayDiagnosaInNewModal Anda sudah ada dan benar
-function displayDiagnosaInNewModal(diagnosa) {
-    if (diagnosa) {
-        // Asumsi ada modal dengan ID 'diagnosaModal' dan elemen-elemen untuk menampilkan hasil
-        $('#diagnosaModalLabel').text('Hasil Skrining untuk ' + diagnosa.skrining.Nama_Pasien); // Contoh judul
-        $('#diagnosaHasilUtama').text(diagnosa.hasil_utama);
-        $('#diagnosaRekomendasi').text(diagnosa.rekomendasi_tindak_lanjut);
-        $('#diagnosaDetail').text(diagnosa.detail_diagnosa); // Jika Anda menampilkan detail
-        $('#diagnosaCatatan').text(diagnosa.catatan); // Jika Anda menampilkan catatan
-
-        // Tampilkan modal diagnosa
-        $('#diagnosaModal').modal('show');
-    } else {
-        Swal.fire('Info', 'Belum ada hasil skrining otomatis untuk data ini.', 'info');
-    }
-}
-
+                        } else {
+                            Swal.fire('Error!', response.message, 'error');
+                        }
+                        $('#btnSimpanSkriningTambah').prop('disabled', false).text('Simpan');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error submitting form:", error);
+                        // Tambahkan detail error dari respons jika ada
+                        let errorMessage = 'Terjadi kesalahan saat menyimpan data skrining.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        Swal.fire('Error!', errorMessage, 'error');
+                        $('#btnSimpanSkriningTambah').prop('disabled', false).text('Simpan');
+                    }
+                });
+            });
 
             // Event untuk tombol edit
             $(document).on('click', '.btn-edit', function() {
@@ -830,7 +958,8 @@ function displayDiagnosaInNewModal(diagnosa) {
                 var updateUrl = "{{ url('skrining/update') }}/" + skriningId;
 
                 $('#editForm').attr('action', updateUrl);
-                $('#edit_pertanyaan_list').html('<p><i class="fas fa-spinner fa-spin"></i> Memuat data...</p>');
+                $('#edit_pertanyaan_list').html(
+                    '<p><i class="fas fa-spinner fa-spin"></i> Memuat data...</p>');
 
                 $.ajax({
                     url: editUrl,
@@ -852,7 +981,8 @@ function displayDiagnosaInNewModal(diagnosa) {
 
                                     const parts = dateOnly.split('-');
                                     if (parts.length === 3) {
-                                        $('#edit_Tanggal_Skrining').val(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                                        $('#edit_Tanggal_Skrining').val(
+                                            `${parts[2]}-${parts[1]}-${parts[0]}`);
                                     } else {
                                         $('#edit_Tanggal_Skrining').val(rawDateString);
                                     }
@@ -863,40 +993,53 @@ function displayDiagnosaInNewModal(diagnosa) {
                             } else {
                                 $('#edit_Tanggal_Skrining').val('');
                             }
-                            
+
                             $('#edit_Nama_Petugas').val(skrining.Nama_Petugas);
-                            $('#edit_NIK_Pasien').val(skrining.pasien ? skrining.pasien.NIK : '-');
+                            $('#edit_NIK_Pasien').val(skrining.pasien ? skrining.pasien.NIK :
+                                '-');
                             updateNikLengthInfo('#edit_NIK_Pasien', '#nik_length_info_edit');
                             $('#edit_Nama_Pasien').val(skrining.Nama_Pasien);
 
                             var formSkriningSelect = $('#edit_id_form_skrining');
                             formSkriningSelect.empty();
-                            formSkriningSelect.append('<option value="">-- Pilih Formulir Skrining --</option>');
+                            formSkriningSelect.append(
+                                '<option value="">-- Pilih Formulir Skrining --</option>');
                             if (formSkrinings && formSkrinings.length > 0) {
                                 $.each(formSkrinings, function(index, form) {
-                                    formSkriningSelect.append(new Option(form.nama_skrining, form.id));
+                                    formSkriningSelect.append(new Option(form
+                                        .nama_skrining, form.id));
                                 });
                             } else {
-                                formSkriningSelect.append('<option value="">Tidak ada formulir skrining tersedia</option>');
+                                formSkriningSelect.append(
+                                    '<option value="">Tidak ada formulir skrining tersedia</option>'
+                                );
                             }
                             if (skrining.id_form_skrining) {
                                 formSkriningSelect.val(skrining.id_form_skrining);
                             }
 
                             if (skrining.form_skrining && skrining.form_skrining.id) {
-                                loadPertanyaanEdit(skrining.form_skrining.id, skrining.jawabans);
+                                loadPertanyaanEdit(skrining.form_skrining.id, skrining
+                                    .jawabans);
                             } else {
-                                console.warn("Form Skrining ID tidak tersedia dari data skrining.");
-                                $('#edit_pertanyaan_list').html('<p class="text-danger">Formulir Skrining tidak terhubung dengan data skrining ini.</p>');
+                                console.warn(
+                                    "Form Skrining ID tidak tersedia dari data skrining.");
+                                $('#edit_pertanyaan_list').html(
+                                    '<p class="text-danger">Formulir Skrining tidak terhubung dengan data skrining ini.</p>'
+                                );
                             }
 
                             $('#editModal').modal('show');
                         } else {
-                            Swal.fire('Error', response.message || 'Gagal memuat data skrining.', 'error');
+                            Swal.fire('Error', response.message ||
+                                'Gagal memuat data skrining.', 'error');
                         }
                     },
                     error: function(xhr) {
-                        Swal.fire('Error', 'Terjadi kesalahan saat mengambil data untuk edit: ' + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText), 'error');
+                        Swal.fire('Error',
+                            'Terjadi kesalahan saat mengambil data untuk edit: ' + (xhr
+                                .responseJSON ? xhr.responseJSON.message : xhr.statusText),
+                            'error');
                         console.error("Error fetching edit data:", xhr.responseText);
                     }
                 });
@@ -915,7 +1058,8 @@ function displayDiagnosaInNewModal(diagnosa) {
                 var url = form.attr('action');
                 var formData = new FormData(form[0]);
 
-                $('#editModal button[type="submit"]').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Menyimpan Perubahan...');
+                $('#editModal button[type="submit"]').prop('disabled', true).html(
+                    '<i class="fas fa-spinner fa-spin"></i> Menyimpan Perubahan...');
 
                 var tanggalInput = $('#edit_Tanggal_Skrining').val();
                 var tanggalSkriningFormatted = null;
@@ -955,12 +1099,16 @@ function displayDiagnosaInNewModal(diagnosa) {
                         } else {
                             Swal.fire('Error!', response.message, 'error');
                         }
-                        $('#editModal button[type="submit"]').prop('disabled', false).text('Simpan Perubahan');
+                        $('#editModal button[type="submit"]').prop('disabled', false).text(
+                            'Simpan Perubahan');
                     },
                     error: function(xhr, status, error) {
                         console.error("Error submitting edit form:", error);
-                        Swal.fire('Error!', 'Terjadi kesalahan saat menyimpan perubahan data skrining.', 'error');
-                        $('#editModal button[type="submit"]').prop('disabled', false).text('Simpan Perubahan');
+                        Swal.fire('Error!',
+                            'Terjadi kesalahan saat menyimpan perubahan data skrining.',
+                            'error');
+                        $('#editModal button[type="submit"]').prop('disabled', false).text(
+                            'Simpan Perubahan');
                     }
                 });
             });
@@ -1013,7 +1161,8 @@ function displayDiagnosaInNewModal(diagnosa) {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Gagal!',
-                                text: response.message || 'Terjadi kesalahan saat menghapus data.',
+                                text: response.message ||
+                                    'Terjadi kesalahan saat menghapus data.',
                             });
                         }
                     },
@@ -1038,7 +1187,9 @@ function displayDiagnosaInNewModal(diagnosa) {
                 const skriningId = $(this).data('id');
                 lastDisplayedSkriningId = skriningId;
 
-                $('#hasilDiagnosaDisplayModal .modal-body').html('<p class="text-center"><i class="fas fa-spinner fa-spin"></i> Memuat hasil diagnosa...</p>');
+                $('#hasilDiagnosaDisplayModal.modal-body').html(
+                    '<p class="text-center"><i class="fas fa-spinner fa-spin"></i> Memuat hasil diagnosa...</p>'
+                );
                 $('#hasilDiagnosaDisplayModal').modal('show');
 
                 $.ajax({
@@ -1048,14 +1199,20 @@ function displayDiagnosaInNewModal(diagnosa) {
                         if (response.success && response.diagnosa) {
                             displayDiagnosaInNewModal(response.diagnosa);
                         } else {
-                            Swal.fire('Error', response.message || 'Gagal memuat diagnosa.', 'error');
-                            $('#hasilDiagnosaDisplayModal .modal-body').html('<p class="text-danger text-center">Gagal memuat data diagnosa.</p>');
+                            Swal.fire('Error', response.message || 'Gagal memuat diagnosa.',
+                                'error');
+                            $('#hasilDiagnosaDisplayModal .modal-body').html(
+                                '<p class="text-danger text-center">Gagal memuat data diagnosa.</p>'
+                            );
                         }
                     },
                     error: function(xhr) {
                         console.error("Error fetching diagnosa data:", xhr.responseText);
-                        Swal.fire('Error', 'Terjadi kesalahan saat memuat hasil diagnosa.', 'error');
-                        $('#hasilDiagnosaDisplayModal .modal-body').html('<p class="text-danger text-center">Terjadi kesalahan saat memuat hasil diagnosa.</p>');
+                        Swal.fire('Error', 'Terjadi kesalahan saat memuat hasil diagnosa.',
+                            'error');
+                        $('#hasilDiagnosaDisplayModal .modal-body').html(
+                            '<p class="text-danger text-center">Terjadi kesalahan saat memuat hasil diagnosa.</p>'
+                        );
                     }
                 });
             });

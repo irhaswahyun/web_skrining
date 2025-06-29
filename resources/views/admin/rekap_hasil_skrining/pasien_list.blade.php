@@ -26,14 +26,14 @@
                 <div class="row mb-2">
                     <div class="col-sm-6">
                         <h1 class="m-0">
-                            Daftar Pasien "{{ $namaFormSkrining ?? 'Tidak Diketahui' }}"
+                            Daftar Pasien "{{ $nama_form_skrining ?? 'Tidak Diketahui' }}"
                             @if ($wilayah && $wilayah !== 'Tidak Diketahui')
                                 di Wilayah "{{ $wilayah }}"
                             @elseif($wilayah === 'Tidak Diketahui')
                                 di Wilayah Tidak Diketahui
                             @endif
                             @if ($bulan && $tahun)
-                                pada Bulan {{ \Carbon\Carbon::createFromDate($tahun, $bulan, 1)->isoFormat('MMMM') }}
+                                pada Bulan {{ \Carbon\Carbon::createFromDate($tahun, $bulan, 1)->locale('id')->isoFormat('MMMM') }}
                             @elseif($tahun)
                                 pada Tahun {{ $tahun }}
                             @endif
@@ -197,10 +197,10 @@
                 });
             }
 
-             // Event untuk tombol "Detail" di Rekap Hasil Skrining (pasien-list)
-    $(document).on('click', '.btn-detail-skrining', function() {
-        console.log("Tombol detail diklik!"); // <-- TAMBAHKAN BARIS INI
-        var skriningId = $(this).data('skrining-id');
+            // Event untuk tombol "Detail" di Rekap Hasil Skrining (pasien-list)
+            $(document).on('click', '.btn-detail-skrining', function() {
+                console.log("Tombol detail diklik!"); // <-- TAMBAHKAN BARIS INI
+                var skriningId = $(this).data('skrining-id');
 
                 $.ajax({
                     url: "{{ route('rekap_hasil_skrining.detail') }}",
@@ -259,22 +259,20 @@
                             '<p class="text-danger">Gagal memuat detail pertanyaan.</p>');
                     }
                 });
-            }
+            })
         });
-    });
 
-            // Handler untuk tombol check DataTables status
-            $('#checkDataTableStatus').on('click', function() {
-                if ($.fn.DataTable) {
-                    if ($.fn.DataTable.isDataTable('#pasienSkriningTable')) {
-                        alert('DataTables sudah diinisialisasi untuk #pasienSkriningTable. (Client-side)');
-                    } else {
-                        alert('DataTables BELUM diinisialisasi untuk #pasienSkriningTable.');
-                    }
+        // Handler untuk tombol check DataTables status
+        $('#checkDataTableStatus').on('click', function() {
+            if ($.fn.DataTable) {
+                if ($.fn.DataTable.isDataTable('#pasienSkriningTable')) {
+                    alert('DataTables sudah diinisialisasi untuk #pasienSkriningTable. (Client-side)');
                 } else {
-                    alert('Library DataTables ($.fn.DataTable) tidak ditemukan di jQuery.');
+                    alert('DataTables BELUM diinisialisasi untuk #pasienSkriningTable.');
                 }
-            });
+            } else {
+                alert('Library DataTables ($.fn.DataTable) tidak ditemukan di jQuery.');
+            }
         });
     </script>
 @endpush

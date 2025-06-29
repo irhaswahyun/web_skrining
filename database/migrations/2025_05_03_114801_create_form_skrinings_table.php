@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('form_skrinings', function (Blueprint $table) {
             $table->id();
             $table->string('nama_skrining');
-            $table->foreignId('id_daftar_penyakit')->references('id')->on('daftar_penyakits')->onDelete('cascade');
+            // $table->foreignId('id_daftar_penyakit')->references('id')->on('daftar_penyakits')->onDelete('cascade');
             // $table->foreignId('id_daftar_pertanyaan')->references('id')->on('daftar_pertanyaans')->onDelete('cascade');
             $table->timestamps();
         });

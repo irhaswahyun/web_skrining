@@ -56,7 +56,7 @@
                                                 <td>{{ $i + 1 }}</td>
                                                 <td>{{ $user->nama }}</td>
                                                 <td>{{ $user->email }}</td>
-                                                <td>{{ $user->role->Nama_Role ?? 'N/A' }}</td>
+                                                <td>{{ $user->role }}</td>
                                                 <td>
                                                     <button class="btn btn-sm btn-primary btn-edit"
                                                         data-id="{{ $user->id }}" data-nama="{{ $user->nama }}"
