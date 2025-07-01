@@ -75,24 +75,41 @@ class SkriningController extends Controller
     /**
      * Mengambil pertanyaan berdasarkan ID Form Skrining.
      */
-    public function getPertanyaanByFormSkrining(Request $request, $id)
+     public function getPertanyaanByFormSkrining(Request $request, $id)
     {
         try {
+            // 1. Pastikan $id adalah ID numerik dari FormSkrining.
+            //    Jika rute Anda seperti yang di atas (/{id}), maka $id akan otomatis menjadi bagian setelah /pertanyaan/.
+            //    Jika frontend mengirim "riplay-2023-07-01:1" ke sini, maka ini akan gagal.
             $formSkrining = FormSkrining::with('pertanyaan')->findOrFail($id);
             $pertanyaanList = $formSkrining->pertanyaan;
 
             $nikPasien = $request->query('nik_pasien');
             $tanggalSkriningRaw = $request->query('tanggal_skrining');
 
+            // --- Bagian Logging untuk Debugging ---
+            Log::info('getPertanyaanByFormSkrining - ID Form Skrining:', ['id' => $id]);
+            Log::info('getPertanyaanByFormSkrining - NIK Pasien:', ['nik' => $nikPasien]);
+            Log::info('getPertanyaanByFormSkrining - Tanggal Skrining Raw:', ['tanggal' => $tanggalSkriningRaw]);
+            // --- Akhir Bagian Logging ---
+
             if ($nikPasien && $tanggalSkriningRaw) {
                 try {
-                    // Pastikan format tanggal yang diterima dari frontend adalah Y-m-d
+                    // 2. Penting: Pastikan format tanggal dari frontend adalah 'Y-m-d' (misal: 2023-07-01).
+                    //    Jika tidak, `createFromFormat` akan melemparkan pengecualian.
                     $parsedDate = Carbon::createFromFormat('Y-m-d', $tanggalSkriningRaw)->format('Y-m-d');
+                    Log::info('getPertanyaanByFormSkrining - Tanggal Skrining Parsed:', ['parsedDate' => $parsedDate]);
 
+
+                    // 3. TAMBAHKAN FILTER ID FORM SKRINING DI SINI!
+                    //    Ini memastikan Anda hanya mengambil jawaban sebelumnya untuk FORMULIR SPESIFIK yang sedang diisi.
                     $skriningsToday = Skrining::where('NIK_Pasien', $nikPasien)
                         ->whereDate('Tanggal_Skrining', $parsedDate)
+                        ->where('id_form_skrining', $id) // <--- GARIS INI SANGAT PENTING DITAMBAHKAN
                         ->with('jawabans')
                         ->get();
+
+                    Log::info('getPertanyaanByFormSkrining - Skrining ditemukan (untuk NIK, Tanggal, Form ID):', ['count' => $skriningsToday->count()]);
 
                     $previousAnswers = [];
                     foreach ($skriningsToday as $skrining) {
@@ -101,41 +118,37 @@ class SkriningController extends Controller
                         }
                     }
 
-                    // Map pertanyaanList untuk menambahkan properti 'previous_answer'
-                    // Karena JavaScript Anda sebelumnya mengharapkan 'previous_answer'
                     $pertanyaanList = $pertanyaanList->map(function ($pertanyaan) use ($previousAnswers) {
-                        // Ubah ini dari 'jawaban_tersimpan' menjadi 'previous_answer'
                         $pertanyaan->previous_answer = $previousAnswers[$pertanyaan->id] ?? null;
                         return $pertanyaan;
                     });
                 } catch (\Exception $e) {
-                    // Jika ada error dalam parsing tanggal atau query,
-                    // Tetap kembalikan pertanyaanList tapi dengan pesan error untuk frontend jika perlu
-                    // Namun, karena JS Anda mengharapkan array langsung, kita harus konsisten.
-                    // Sebaiknya log error ini untuk debugging.
-                    \Log::error("Error in getPertanyaanByFormSkrining date parsing/query: " . $e->getMessage());
-                    // Kita masih akan mengembalikan pertanyaanList (mungkin tanpa jawaban sebelumnya)
-                    // dan biarkan frontend menangani 'previous_answer' yang null.
-                    // Pertahankan $pertanyaanList apa adanya jika ada error di sini.
+                    // 4. Perbaiki penanganan error untuk parsing tanggal atau query.
+                    //    Mengembalikan 500 error di sini agar frontend tahu ada masalah server.
+                    Log::error("Error in getPertanyaanByFormSkrining date parsing/query for NIK: {$nikPasien}, Date: {$tanggalSkriningRaw}, Form ID: {$id}. Error: " . $e->getMessage() . " on line " . $e->getLine() . " in file " . $e->getFile());
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Gagal memproses tanggal atau data skrining sebelumnya. Pastikan format tanggal YYYY-MM-DD.',
+                        'error_details' => $e->getMessage(),
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine()
+                    ], 500);
                 }
             }
 
-            // =================================================================
-            // >>> PENTING: UBAH BAGIAN INI AGAR MENGEMBALIKAN ARRAY LANGSUNG <<<
-            // =================================================================
-            return response()->json($pertanyaanList); // Hanya kirim array pertanyaanList
-            // =================================================================
+            return response()->json($pertanyaanList);
 
         } catch (ModelNotFoundException $e) {
-            // Untuk ModelNotFoundException, kita harus mengembalikan respons yang bisa dipahami JavaScript.
-            // Karena ini adalah error, mungkin lebih baik tetap dalam format objek.
-            // JavaScript Anda di `error` callback sudah menangani `xhr.responseText`.
+            // 5. Log ModelNotFoundException agar bisa dilacak.
+            Log::error("FormSkrining with ID {$id} not found in getPertanyaanByFormSkrining. Error: " . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Formulir Skrining tidak ditemukan.'], 404);
         } catch (\Exception $e) {
-            // Untuk error umum, juga kembalikan dalam format objek agar JavaScript bisa menangkapnya di `error` callback.
+            // 6. Log error umum lainnya.
+            Log::error("General error in getPertanyaanByFormSkrining: " . $e->getMessage() . " on line " . $e->getLine() . " in file " . $e->getFile());
             return response()->json(['success' => false, 'message' => 'Terjadi kesalahan server: ' . $e->getMessage(), 'error_details' => $e->getMessage()], 500);
         }
     }
+
 
     /**
      * Mengambil rekomendasi form skrining berdasarkan NIK Pasien.

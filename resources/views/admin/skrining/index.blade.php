@@ -373,23 +373,6 @@
                 $('#cetakHasilUtama').show();
             }
 
-            // Pastikan fungsi displayDiagnosaInNewModal Anda sudah ada dan benar
-            // function displayDiagnosaInNewModal(diagnosa) {
-            //     if (diagnosa) {
-            //         // Asumsi ada modal dengan ID 'diagnosaModal' dan elemen-elemen untuk menampilkan hasil
-            //         $('#diagnosaModalLabel').text('Hasil Skrining untuk ' + diagnosa.skrining.Nama_Pasien); // Contoh judul
-            //         $('#diagnosaHasilUtama').text(diagnosa.hasil_utama);
-            //         $('#diagnosaRekomendasi').text(diagnosa.rekomendasi_tindak_lanjut);
-            //         $('#diagnosaDetail').text(diagnosa.detail_diagnosa); // Jika Anda menampilkan detail
-            //         $('#diagnosaCatatan').text(diagnosa.catatan); // Jika Anda menampilkan catatan
-
-            //         // Tampilkan modal diagnosa
-            //         $('#diagnosaModal').modal('show');
-            //     } else {
-            //         Swal.fire('Info', 'Belum ada hasil skrining otomatis untuk data ini.', 'info');
-            //     }
-            // }
-
             // Fungsi untuk memuat pertanyaan di modal Tambah
             function loadPertanyaanTambah() {
                 var formSkriningId = $('#id_form_skrining').val();
@@ -417,6 +400,13 @@
                         tanggal_skrining: tanggalSkriningUntukBackend
                     },
                     success: function(response) {
+                        if (response.success === false) {
+                            console.error('Backend melaporkan kegagalan:', response.message);
+                            pertanyaanContainer.html(`<p class="text-danger">Gagal memuat pertanyaan: ${response.message || 'Terjadi kesalahan di server.'}</p>`);
+                            Swal.fire('Error', response.message || 'Gagal memuat pertanyaan.', 'error');
+                            $('#pertanyaan_container_tambah').show(); // Pastikan kontainer tetap terlihat untuk pesan error
+                            return; // Hentikan pemrosesan lebih lanjut
+                        }
                         pertanyaanContainer.empty();
                         if (response && response.length > 0) {
                             $.each(response, function(index, pertanyaan) {
@@ -490,6 +480,12 @@
                         tanggal_skrining: tanggalSkriningFormatted
                     },
                     success: function(response) {
+                         if (response.success === false) {
+                            console.error('Backend melaporkan kegagalan:', response.message);
+                            $('#edit_pertanyaan_list').html(`<p class="text-danger">Gagal memuat pertanyaan: ${response.message || 'Terjadi kesalahan di server.'}</p>`);
+                            Swal.fire('Error', response.message || 'Gagal memuat pertanyaan.', 'error');
+                            return; // Hentikan pemrosesan lebih lanjut
+                        }
                         $('#edit_pertanyaan_list').empty();
                         let pertanyaanList = [];
 

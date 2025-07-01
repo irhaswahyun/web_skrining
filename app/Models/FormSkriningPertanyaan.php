@@ -9,7 +9,7 @@ class FormSkriningPertanyaan extends Model
 {
     use HasFactory;
 
-    protected $table = 'form_skrining_pertanyaans';
+    protected $table = 'form_skrining_pertanyaan';
     protected $fillable = ['id_form_skrining', 'id_daftar_pertanyaan'];
 
     public function daftarPertanyaan()

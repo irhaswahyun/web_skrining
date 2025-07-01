@@ -21,8 +21,8 @@ class DatabaseSeeder extends Seeder
         // Menambahkan user setelah role ada
         User::insert([
             [
-                'nama' => 'Irhas Wahyu Ningtyas',
-            'email' => 'iir@gmail.com',
+                'nama' => 'Iyas',
+            'email' => 'irhass@gmail.com',
             'id_role' => 1, // Menggunakan id yang sudah ada pada role
             'password' => bcrypt('12345678'),
             ],

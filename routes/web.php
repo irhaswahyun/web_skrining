@@ -148,13 +148,15 @@ Route::middleware(['auth', 'role:nakes'])->group(function () {
     });
 
 
-    // Pastikan rute rekap skrining ini ada dan sesuai
+    // REKAP SKRINING ROUTES
     Route::prefix('rekap-hasil-skrining')->name('rekap_hasil_skrining.')->group(function () {
         Route::get('/', [RekapSkriningController::class, 'index'])->name('index');
         Route::get('/summary', [RekapSkriningController::class, 'getRekapSummary'])->name('summary');
         Route::get('/detail', [RekapSkriningController::class, 'getDetailSkrining'])->name('detail');
-
-        // Rute untuk menampilkan daftar pasien skrining
         Route::get('/pasien-list', [RekapSkriningController::class, 'pasienList'])->name('pasien_list');
+
+        // Rute baru yang menyebabkan error:
+        Route::get('/status-summary', [RekapSkriningController::class, 'getSkriningStatusSummary'])->name('status_summary');
+        Route::get('/pasien-by-status', [RekapSkriningController::class, 'getPasienListBySkriningStatus'])->name('pasien_by_status');
     });
 });

@@ -9,16 +9,12 @@ class FormSkrining extends Model
 {
     use HasFactory;
 
-    protected $table = 'form_skrinings'; // Pastikan nama tabel benar
+    protected $table = 'form_skrinings';
     protected $fillable = [
         'nama_skrining',
-        // 'nama_form',
-        'kategori', // Penting: Pastikan ini masuk fillable
+        'kategori',
     ];
 
-    // PENTING: Cast kolom 'kategori' sebagai array.
-    // Kolom 'kategori' di tabel form_skrinings HARUS menyimpan data JSON array (misal: ["Lansia", "Anak"]).
-    // Jika tidak, whereJsonContains tidak akan bekerja dengan benar.
     protected $casts = [
         'kategori' => 'array',
     ];
@@ -26,7 +22,17 @@ class FormSkrining extends Model
     // Relasi many-to-many dengan DaftarPertanyaan
     public function pertanyaan()
     {
-        return $this->belongsToMany(DaftarPertanyaan::class, 'form_skrining_pertanyaans', 'id_form_skrining', 'id_daftar_pertanyaan');
+        // Parameter belongsToMany:
+        // 1. Nama model yang berelasi (DaftarPertanyaan::class)
+        // 2. Nama tabel pivot ('form_skrining_pertanyaan')
+        // 3. Foreign key dari model ini (FormSkrining) di tabel pivot ('form_skrining_id')
+        // 4. Foreign key dari model berelasi (DaftarPertanyaan) di tabel pivot ('daftar_pertanyaan_id')
+        return $this->belongsToMany(
+            DaftarPertanyaan::class,
+            'form_skrining_pertanyaan', // Nama tabel pivot yang benar
+            'form_skrining_id',       // Foreign key FormSkrining di tabel pivot
+            'daftar_pertanyaan_id'    // Foreign key DaftarPertanyaan di tabel pivot
+        );
     }
 
     // Metode helper untuk mendapatkan pertanyaan terkait
@@ -36,7 +42,7 @@ class FormSkrining extends Model
     }
 
     public function penyakit()
-{
-    return $this->belongsTo(DaftarPenyakit::class, 'penyakit_id'); // sesuaikan foreign key-nya
-}
+    {
+        return $this->belongsTo(DaftarPenyakit::class, 'penyakit_id'); // sesuaikan foreign key-nya
+    }
 }
