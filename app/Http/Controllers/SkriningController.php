@@ -213,8 +213,8 @@ class SkriningController extends Controller
             'Nama_Petugas' => 'required|string|max:255',
             'NIK_Pasien' => [
                 'required',
-                'string',
-                'max:255',
+                'numeric',        // NIK harus berupa angka saja
+                'digits:16',      // NIK harus tepat 16 digit
                 Rule::unique('skrinings')->where(function ($query) use ($request) {
                     $tanggalSkriningRaw = $request->Tanggal_Skrining;
                     try {
@@ -233,6 +233,9 @@ class SkriningController extends Controller
             'jawaban' => 'required|array',
             'jawaban.*' => 'nullable|string|max:1000',
         ], [
+            'NIK_Pasien.required' => 'Nomor Induk Kependudukan (NIK) wajib diisi.',
+            'NIK_Pasien.numeric'  => 'Nomor Induk Kependudukan (NIK) harus berupa angka.',
+            'NIK_Pasien.digits'   => 'Nomor Induk Kependudukan (NIK) harus terdiri dari 16 digit.',
             'NIK_Pasien.unique' => 'Pasien ini sudah melakukan skrining untuk jenis formulir yang sama pada tanggal yang sama.',
             'Tanggal_Skrining.date_format' => 'Format Tanggal Skrining harus YYYY-MM-DD.',
         ]);
@@ -332,43 +335,7 @@ class SkriningController extends Controller
             ], 500);
         }
     }
-    /**
-     * Menampilkan detail skrining untuk modal edit.
-     */
-    // public function show($id)
-    // {
-    //     try {
-    //         // Load relasi yang diperlukan: pasien, formSkrining dengan pertanyaan, jawaban dengan pertanyaan, dan diagnosa
-    //         $skrining = Skrining::with(['pasien', 'formSkrining.pertanyaan', 'jawabans.pertanyaan', 'diagnosa'])->find($id);
 
-    //         if (!$skrining) {
-    //             return response()->json(['success' => false, 'message' => 'Data skrining tidak ditemukan.'], 404);
-    //         }
-
-    //         // Ambil semua form skrining yang tersedia untuk dropdown di frontend
-    //         $formSkrinings = FormSkrining::all();
-
-    //         // Kumpulkan jawaban yang sudah ada dalam format yang mudah digunakan di frontend
-    //         $existingJawaban = [];
-    //         foreach ($skrining->jawabans as $jawaban) {
-    //             $existingJawaban[$jawaban->ID_DaftarPertanyaan] = $jawaban->jawaban;
-    //         }
-
-    //         // Tambahkan jawaban yang sudah ada ke data pertanyaan
-    //         // Ini akan diproses oleh JavaScript di frontend saat mengisi form edit
-    //         foreach ($skrining->formSkrining->pertanyaan as $pertanyaan) {
-    //             $pertanyaan->jawaban_tersimpan = $existingJawaban[$pertanyaan->id] ?? null;
-    //         }
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'data' => $skrining,
-    //             'formSkrinings' => $formSkrinings,
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         return response()->json(['success' => false, 'message' => 'Gagal memuat data skrining untuk edit: ' . $e->getMessage()], 500);
-    //     }
-    // }
 
     public function show($id)
     {
@@ -422,13 +389,16 @@ class SkriningController extends Controller
         // Validasi data input untuk update
         $request->validate([
             'Nama_Petugas' => 'required|string|max:255',
-            'NIK_Pasien' => 'required|string|max:255', // Sesuaikan max length jika NIK 16 digit
+            'NIK_Pasien' => 'required|numeric|digits:16', // Sesuaikan max length jika NIK 16 digit
             'Nama_Pasien' => 'required|string|max:255',
             'Tanggal_Skrining' => 'required|date_format:Y-m-d', // PENTING: Validasi ini HARUS Y-m-d
             'id_form_skrining_edit' => 'required|exists:form_skrinings,id', // Nama input di frontend adalah id_form_skrining_edit
             'jawaban' => 'required|array',
             'jawaban.*' => 'nullable|string|max:1000',
         ], [
+            'NIK_Pasien.required' => 'Nomor Induk Kependudukan (NIK) wajib diisi.',
+            'NIK_Pasien.numeric'  => 'Nomor Induk Kependudukan (NIK) harus berupa angka.',
+            'NIK_Pasien.digits'   => 'Nomor Induk Kependudukan (NIK) harus terdiri dari 16 digit.',
             'NIK_Pasien.unique' => 'Pasien ini sudah melakukan skrining untuk jenis formulir yang sama pada tanggal yang sama.',
             'Tanggal_Skrining.date_format' => 'Format Tanggal Skrining harus YYYY-MM-DD.',
         ]);

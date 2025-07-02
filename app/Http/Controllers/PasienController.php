@@ -26,7 +26,7 @@ class PasienController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'NIK' => 'required|unique:pasiens,NIK|digits:16', // Tambahkan validasi digits
+            'NIK' => 'required|numeric|digits:16|unique:pasiens,NIK', // Tambahkan validasi digits
             'Nama_Pasien' => 'required',
             'Tanggal_Lahir' => 'required|date',
             'Kategori' => 'required',
@@ -34,6 +34,12 @@ class PasienController extends Controller
             'Alamat' => 'required',
             'Wilayah' => 'required',
             'No_telp' => 'required',
+         ], [
+            // Pesan kustom untuk NIK
+            'NIK.required' => 'Nomor Induk Kependudukan (NIK) wajib diisi.',
+            'NIK.numeric' => 'Nomor Induk Kependudukan (NIK) hanya boleh berisi angka.',
+            'NIK.digits' => 'Nomor Induk Kependudukan (NIK) harus terdiri dari 16 digit.',
+            'NIK.unique' => 'Nomor Induk Kependudukan (NIK) sudah terdaftar.'
         ]);
 
         try {
@@ -71,7 +77,7 @@ class PasienController extends Controller
         $request->validate([
             // PENTING: Mengubah cara mengabaikan NIK saat update
             // Gunakan $pasien->getKey() atau $pasien->NIK karena NIK adalah primaryKey
-            'NIK' => 'required|digits:16|unique:pasiens,NIK,' . $pasien->getKey() . ',' . $pasien->getKeyName(),
+            'NIK' => 'required|numeric|digits:16|unique:pasiens,NIK,' . $pasien->getKey() . ',' . $pasien->getKeyName(),
             'Nama_Pasien' => 'required',
             'Tanggal_Lahir' => 'required|date',
             'Kategori' => 'required',
@@ -79,6 +85,12 @@ class PasienController extends Controller
             'Alamat' => 'required',
             'Wilayah' => 'required',
             'No_telp' => 'required',
+        ], [
+            // Pesan kustom untuk NIK
+            'NIK.required' => 'Nomor Induk Kependudukan (NIK) wajib diisi.',
+            'NIK.numeric' => 'Nomor Induk Kependudukan (NIK) hanya boleh berisi angka.',
+            'NIK.digits' => 'Nomor Induk Kependudukan (NIK) harus terdiri dari 16 digit.',
+            'NIK.unique' => 'Nomor Induk Kependudukan (NIK) sudah terdaftar.'
         ]);
 
         try {

@@ -60,7 +60,7 @@
                 </div> --}}
 
                 {{-- KARTU JUMLAH PENYAKIT YANG TERDAFTAR (Opsional) --}}
-                <div class="col-6 col-lg-3 mb-4">
+                {{-- <div class="col-6 col-lg-3 mb-4">
                     <div class="card shadow text-center">
                         <div class="card-body d-flex align-items-center justify-content-center flex-column flex-md-row">
                             <div class="card-icon mr-3 mb-2 mb-md-0">
@@ -72,7 +72,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div> {{-- End of row for static cards --}}
 
             {{-- Bagian Kontainer Kartu Dinamis per Jenis Skrining --}}

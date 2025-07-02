@@ -284,23 +284,61 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
+            if (typeof jQuery == 'undefined') {
+                console.error("jQuery is not loaded! Please ensure jQuery library is included before this script.");
+                return; // Hentikan eksekusi script jika jQuery tidak ada
+            }
+
             const NIK_LENGTH = 16; // Konstanta untuk panjang NIK
             let lastDisplayedSkriningId = null;
 
             // Fungsi untuk mengupdate info panjang NIK
             function updateNikLengthInfo(inputId, infoId) {
-                const currentLength = $(inputId).val().length;
-                const infoElement = $(infoId);
-                infoElement.text(`${currentLength}/${NIK_LENGTH} digit`);
+            const inputElement = $(inputId); // Dapatkan elemen input menggunakan selector
+            const infoElement = $(infoId);   // Dapatkan elemen info
 
-                if (currentLength === NIK_LENGTH) {
-                    infoElement.removeClass('text-muted text-danger').addClass('text-success');
-                } else if (currentLength > NIK_LENGTH) {
-                    infoElement.removeClass('text-muted text-success').addClass('text-danger');
-                } else {
-                    infoElement.removeClass('text-success text-danger').addClass('text-muted');
+            if (!inputElement.length) { // Cek jika elemen input tidak ditemukan
+                console.warn(`Element with selector '${inputId}' not found for updateNikLengthInfo.`);
+                return;
+            }
+            if (!infoElement.length) { // Cek jika elemen info tidak ditemukan
+                console.warn(`Info element with selector '${infoId}' not found for updateNikLengthInfo.`);
+                return;
+            }
+
+            const nikValue = inputElement.val(); // Ambil nilai NIK dari elemen input
+            const currentLength = nikValue.length; // Hitung panjangnya
+
+            // Reset teks info awal
+            infoElement.text(`${currentLength}/${NIK_LENGTH} digit`);
+
+            // Cek apakah NIK hanya angka
+            const isNumeric = /^\d*$/.test(nikValue); // Memastikan hanya angka atau kosong
+
+            // Hapus semua kelas warna sebelumnya untuk menghindari konflik
+            infoElement.removeClass('text-muted text-success text-danger');
+
+            if (currentLength === NIK_LENGTH && isNumeric) {
+                infoElement.addClass('text-success'); // Hijau jika valid
+            } else if (currentLength > NIK_LENGTH) {
+                infoElement.addClass('text-danger').text(`Terlalu panjang! ${currentLength}/${NIK_LENGTH} digit.`); // Merah jika terlalu panjang
+            } else if (!isNumeric && nikValue !== '') {
+                infoElement.addClass('text-danger').text(`Hanya boleh angka! ${currentLength}/${NIK_LENGTH} digit.`); // Merah jika ada non-angka
+            } else {
+                infoElement.addClass('text-muted'); // Abu-abu jika belum lengkap
+            }
+            // Menonaktifkan rekomendasi/pencarian pasien jika NIK tidak valid di modal tambah
+            if (inputId === '#NIK_Pasien') { // Hanya berlaku untuk NIK_Pasien di modal tambah
+                 if (currentLength !== NIK_LENGTH || !isNumeric) {
+                    $('#Nama_Pasien').val('');
+                    $('#id_form_skrining').html('<option value="">-- Masukkan NIK Pasien untuk Rekomendasi --</option>');
+                    $('#form_skrining_recommendation_info').text('Form skrining akan direkomendasikan setelah NIK pasien dimasukkan.');
+                    $('#pertanyaan_list_tambah').html('<p>Pilih formulir skrining untuk memuat pertanyaan.</p>');
+                    $('#pertanyaan_container_tambah').hide();
                 }
             }
+        }
+
 
             // Fungsi untuk mencetak hasil skrining
             function cetakHasilSkrining(containerId) {
@@ -676,7 +714,9 @@
             // Event untuk tombol "Tambah Baru"
             $('#tambahSkriningBaru').click(function() {
                 $('#tambahSkriningForm')[0].reset();
-                $('#NIK_Pasien').val('');
+               $('#NIK_Pasien').val('');
+                    // Panggil updateNikLengthInfo dengan selector input
+                    updateNikLengthInfo('#NIK_Pasien', '#nik_length_info_tambah');
                 $('#Nama_Pasien').val('');
                 $('#tanggalSkriningTambah').datepicker('setDate', new Date());
                 updateNikLengthInfo('#NIK_Pasien', '#nik_length_info_tambah');
@@ -694,7 +734,13 @@
 
             // Event untuk NIK Pasien di Modal Tambah
             $('#NIK_Pasien').on('input', function() {
+                 // Hapus karakter non-digit secara langsung
+                let value = $(this).val();
+                value = value.replace(/\D/g, ''); // Hanya tinggalkan digit
+                $(this).val(value);
+
                 updateNikLengthInfo('#NIK_Pasien', '#nik_length_info_tambah');
+
                 var nik = $(this).val();
                 $('#Nama_Pasien').val('');
                 $('#id_form_skrining').html('<option value="">-- Memuat Rekomendasi... --</option>');
@@ -702,7 +748,10 @@
                     '<i class="fas fa-spinner fa-spin"></i> Mencari rekomendasi...');
                 $('#pertanyaan_container_tambah').hide();
 
-                if (nik && nik.length === NIK_LENGTH) {
+                if (nik && nik.length === NIK_LENGTH && /^\d{16}$/.test(nik)) {
+                      $('#form_skrining_recommendation_info').html('<i class="fa fa-spinner fa-spin"></i> Memuat Rekomendasi...');
+            $('#id_form_skrining').html('<option value="">Memuat...</option>');
+            $('#pertanyaan_container_tambah').hide();
                     $.ajax({
                         url: "{{ route('pasien.getPasienData') }}",
                         method: 'GET',
@@ -846,13 +895,31 @@
                 loadPertanyaanTambah();
             });
 
+            // Event saat modal Edit dibuka
+    $('#editModal').on('shown.bs.modal', function() {
+        // Panggil updateNikLengthInfo dengan selector string untuk input NIK edit
+        updateNikLengthInfo('#edit_NIK_Pasien', '#nik_length_info_edit'); // <<< INI JUGA DIPERBAIKI
+    });
+
+            // Event saat modal Tambah dibuka
+            $('#tambahSkriningModal').on('shown.bs.modal', function() {
+                // Panggil updateNikLengthInfo dengan selector string untuk input NIK tambah
+                updateNikLengthInfo('#NIK_Pasien', '#nik_length_info_tambah'); // <<< INI JUGA DIPERBAIKI
+            });
+
             // Event untuk submit form Tambah Skrining Baru
             $('#tambahSkriningForm').submit(function(e) {
                 e.preventDefault();
+                 var nik = $('#NIK_Pasien').val();
                 var form = $(this);
                 var url = form.attr('action');
                 var formData = new FormData(form[0]); // PERBAIKI: 'new new FormData' jadi 'new FormData'
 
+                if (nik.length !== NIK_LENGTH || !/^\d{16}$/.test(nik)) {
+                    Swal.fire('Peringatan!', 'NIK Pasien harus 16 digit angka.', 'warning');
+                    $('#NIK_Pasien').focus();
+                    return; // Hentikan proses submit
+                }
                 $('#btnSimpanSkriningTambah').prop('disabled', true).html(
                     '<i class="fas fa-spinner fa-spin"></i> Menyimpan...');
 

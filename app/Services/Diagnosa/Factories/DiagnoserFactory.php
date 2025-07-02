@@ -8,11 +8,9 @@ class DiagnoserFactory
 {
     protected array $diagnosers = [
         'skrining malaria' => MalariaDiagnoser::class,
-        // 'skrining penyakit lainnya' => NamaPenyakitLainDiagnoser::class,
-        // ...
     ];
 
-    public function getDiagnoser(string $jenisPenyakit): ?DiagnoserInterface // Periksa kembali baris ini
+    public function getDiagnoser(string $jenisPenyakit): ?DiagnoserInterface 
     {
         $jenisPenyakit = strtolower($jenisPenyakit);
 
